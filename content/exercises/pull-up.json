@@ -1,0 +1,44 @@
+{
+  "slug": "pull-up",
+  "category": "upper",
+  "pattern": "pull",
+  "difficulty": "intermediate",
+  "equipment": ["pull_up_bar"],
+  "muscleGroups": ["lats", "biceps", "upper_back"],
+  "isUnilateral": false,
+  "relations": { "variations": ["chin-up"], "substitutes": [] },
+  "fr": {
+    "name": "Traction stricte",
+    "altNames": ["traction", "tractions strictes", "pull-up"],
+    "description": "Tirage vertical au poids du corps, mains en pronation. Il renforce le dos et les bras, sans élan.",
+    "instructions": [
+      "Suspends-toi à la barre, mains en pronation, un peu plus écartées que les épaules.",
+      "Serre les abdominaux et les fessiers pour garder le corps gainé et immobile.",
+      "Abaisse les épaules, puis tire en amenant la poitrine vers la barre jusqu’à passer le menton au-dessus.",
+      "Redescends lentement jusqu’à avoir les bras tendus, sans relâcher les épaules d’un coup."
+    ],
+    "commonMistakes": [
+      "Prendre de l’élan avec les jambes ou le bassin.",
+      "S’arrêter à mi-hauteur au lieu de revenir bras tendus.",
+      "Tendre le cou pour passer le menton au lieu de tirer avec le dos."
+    ],
+    "mediaAlt": "Traction stricte : personne suspendue à une barre, mains en pronation, menton au-dessus de la barre."
+  },
+  "en": {
+    "name": "Pull-up",
+    "altNames": ["strict pull-up", "traction"],
+    "description": "A bodyweight vertical pull with an overhand grip. It builds the back and arms, with no swinging.",
+    "instructions": [
+      "Hang from the bar with an overhand grip, hands slightly wider than your shoulders.",
+      "Brace your abs and glutes so your body stays tight and still.",
+      "Draw your shoulders down, then pull your chest towards the bar until your chin clears it.",
+      "Lower slowly until your arms are straight, without dropping into the bottom."
+    ],
+    "commonMistakes": [
+      "Swinging the legs or hips to build momentum.",
+      "Stopping halfway down instead of returning to straight arms.",
+      "Craning the neck to get the chin over instead of pulling with the back."
+    ],
+    "mediaAlt": "Pull-up: a person hanging from a bar with an overhand grip, chin above the bar."
+  }
+}

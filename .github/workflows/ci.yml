@@ -64,6 +64,11 @@ jobs:
           pnpm db:types
           git diff --exit-code -- apps/web/server/db/types.ts
 
+      - name: Generated seed is up to date
+        run: |
+          pnpm seed:generate
+          git diff --exit-code -- supabase/seed.sql
+
       - name: Database tests
         run: pnpm test:db
 

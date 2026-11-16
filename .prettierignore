@@ -1,7 +1,7 @@
 pnpm-lock.yaml
 **/*.md
 docs/
-content/
+content/media/
 **/.next/
 **/node_modules/
 coverage/

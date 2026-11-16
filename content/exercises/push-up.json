@@ -1,0 +1,44 @@
+{
+  "slug": "push-up",
+  "category": "upper",
+  "pattern": "push",
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["chest", "triceps", "shoulders", "core"],
+  "isUnilateral": false,
+  "relations": { "variations": ["pike-push-up"], "substitutes": [] },
+  "fr": {
+    "name": "Pompe",
+    "altNames": ["pompes", "push-up"],
+    "description": "Poussée horizontale au sol qui renforce la poitrine, les épaules et les triceps, corps gainé.",
+    "instructions": [
+      "Place les mains au sol, un peu plus larges que les épaules, et tends les jambes derrière toi.",
+      "Aligne la tête, le dos et les talons, abdominaux et fessiers serrés.",
+      "Descends en pliant les coudes vers l’arrière, à environ 45° du corps, jusqu’à frôler le sol avec la poitrine.",
+      "Pousse dans le sol pour remonter bras tendus, sans casser l’alignement."
+    ],
+    "commonMistakes": [
+      "Laisser le bassin s’affaisser ou le monter trop haut.",
+      "Écarter les coudes à 90° du corps.",
+      "Raccourcir l’amplitude au lieu de descendre près du sol."
+    ],
+    "mediaAlt": "Pompe : personne en appui sur les mains et les pieds, corps aligné, bras tendus."
+  },
+  "en": {
+    "name": "Push-up",
+    "altNames": ["press-up", "pompe"],
+    "description": "A horizontal push from the floor that builds the chest, shoulders and triceps, with the body braced.",
+    "instructions": [
+      "Place your hands on the floor slightly wider than your shoulders and stretch your legs out behind you.",
+      "Line up your head, back and heels, with abs and glutes tight.",
+      "Lower by bending your elbows back at about 45° to your body until your chest nearly touches the floor.",
+      "Push the floor away to return to straight arms, keeping the line."
+    ],
+    "commonMistakes": [
+      "Letting the hips sag or lifting them too high.",
+      "Flaring the elbows out to 90° from the body.",
+      "Cutting the range short instead of lowering close to the floor."
+    ],
+    "mediaAlt": "Push-up: a person supported on hands and feet, body in a straight line, arms straight."
+  }
+}

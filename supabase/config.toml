@@ -67,7 +67,7 @@ schema_paths = []
 
 [db.seed]
 # If enabled, seeds the database after migrations during a db reset.
-enabled = false # enabled by P1-10 when the content seed exists
+enabled = true # generated from content/ by `pnpm seed:generate` (ADR 0005)
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 sql_paths = ["./seed.sql"]

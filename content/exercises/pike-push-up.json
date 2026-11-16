@@ -1,0 +1,44 @@
+{
+  "slug": "pike-push-up",
+  "category": "upper",
+  "pattern": "push",
+  "difficulty": "intermediate",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["shoulders", "triceps"],
+  "isUnilateral": false,
+  "relations": { "variations": ["push-up"], "substitutes": [] },
+  "fr": {
+    "name": "Pike push-up",
+    "altNames": ["pike push-ups", "pompe pike", "pompe en V"],
+    "description": "Pompe hanches hautes, en V inversé, qui oriente l’effort vers les épaules.",
+    "instructions": [
+      "Mets-toi en position de pompe, puis recule les pieds et monte les hanches pour former un V inversé.",
+      "Garde les bras et les jambes aussi tendus que possible, la tête entre les bras.",
+      "Plie les coudes pour descendre le haut de la tête vers le sol, devant tes mains.",
+      "Pousse pour revenir bras tendus, hanches toujours hautes."
+    ],
+    "commonMistakes": [
+      "Laisser les hanches descendre, ce qui transforme l’exercice en pompe classique.",
+      "Poser la tête au sol ou descendre trop vite.",
+      "Écarter fortement les coudes sur les côtés."
+    ],
+    "mediaAlt": "Pike push-up : personne en V inversé, hanches hautes, mains et pieds au sol."
+  },
+  "en": {
+    "name": "Pike push-up",
+    "altNames": ["pike press-up"],
+    "description": "A push-up with the hips high in an inverted V, which shifts the work to the shoulders.",
+    "instructions": [
+      "Start in a push-up position, then walk your feet in and lift your hips into an inverted V.",
+      "Keep your arms and legs as straight as you can, head between your arms.",
+      "Bend your elbows to lower the top of your head towards the floor, just in front of your hands.",
+      "Press back up to straight arms, hips still high."
+    ],
+    "commonMistakes": [
+      "Letting the hips drop, which turns it into a regular push-up.",
+      "Resting the head on the floor or lowering too fast.",
+      "Flaring the elbows wide to the sides."
+    ],
+    "mediaAlt": "Pike push-up: a person in an inverted V, hips high, hands and feet on the floor."
+  }
+}
