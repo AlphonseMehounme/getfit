@@ -2,6 +2,17 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 
+// AGENTS §9: no hardcoded colours in UI code; colours come from the design tokens in app/globals.css.
+const HEX =
+  '(^|[^0-9A-Za-z_&])#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})($|[^0-9A-Za-z_-])';
+const COLOUR_FN = '(rgba?|hsla?|hwb|lab|lch|oklab|oklch)\\(';
+const colourMessage =
+  'AGENTS §9: use a design token (app/globals.css) instead of a colour literal.';
+const noColourLiterals = [HEX, COLOUR_FN].flatMap((pattern) => [
+  { selector: `Literal[value=/${pattern}/]`, message: colourMessage },
+  { selector: `TemplateElement[value.raw=/${pattern}/]`, message: colourMessage },
+]);
+
 const repositoriesImport = {
   group: ['@/server/repositories', '@/server/repositories/*', '**/server/repositories/**'],
   message: 'AGENTS §5.2: routes and components go through server/services, never repositories.',
@@ -58,6 +69,9 @@ export default defineConfig([
   },
   {
     files: ['apps/web/app/**/*.{ts,tsx}', 'apps/web/components/**/*.{ts,tsx}'],
-    rules: { 'no-restricted-imports': ['error', { patterns: [repositoriesImport] }] },
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [repositoriesImport] }],
+      'no-restricted-syntax': ['error', ...noColourLiterals],
+    },
   },
 ]);

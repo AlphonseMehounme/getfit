@@ -13,13 +13,13 @@ export default async function LandingPage() {
       <div className="mt-4 flex flex-wrap gap-3">
         <Link
           href={SIGN_UP_PATH}
-          className="bg-accent text-accent-foreground focus-visible:outline-accent inline-flex min-h-12 items-center rounded-xl px-5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="bg-accent text-accent-foreground hover:bg-accent-hover focus-visible:outline-focus inline-flex min-h-12 items-center rounded-control duration-fast ease-standard transition-colors px-5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {t('signUp')}
         </Link>
         <Link
           href={LOGIN_PATH}
-          className="border-border focus-visible:outline-accent inline-flex min-h-12 items-center rounded-xl border px-5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="border-control hover:bg-surface focus-visible:outline-focus inline-flex min-h-12 items-center rounded-control duration-fast ease-standard transition-colors border px-5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {t('login')}
         </Link>
