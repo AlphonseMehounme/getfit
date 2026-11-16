@@ -6,6 +6,64 @@
   "Landing": {
     "title": "GetFit",
     "tagline": "Strength training and running, together in one structured programme.",
-    "subtitle": "Every day, know what to do, why it matters and when to recover."
+    "subtitle": "Every day, know what to do, why it matters and when to recover.",
+    "login": "Log in",
+    "signUp": "Create an account"
+  },
+  "Auth": {
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "pending": "Please wait…",
+    "login": {
+      "title": "Log in",
+      "submit": "Log in",
+      "noAccount": "No account yet?",
+      "signUpLink": "Create one"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "submit": "Create account",
+      "passwordHint": "At least {min} characters.",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in"
+    },
+    "checkInbox": {
+      "title": "Check your inbox",
+      "body": "If {email} can be used, we have sent a confirmation link to it. Open it to activate your account.",
+      "hint": "The link works on any device. Check your spam folder if nothing arrives within a few minutes."
+    },
+    "errors": {
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Use at least 8 characters.",
+      "passwordTooLong": "Use 72 characters or fewer.",
+      "invalidCredentials": "Email or password is incorrect.",
+      "emailNotConfirmed": "Confirm your email address first, using the link we sent you.",
+      "weakPassword": "This password is too easy to guess. Choose another one.",
+      "rateLimited": "Too many attempts. Wait a few minutes, then try again.",
+      "invalidLink": "This link has expired or was already used. Log in, or sign up again to get a new one.",
+      "invalidInput": "Check the fields and try again.",
+      "unexpected": "Something went wrong. Try again in a moment."
+    }
+  },
+  "Profile": {
+    "title": "Profile",
+    "account": "Account",
+    "email": "Email",
+    "language": "Language",
+    "timeZone": "Time zone",
+    "languages": {
+      "fr": "French",
+      "en": "English"
+    },
+    "signOut": "Log out",
+    "loading": "Loading your profile…",
+    "error": {
+      "title": "Your profile could not be loaded",
+      "body": "Check your connection, then try again.",
+      "retry": "Try again"
+    }
   }
 }

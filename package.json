@@ -21,6 +21,7 @@
     "test:db": "vitest run --config tests/db/vitest.config.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.65.1",
     "@supabase/supabase-js": "2.119.0",
     "@types/node": "26.6.6",
