@@ -1,4 +1,6 @@
 import { bySlug, LOCALES, type Exercise } from '../../content/schema/exercise.ts';
+import type { Programme } from '../../content/schema/programme.ts';
+import { programmeSql } from './programme-sql.ts';
 import { array, bool, jsonb, literal, nullable } from './sql.ts';
 
 // ADR 0005: the content seed is generated SQL. It is idempotent (upserts by slug), runs in one transaction
@@ -105,10 +107,23 @@ function relationsSql(exercises: readonly Exercise[]): string {
   return statements.join('\n');
 }
 
-/** Builds the seed from validated exercises (see `checkLibrary`). Same input, same output, byte for byte. */
-export function buildSeed(exercises: readonly Exercise[]): string {
+/**
+ * Builds the seed from validated content (see `checkLibrary` and `checkProgrammes`).
+ * Same input, same output, byte for byte.
+ */
+export function buildSeed(
+  exercises: readonly Exercise[],
+  programmes: readonly Programme[] = [],
+): string {
   if (exercises.length === 0) throw new RangeError('The seed needs at least one exercise');
   const sorted = [...exercises].sort(bySlug);
+  const programmeSections = [...programmes]
+    .sort((a, b) => bySlug(a, b) || a.version - b.version)
+    .flatMap((p) => [
+      '',
+      `-- Programme ${p.slug} v${p.version} (PRD §7, ADR 0004)`,
+      programmeSql(p),
+    ]);
   return [
     SEED_HEADER,
     '',
@@ -122,6 +137,7 @@ export function buildSeed(exercises: readonly Exercise[]): string {
     '',
     '-- Variations and substitutes',
     relationsSql(sorted),
+    ...programmeSections,
     '',
     'commit;',
     '',

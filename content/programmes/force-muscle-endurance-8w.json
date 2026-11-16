@@ -1,0 +1,519 @@
+{
+  "slug": "force-muscle-endurance-8w",
+  "version": 1,
+  "durationWeeks": 8,
+  "difficulty": "intermediate",
+  "objectives": ["increase_strength", "build_muscle", "improve_endurance"],
+  "requiredEquipment": ["pull_up_bar", "bodyweight"],
+  "fr": {
+    "title": "Force, muscle & endurance — 8 semaines",
+    "description": "3 séances de renforcement par semaine, une sortie longue le dimanche et une récupération planifiée. Matériel : une barre de traction ; les autres exercices se font au poids du corps. Programme indicatif à adapter selon ta forme et ta récupération.",
+    "safetyNotes": [
+      "Garde 2–3 répétitions en réserve à chaque série.",
+      "N’ajoute pas les anciennes compositions quotidiennes à ce programme.",
+      "Si la fatigue persiste, réduis les séries ou repose-toi.",
+      "Arrête un mouvement en cas de douleur vive ou qui s’aggrave.",
+      "La sortie du dimanche doit rester maîtrisée, pas devenir un contre-la-montre."
+    ]
+  },
+  "en": {
+    "title": "Strength, muscle & endurance — 8 weeks",
+    "description": "3 strength sessions a week, a long run on Sunday and planned recovery. Equipment: a pull-up bar; everything else is bodyweight. A guide to adapt to your fitness and recovery.",
+    "safetyNotes": [
+      "Keep 2–3 reps in reserve on every set.",
+      "Don’t add your old daily routines to this programme.",
+      "If fatigue persists, cut sets or rest.",
+      "Stop a movement if you feel sharp or worsening pain.",
+      "Keep the Sunday run under control; it is not a time trial."
+    ]
+  },
+  "templates": [
+    {
+      "slug": "strength-a",
+      "sessionType": "strength",
+      "bodyFocus": "upper",
+      "estimatedDurationMin": 40,
+      "countsForAdherence": true,
+      "exercises": [
+        {
+          "exercise": "pull-up",
+          "sets": 3,
+          "target": {
+            "reps": 6
+          },
+          "perSide": false,
+          "restS": 120
+        },
+        {
+          "exercise": "push-up",
+          "sets": 3,
+          "target": {
+            "reps": 12
+          },
+          "perSide": false,
+          "restS": 90
+        },
+        {
+          "exercise": "pike-push-up",
+          "sets": 2,
+          "target": {
+            "reps": 8
+          },
+          "perSide": false,
+          "restS": 90
+        },
+        {
+          "exercise": "glute-bridge",
+          "sets": 2,
+          "target": {
+            "reps": 15
+          },
+          "perSide": false,
+          "restS": 60
+        },
+        {
+          "exercise": "plank",
+          "sets": 2,
+          "target": {
+            "durationS": 45
+          },
+          "perSide": false,
+          "restS": 60
+        }
+      ],
+      "fr": {
+        "title": "Séance A — Haut du corps",
+        "purpose": "Renforcer le tirage, la poussée et le gainage, en gardant les jambes légères après la sortie du dimanche.",
+        "guidance": [
+          "Jambes légères après la sortie du dimanche.",
+          "Garde 2–3 répétitions en réserve à chaque série."
+        ]
+      },
+      "en": {
+        "title": "Strength A — Upper body",
+        "purpose": "Build pulling, pushing and core strength while keeping the legs light after Sunday’s run.",
+        "guidance": [
+          "Legs stay light after Sunday’s run.",
+          "Keep 2–3 reps in reserve on every set."
+        ]
+      }
+    },
+    {
+      "slug": "recovery",
+      "sessionType": "recovery",
+      "bodyFocus": "none",
+      "estimatedDurationMin": null,
+      "countsForAdherence": false,
+      "exercises": [
+        {
+          "exercise": "easy-walk",
+          "sets": 1,
+          "target": {
+            "durationS": 1800
+          },
+          "perSide": false,
+          "restS": null
+        },
+        {
+          "exercise": "mobility-hips",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        },
+        {
+          "exercise": "mobility-ankles",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        },
+        {
+          "exercise": "mobility-shoulders",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        }
+      ],
+      "fr": {
+        "title": "Récupération et mobilité",
+        "purpose": "Bouger en douceur pour récupérer entre deux séances, sans ajouter de fatigue.",
+        "guidance": [
+          "Marche facile jusqu’à 30 min, sans objectif de vitesse.",
+          "Mobilité douce jusqu’à 10 min : hanches, chevilles, épaules.",
+          "Pas de circuit intense. Repos complet si fatigue."
+        ]
+      },
+      "en": {
+        "title": "Recovery and mobility",
+        "purpose": "Move gently to recover between sessions, without adding fatigue.",
+        "guidance": [
+          "Easy walk up to 30 min, with no speed target.",
+          "Gentle mobility up to 10 min: hips, ankles, shoulders.",
+          "No intense circuit. Rest completely if you feel tired."
+        ]
+      }
+    },
+    {
+      "slug": "strength-b",
+      "sessionType": "strength",
+      "bodyFocus": "lower",
+      "estimatedDurationMin": 45,
+      "countsForAdherence": true,
+      "exercises": [
+        {
+          "exercise": "chin-up",
+          "sets": 3,
+          "target": {
+            "reps": 6
+          },
+          "perSide": false,
+          "restS": 120
+        },
+        {
+          "exercise": "bulgarian-split-squat",
+          "sets": 3,
+          "target": {
+            "reps": 10
+          },
+          "perSide": true,
+          "restS": 90
+        },
+        {
+          "exercise": "single-leg-glute-bridge",
+          "sets": 3,
+          "target": {
+            "reps": 10
+          },
+          "perSide": true,
+          "restS": 60
+        },
+        {
+          "exercise": "standing-calf-raise",
+          "sets": 3,
+          "target": {
+            "reps": 20
+          },
+          "perSide": false,
+          "restS": 60
+        },
+        {
+          "exercise": "hanging-knee-raise",
+          "sets": 2,
+          "target": {
+            "reps": 12
+          },
+          "perSide": false,
+          "restS": 60
+        }
+      ],
+      "fr": {
+        "title": "Séance B — Jambes et corps entier",
+        "purpose": "Renforcer les jambes, le tirage et les abdominaux en milieu de semaine, pour laisser les jambes récupérer avant la sortie longue.",
+        "guidance": [
+          "Garde 2–3 répétitions en réserve à chaque série.",
+          "Les exercices sur une jambe se font de chaque côté."
+        ]
+      },
+      "en": {
+        "title": "Strength B — Lower and full body",
+        "purpose": "Build the legs, pulling and abs midweek, so the legs can recover before the long run.",
+        "guidance": [
+          "Keep 2–3 reps in reserve on every set.",
+          "Single-leg exercises are done on each side."
+        ]
+      }
+    },
+    {
+      "slug": "rest-mobility",
+      "sessionType": "rest",
+      "bodyFocus": "none",
+      "estimatedDurationMin": null,
+      "countsForAdherence": false,
+      "exercises": [
+        {
+          "exercise": "mobility-hips",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        },
+        {
+          "exercise": "mobility-ankles",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        },
+        {
+          "exercise": "mobility-shoulders",
+          "sets": 1,
+          "target": {
+            "durationS": 180
+          },
+          "perSide": false,
+          "restS": null
+        }
+      ],
+      "fr": {
+        "title": "Repos ou mobilité",
+        "purpose": "Récupérer : aucune séance de renforcement n’est nécessaire aujourd’hui.",
+        "guidance": [
+          "Repos complet ou mobilité douce, au choix.",
+          "Aucune séance de renforcement nécessaire."
+        ]
+      },
+      "en": {
+        "title": "Rest or mobility",
+        "purpose": "Recover: no strength session is needed today.",
+        "guidance": ["Full rest or gentle mobility, as you prefer.", "No strength session needed."]
+      }
+    },
+    {
+      "slug": "strength-c",
+      "sessionType": "strength",
+      "bodyFocus": "upper",
+      "estimatedDurationMin": 30,
+      "countsForAdherence": true,
+      "exercises": [
+        {
+          "exercise": "pull-up",
+          "sets": 2,
+          "target": {
+            "reps": 6
+          },
+          "perSide": false,
+          "restS": 120
+        },
+        {
+          "exercise": "push-up",
+          "sets": 2,
+          "target": {
+            "reps": 12
+          },
+          "perSide": false,
+          "restS": 90
+        },
+        {
+          "exercise": "pike-push-up",
+          "sets": 2,
+          "target": {
+            "reps": 8
+          },
+          "perSide": false,
+          "restS": 90
+        },
+        {
+          "exercise": "side-plank",
+          "sets": 2,
+          "target": {
+            "durationS": 30
+          },
+          "perSide": true,
+          "restS": 45
+        }
+      ],
+      "fr": {
+        "title": "Séance C — Haut du corps",
+        "purpose": "Une séance plus courte du haut du corps, sans charger les jambes avant le week-end.",
+        "guidance": [
+          "Garde 2–3 répétitions en réserve à chaque série.",
+          "La planche latérale se tient de chaque côté."
+        ]
+      },
+      "en": {
+        "title": "Strength C — Upper body",
+        "purpose": "A shorter upper-body session that leaves the legs fresh for the weekend.",
+        "guidance": ["Keep 2–3 reps in reserve on every set.", "Hold the side plank on each side."]
+      }
+    },
+    {
+      "slug": "rest-pre-run",
+      "sessionType": "rest",
+      "bodyFocus": "none",
+      "estimatedDurationMin": null,
+      "countsForAdherence": false,
+      "exercises": [],
+      "fr": {
+        "title": "Repos avant la sortie longue",
+        "purpose": "Arriver frais à la sortie longue de demain.",
+        "guidance": ["Pas de séance jambes intense.", "Marche facultative."]
+      },
+      "en": {
+        "title": "Rest before the long run",
+        "purpose": "Arrive fresh for tomorrow’s long run.",
+        "guidance": ["No intense leg work.", "An easy walk is optional."]
+      }
+    },
+    {
+      "slug": "long-run",
+      "sessionType": "run",
+      "bodyFocus": "lower",
+      "estimatedDurationMin": null,
+      "countsForAdherence": true,
+      "exercises": [
+        {
+          "exercise": "long-run",
+          "sets": 1,
+          "target": {
+            "distanceM": 11000
+          },
+          "perSide": false,
+          "restS": null
+        }
+      ],
+      "fr": {
+        "title": "Sortie longue",
+        "purpose": "Développer l’endurance à allure conversationnelle, effort 5/10 ou moins.",
+        "guidance": [
+          "La distance prévue est un plafond, pas un objectif à battre.",
+          "Allure conversationnelle, effort 5/10 ou moins. Marcher par moments est possible.",
+          "Ne cherche pas à battre ton temps de référence : ralentis si nécessaire."
+        ]
+      },
+      "en": {
+        "title": "Long run",
+        "purpose": "Build endurance at a conversational pace, effort 5/10 or lower.",
+        "guidance": [
+          "The planned distance is a ceiling, not a target to beat.",
+          "Conversational pace, effort 5/10 or lower. Walking at times is fine.",
+          "Don’t try to beat your reference time: slow down if you need to."
+        ]
+      }
+    }
+  ],
+  "weekPattern": {
+    "1": "strength-a",
+    "2": "recovery",
+    "3": "strength-b",
+    "4": "rest-mobility",
+    "5": "strength-c",
+    "6": "rest-pre-run",
+    "7": "long-run"
+  },
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "focusKey": "transition",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Transition",
+        "focus": "Transition et récupération : reprendre le rythme en douceur."
+      },
+      "en": {
+        "label": "Transition",
+        "focus": "Transition and recovery: ease back into a rhythm."
+      }
+    },
+    {
+      "weekNumber": 2,
+      "focusKey": "installation",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Installation",
+        "focus": "Installer la routine."
+      },
+      "en": {
+        "label": "Establish",
+        "focus": "Establish the routine."
+      }
+    },
+    {
+      "weekNumber": 3,
+      "focusKey": "installation",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Installation",
+        "focus": "Installer la routine et la régularité."
+      },
+      "en": {
+        "label": "Establish",
+        "focus": "Establish the routine and consistency."
+      }
+    },
+    {
+      "weekNumber": 4,
+      "focusKey": "consolidation",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Consolidation",
+        "focus": "Consolider, avec une progression contrôlée."
+      },
+      "en": {
+        "label": "Consolidation",
+        "focus": "Consolidate, with controlled progression."
+      }
+    },
+    {
+      "weekNumber": 5,
+      "focusKey": "deload",
+      "volumeMultiplier": 0.65,
+      "longRunCeilingM": 7000,
+      "fr": {
+        "label": "Allégée",
+        "focus": "Semaine allégée pour récupérer : environ un tiers de séries en moins et une sortie longue jusqu’à 7 km."
+      },
+      "en": {
+        "label": "Deload",
+        "focus": "A lighter week to recover: about a third fewer sets and a long run of up to 7 km."
+      }
+    },
+    {
+      "weekNumber": 6,
+      "focusKey": "progression",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Progression",
+        "focus": "Reprendre la progression si la récupération est bonne."
+      },
+      "en": {
+        "label": "Progression",
+        "focus": "Resume progression if recovery is good."
+      }
+    },
+    {
+      "weekNumber": 7,
+      "focusKey": "progression",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Progression",
+        "focus": "Progresser et consolider les performances."
+      },
+      "en": {
+        "label": "Progression",
+        "focus": "Progress and consolidate performance."
+      }
+    },
+    {
+      "weekNumber": 8,
+      "focusKey": "evaluation",
+      "volumeMultiplier": 1,
+      "longRunCeilingM": 11000,
+      "fr": {
+        "label": "Évaluation",
+        "focus": "Évaluer les progrès sans aller systématiquement à l’échec. Tests de référence facultatifs : tractions, pompes et squats au maximum."
+      },
+      "en": {
+        "label": "Evaluation",
+        "focus": "Assess your progress without always training to failure. Optional baseline re-tests: max pull-ups, push-ups and squats."
+      }
+    }
+  ]
+}
