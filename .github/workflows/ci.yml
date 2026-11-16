@@ -55,3 +55,35 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  database:
+    name: Migrations, generated types, RLS and constraint tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Start local Supabase (applies every migration)
+        run: pnpm exec supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,supavisor
+
+      - name: Generated types are up to date
+        run: |
+          pnpm db:types
+          git diff --exit-code -- apps/web/server/db/types.ts
+
+      - name: Database tests
+        run: pnpm test:db
+
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm exec supabase stop --no-backup
