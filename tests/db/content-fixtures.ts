@@ -64,3 +64,41 @@ export async function insertProgrammeSkeleton(db: pg.Client): Promise<ProgrammeS
 
   return { programmeId, weekId: week.rows[0]!.id, templateId: template.rows[0]!.id };
 }
+
+export interface ProgrammeFixture extends ProgrammeSkeleton {
+  programmeDayId: string;
+  templateExerciseId: string;
+  exerciseId: string;
+}
+
+/** A committed programme with one day and one prescribed exercise. Remove with `removeProgrammeFixture`. */
+export async function insertProgrammeFixture(db: pg.Client): Promise<ProgrammeFixture> {
+  const skeleton = await insertProgrammeSkeleton(db);
+  const exerciseId = await insertExercise(db);
+  const day = await db.query<{ id: string }>(
+    `insert into public.programme_days (programme_week_id, day_of_week, session_template_id)
+     values ($1, 1, $2) returning id`,
+    [skeleton.weekId, skeleton.templateId],
+  );
+  const templateExercise = await db.query<{ id: string }>(
+    `insert into public.template_exercises (session_template_id, exercise_id, sequence, target_sets, target_reps, rest_s)
+     values ($1, $2, 1, 3, 6, 120) returning id`,
+    [skeleton.templateId, exerciseId],
+  );
+  return {
+    ...skeleton,
+    exerciseId,
+    programmeDayId: day.rows[0]!.id,
+    templateExerciseId: templateExercise.rows[0]!.id,
+  };
+}
+
+/** Deletes a programme fixture once no user rows reference it (ON DELETE RESTRICT). */
+export async function removeProgrammeFixture(db: pg.Client, f: ProgrammeFixture): Promise<void> {
+  await db.query('delete from public.template_exercises where id = $1', [f.templateExerciseId]);
+  await db.query('delete from public.programme_days where id = $1', [f.programmeDayId]);
+  await db.query('delete from public.session_templates where id = $1', [f.templateId]);
+  await db.query('delete from public.programme_weeks where id = $1', [f.weekId]);
+  await db.query('delete from public.programmes where id = $1', [f.programmeId]);
+  await db.query('delete from public.exercises where id = $1', [f.exerciseId]);
+}
