@@ -29,9 +29,12 @@ export default defineConfig({
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',
+        // P1-14: design-system components, tested with Testing Library and axe.
+        'apps/web/components/ui/{card,skeleton,empty-state,error-state,week-strip}.tsx',
+        'apps/web/components/exercise/**/*.tsx',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
-      exclude: ['**/*.test.ts', 'supabase/seed/generate.ts'],
+      exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],
       thresholds: { branches: 100, functions: 100, lines: 100, statements: 100 },
     },
   },
