@@ -122,6 +122,104 @@ export type Database = {
         };
         Relationships: [];
       };
+      prescription_overrides: {
+        Row: {
+          accepted_at: string;
+          created_at: string;
+          from_week: number;
+          id: string;
+          target_distance_m: number | null;
+          target_duration_s: number | null;
+          target_reps: number | null;
+          template_exercise_id: string;
+          user_programme_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string;
+          created_at?: string;
+          from_week: number;
+          id?: string;
+          target_distance_m?: number | null;
+          target_duration_s?: number | null;
+          target_reps?: number | null;
+          template_exercise_id: string;
+          user_programme_id: string;
+        };
+        Update: {
+          accepted_at?: string;
+          created_at?: string;
+          from_week?: number;
+          id?: string;
+          target_distance_m?: number | null;
+          target_duration_s?: number | null;
+          target_reps?: number | null;
+          template_exercise_id?: string;
+          user_programme_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prescription_overrides_template_exercise_id_fkey';
+            columns: ['template_exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'template_exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prescription_overrides_user_programme_id_fkey';
+            columns: ['user_programme_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_programmes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          birth_year: number | null;
+          created_at: string;
+          experience_level: Database['public']['Enums']['experience_level'] | null;
+          first_name: string | null;
+          height_cm: number | null;
+          id: string;
+          locale: Database['public']['Enums']['app_locale'];
+          onboarding_completed_at: string | null;
+          preferred_duration_min: number | null;
+          preferred_units: Database['public']['Enums']['unit_system'];
+          timezone: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          birth_year?: number | null;
+          created_at?: string;
+          experience_level?: Database['public']['Enums']['experience_level'] | null;
+          first_name?: string | null;
+          height_cm?: number | null;
+          id: string;
+          locale?: Database['public']['Enums']['app_locale'];
+          onboarding_completed_at?: string | null;
+          preferred_duration_min?: number | null;
+          preferred_units?: Database['public']['Enums']['unit_system'];
+          timezone?: string;
+          updated_at?: string;
+        };
+        Update: {
+          birth_year?: number | null;
+          created_at?: string;
+          experience_level?: Database['public']['Enums']['experience_level'] | null;
+          first_name?: string | null;
+          height_cm?: number | null;
+          id?: string;
+          locale?: Database['public']['Enums']['app_locale'];
+          onboarding_completed_at?: string | null;
+          preferred_duration_min?: number | null;
+          preferred_units?: Database['public']['Enums']['unit_system'];
+          timezone?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       programme_days: {
         Row: {
           day_of_week: number;
@@ -295,6 +393,55 @@ export type Database = {
         };
         Relationships: [];
       };
+      schedule_overrides: {
+        Row: {
+          action: Database['public']['Enums']['override_action'];
+          created_at: string;
+          id: string;
+          new_date: string | null;
+          original_date: string;
+          programme_day_id: string;
+          reason: string | null;
+          user_programme_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          action: Database['public']['Enums']['override_action'];
+          created_at?: string;
+          id?: string;
+          new_date?: string | null;
+          original_date: string;
+          programme_day_id: string;
+          reason?: string | null;
+          user_programme_id: string;
+        };
+        Update: {
+          action?: Database['public']['Enums']['override_action'];
+          created_at?: string;
+          id?: string;
+          new_date?: string | null;
+          original_date?: string;
+          programme_day_id?: string;
+          reason?: string | null;
+          user_programme_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'schedule_overrides_programme_day_id_fkey';
+            columns: ['programme_day_id'];
+            isOneToOne: false;
+            referencedRelation: 'programme_days';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'schedule_overrides_user_programme_id_fkey';
+            columns: ['user_programme_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_programmes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       session_template_translations: {
         Row: {
           guidance: NonNullable<Json>;
@@ -425,23 +572,186 @@ export type Database = {
           },
         ];
       };
+      user_availability: {
+        Row: {
+          day_of_week: number;
+          kind: Database['public']['Enums']['availability_kind'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          day_of_week: number;
+          kind: Database['public']['Enums']['availability_kind'];
+          user_id: string;
+        };
+        Update: {
+          day_of_week?: number;
+          kind?: Database['public']['Enums']['availability_kind'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_availability_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_equipment: {
+        Row: {
+          equipment: Database['public']['Enums']['equipment_type'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          equipment: Database['public']['Enums']['equipment_type'];
+          user_id: string;
+        };
+        Update: {
+          equipment?: Database['public']['Enums']['equipment_type'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_equipment_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_goals: {
+        Row: {
+          created_at: string;
+          goal_type: Database['public']['Enums']['goal_type'];
+          id: string;
+          status: Database['public']['Enums']['goal_status'];
+          target_date: string | null;
+          target_unit: string | null;
+          target_value: number | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          goal_type: Database['public']['Enums']['goal_type'];
+          id?: string;
+          status?: Database['public']['Enums']['goal_status'];
+          target_date?: string | null;
+          target_unit?: string | null;
+          target_value?: number | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          goal_type?: Database['public']['Enums']['goal_type'];
+          id?: string;
+          status?: Database['public']['Enums']['goal_status'];
+          target_date?: string | null;
+          target_unit?: string | null;
+          target_value?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_goals_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_programmes: {
+        Row: {
+          created_at: string;
+          ended_at: string | null;
+          id: string;
+          programme_id: string;
+          programme_version: number;
+          start_date: string;
+          start_mode: Database['public']['Enums']['start_mode'];
+          status: Database['public']['Enums']['enrolment_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          ended_at?: string | null;
+          id?: string;
+          programme_id: string;
+          programme_version: number;
+          start_date: string;
+          start_mode: Database['public']['Enums']['start_mode'];
+          status?: Database['public']['Enums']['enrolment_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          ended_at?: string | null;
+          id?: string;
+          programme_id?: string;
+          programme_version?: number;
+          start_date?: string;
+          start_mode?: Database['public']['Enums']['start_mode'];
+          status?: Database['public']['Enums']['enrolment_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_programmes_programme_id_programme_version_fkey';
+            columns: ['programme_id', 'programme_version'];
+            isOneToOne: false;
+            referencedRelation: 'programmes';
+            referencedColumns: ['id', 'version'];
+          },
+          {
+            foreignKeyName: 'user_programmes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      is_known_time_zone: { Args: { tz: string }; Returns: boolean };
+      owns_user_programme: { Args: { target: string }; Returns: boolean };
     };
     Enums: {
       app_locale: 'fr' | 'en';
+      availability_kind: 'training' | 'running' | 'rest';
       body_focus: 'upper' | 'lower' | 'full' | 'none';
       difficulty_level: 'beginner' | 'intermediate' | 'advanced';
+      enrolment_status: 'active' | 'completed' | 'abandoned';
       equipment_type:
         'bodyweight' | 'pull_up_bar' | 'dumbbells' | 'barbell' | 'bands' | 'gym' | 'other';
       exercise_category: 'upper' | 'lower' | 'core' | 'recovery' | 'mobility' | 'running';
       exercise_pattern: 'pull' | 'push';
       exercise_relation_kind: 'variation' | 'substitute';
+      experience_level: 'beginner' | 'intermediate' | 'advanced';
+      goal_status: 'active' | 'achieved' | 'abandoned';
+      goal_type:
+        | 'build_muscle'
+        | 'increase_strength'
+        | 'improve_endurance'
+        | 'improve_running'
+        | 'general_fitness'
+        | 'maintain';
+      override_action: 'moved' | 'skipped';
       session_type: 'strength' | 'run' | 'recovery' | 'rest';
+      start_mode: 'next_monday' | 'this_week';
+      unit_system: 'metric' | 'imperial';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -554,8 +864,10 @@ export const Constants = {
   public: {
     Enums: {
       app_locale: ['fr', 'en'],
+      availability_kind: ['training', 'running', 'rest'],
       body_focus: ['upper', 'lower', 'full', 'none'],
       difficulty_level: ['beginner', 'intermediate', 'advanced'],
+      enrolment_status: ['active', 'completed', 'abandoned'],
       equipment_type: [
         'bodyweight',
         'pull_up_bar',
@@ -568,7 +880,20 @@ export const Constants = {
       exercise_category: ['upper', 'lower', 'core', 'recovery', 'mobility', 'running'],
       exercise_pattern: ['pull', 'push'],
       exercise_relation_kind: ['variation', 'substitute'],
+      experience_level: ['beginner', 'intermediate', 'advanced'],
+      goal_status: ['active', 'achieved', 'abandoned'],
+      goal_type: [
+        'build_muscle',
+        'increase_strength',
+        'improve_endurance',
+        'improve_running',
+        'general_fitness',
+        'maintain',
+      ],
+      override_action: ['moved', 'skipped'],
       session_type: ['strength', 'run', 'recovery', 'rest'],
+      start_mode: ['next_monday', 'this_week'],
+      unit_system: ['metric', 'imperial'],
     },
   },
 } as const;

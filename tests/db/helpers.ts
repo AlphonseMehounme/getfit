@@ -28,7 +28,9 @@ export interface TestUser {
 }
 
 /** Creates a confirmed user with a random address and signs them in. */
-export async function createTestUser(): Promise<TestUser> {
+export async function createTestUser(
+  options: { metadata?: Record<string, unknown> } = {},
+): Promise<TestUser> {
   const admin = adminClient();
   const email = `db-test-${randomUUID()}@example.test`;
   // Generated per run for a throwaway local user; never a fixed credential.
@@ -38,6 +40,7 @@ export async function createTestUser(): Promise<TestUser> {
     email,
     password: credential,
     email_confirm: true,
+    ...(options.metadata ? { user_metadata: options.metadata } : {}),
   });
   if (created.error || !created.data.user) throw created.error ?? new Error('createUser failed');
   const id = created.data.user.id;
