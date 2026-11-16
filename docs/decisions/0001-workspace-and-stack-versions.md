@@ -33,12 +33,12 @@ versions independently and drift.
 | Prettier | 3.10.1 | |
 | Tailwind CSS | 4.3.5 | via `@tailwindcss/postcss` |
 | next-intl | 4.15.1 | see ADR 0003 |
-| Zod | _set in P1-04_ | |
-| Vitest | 5.1.0 | root `projects`: `packages/domain`, `apps/web` |
+| Zod | 4.6.7 | with React Hook Form 7.92.0 and `@hookform/resolvers` 7.0.6 (P1-04) |
+| Vitest | 5.1.0 | root `projects`: `packages/domain`, `apps/web`; `@vitest/coverage-v8` 5.1.0, 100% thresholds on covered domain folders (P1-05) |
 | Playwright | 1.65.1 | Chromium projects `mobile` (360 × 780) and `desktop` (1440 × 900) |
 | GitHub Actions | checkout v7, setup-node v7, pnpm/action-setup v6, upload-artifact v7 | |
-| Supabase CLI / `@supabase/ssr` / `@supabase/supabase-js` | _set in P1-02 / P1-04_ | |
-| date-fns / @date-fns/tz | _set in P1-05_ | see ADR 0002 |
+| Supabase CLI / `@supabase/ssr` / `@supabase/supabase-js` | 3.1.0 / 0.12.7 / 2.119.0 | CLI is a dev dependency (P1-02); clients added in P1-04 |
+| date-fns / @date-fns/tz | 4.4.0 / 1.5.0 | see ADR 0002; the only runtime dependencies of `packages/domain` besides Zod |
 
 ## Consequences
 
