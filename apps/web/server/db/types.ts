@@ -3,6 +3,54 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      body_measurements: {
+        Row: {
+          body_fat_pct: number | null;
+          client_updated_at: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          is_baseline: boolean;
+          measured_at: string;
+          notes: string | null;
+          user_id: string;
+          weight_kg: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          body_fat_pct?: number | null;
+          client_updated_at: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id: string;
+          is_baseline?: boolean;
+          measured_at: string;
+          notes?: string | null;
+          user_id: string;
+          weight_kg?: number | null;
+        };
+        Update: {
+          body_fat_pct?: number | null;
+          client_updated_at?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          is_baseline?: boolean;
+          measured_at?: string;
+          notes?: string | null;
+          user_id?: string;
+          weight_kg?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'body_measurements_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       exercise_relations: {
         Row: {
           exercise_id: string;
@@ -121,6 +169,51 @@ export type Database = {
           slug?: string;
         };
         Relationships: [];
+      };
+      fitness_tests: {
+        Row: {
+          client_updated_at: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          is_baseline: boolean;
+          test_type: Database['public']['Enums']['fitness_test_type'];
+          tested_at: string;
+          user_id: string;
+          value: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_updated_at: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id: string;
+          is_baseline?: boolean;
+          test_type: Database['public']['Enums']['fitness_test_type'];
+          tested_at: string;
+          user_id: string;
+          value: number;
+        };
+        Update: {
+          client_updated_at?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          is_baseline?: boolean;
+          test_type?: Database['public']['Enums']['fitness_test_type'];
+          tested_at?: string;
+          user_id?: string;
+          value?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fitness_tests_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       prescription_overrides: {
         Row: {
@@ -392,6 +485,92 @@ export type Database = {
           version?: number;
         };
         Relationships: [];
+      };
+      running_sessions: {
+        Row: {
+          client_updated_at: string;
+          created_at: string;
+          deleted_at: string | null;
+          distance_m: number;
+          duration_s: number;
+          id: string;
+          is_baseline: boolean;
+          local_date: string;
+          notes: string | null;
+          programme_day_id: string | null;
+          route_name: string | null;
+          rpe: number | null;
+          scheduled_date: string | null;
+          source: Database['public']['Enums']['run_source'];
+          started_at: string;
+          updated_at: string;
+          user_id: string;
+          user_programme_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_updated_at: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          distance_m: number;
+          duration_s: number;
+          id: string;
+          is_baseline?: boolean;
+          local_date: string;
+          notes?: string | null;
+          programme_day_id?: string | null;
+          route_name?: string | null;
+          rpe?: number | null;
+          scheduled_date?: string | null;
+          source?: Database['public']['Enums']['run_source'];
+          started_at: string;
+          updated_at?: string;
+          user_id: string;
+          user_programme_id?: string | null;
+        };
+        Update: {
+          client_updated_at?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          distance_m?: number;
+          duration_s?: number;
+          id?: string;
+          is_baseline?: boolean;
+          local_date?: string;
+          notes?: string | null;
+          programme_day_id?: string | null;
+          route_name?: string | null;
+          rpe?: number | null;
+          scheduled_date?: string | null;
+          source?: Database['public']['Enums']['run_source'];
+          started_at?: string;
+          updated_at?: string;
+          user_id?: string;
+          user_programme_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'running_sessions_programme_day_id_fkey';
+            columns: ['programme_day_id'];
+            isOneToOne: false;
+            referencedRelation: 'programme_days';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'running_sessions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'running_sessions_user_programme_id_user_id_fkey';
+            columns: ['user_programme_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_programmes';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
       };
       schedule_overrides: {
         Row: {
@@ -720,6 +899,249 @@ export type Database = {
           },
         ];
       };
+      weekly_reviews: {
+        Row: {
+          client_updated_at: string;
+          created_at: string;
+          fatigue: number | null;
+          id: string;
+          motivation: number | null;
+          notes: string | null;
+          pain: boolean;
+          pain_location: string | null;
+          pain_notes: string | null;
+          recommendation_key: string | null;
+          sleep_quality: number | null;
+          soreness: number | null;
+          updated_at: string;
+          user_id: string;
+          user_programme_id: string | null;
+          week_start: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_updated_at: string;
+          created_at?: string;
+          fatigue?: number | null;
+          id: string;
+          motivation?: number | null;
+          notes?: string | null;
+          pain?: boolean;
+          pain_location?: string | null;
+          pain_notes?: string | null;
+          recommendation_key?: string | null;
+          sleep_quality?: number | null;
+          soreness?: number | null;
+          updated_at?: string;
+          user_id: string;
+          user_programme_id?: string | null;
+          week_start: string;
+        };
+        Update: {
+          client_updated_at?: string;
+          created_at?: string;
+          fatigue?: number | null;
+          id?: string;
+          motivation?: number | null;
+          notes?: string | null;
+          pain?: boolean;
+          pain_location?: string | null;
+          pain_notes?: string | null;
+          recommendation_key?: string | null;
+          sleep_quality?: number | null;
+          soreness?: number | null;
+          updated_at?: string;
+          user_id?: string;
+          user_programme_id?: string | null;
+          week_start?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'weekly_reviews_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'weekly_reviews_user_programme_id_user_id_fkey';
+            columns: ['user_programme_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_programmes';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      workout_sessions: {
+        Row: {
+          client_updated_at: string;
+          completed_at: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          duration_s: number | null;
+          id: string;
+          notes: string | null;
+          paused_s: number;
+          prescription_snapshot: Json | null;
+          programme_day_id: string | null;
+          rpe: number | null;
+          scheduled_date: string | null;
+          session_template_id: string | null;
+          started_at: string;
+          status: Database['public']['Enums']['workout_status'];
+          updated_at: string;
+          user_id: string;
+          user_programme_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_updated_at: string;
+          completed_at?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          duration_s?: number | null;
+          id: string;
+          notes?: string | null;
+          paused_s?: number;
+          prescription_snapshot?: Json | null;
+          programme_day_id?: string | null;
+          rpe?: number | null;
+          scheduled_date?: string | null;
+          session_template_id?: string | null;
+          started_at: string;
+          status?: Database['public']['Enums']['workout_status'];
+          updated_at?: string;
+          user_id: string;
+          user_programme_id?: string | null;
+        };
+        Update: {
+          client_updated_at?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          duration_s?: number | null;
+          id?: string;
+          notes?: string | null;
+          paused_s?: number;
+          prescription_snapshot?: Json | null;
+          programme_day_id?: string | null;
+          rpe?: number | null;
+          scheduled_date?: string | null;
+          session_template_id?: string | null;
+          started_at?: string;
+          status?: Database['public']['Enums']['workout_status'];
+          updated_at?: string;
+          user_id?: string;
+          user_programme_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'workout_sessions_programme_day_id_fkey';
+            columns: ['programme_day_id'];
+            isOneToOne: false;
+            referencedRelation: 'programme_days';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workout_sessions_session_template_id_fkey';
+            columns: ['session_template_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_templates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workout_sessions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workout_sessions_user_programme_id_user_id_fkey';
+            columns: ['user_programme_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_programmes';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      workout_sets: {
+        Row: {
+          actual_duration_s: number | null;
+          actual_reps: number | null;
+          client_updated_at: string;
+          completed: boolean;
+          created_at: string;
+          exercise_id: string;
+          id: string;
+          load_kg: number | null;
+          logged_at: string;
+          rir: number | null;
+          set_number: number;
+          side: Database['public']['Enums']['set_side'];
+          substituted_for_exercise_id: string | null;
+          updated_at: string;
+          workout_session_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          actual_duration_s?: number | null;
+          actual_reps?: number | null;
+          client_updated_at: string;
+          completed?: boolean;
+          created_at?: string;
+          exercise_id: string;
+          id: string;
+          load_kg?: number | null;
+          logged_at: string;
+          rir?: number | null;
+          set_number: number;
+          side?: Database['public']['Enums']['set_side'];
+          substituted_for_exercise_id?: string | null;
+          updated_at?: string;
+          workout_session_id: string;
+        };
+        Update: {
+          actual_duration_s?: number | null;
+          actual_reps?: number | null;
+          client_updated_at?: string;
+          completed?: boolean;
+          created_at?: string;
+          exercise_id?: string;
+          id?: string;
+          load_kg?: number | null;
+          logged_at?: string;
+          rir?: number | null;
+          set_number?: number;
+          side?: Database['public']['Enums']['set_side'];
+          substituted_for_exercise_id?: string | null;
+          updated_at?: string;
+          workout_session_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'workout_sets_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workout_sets_substituted_for_exercise_id_fkey';
+            columns: ['substituted_for_exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workout_sets_workout_session_id_fkey';
+            columns: ['workout_session_id'];
+            isOneToOne: false;
+            referencedRelation: 'workout_sessions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -727,6 +1149,7 @@ export type Database = {
     Functions: {
       is_known_time_zone: { Args: { tz: string }; Returns: boolean };
       owns_user_programme: { Args: { target: string }; Returns: boolean };
+      owns_workout_session: { Args: { target: string }; Returns: boolean };
     };
     Enums: {
       app_locale: 'fr' | 'en';
@@ -740,6 +1163,7 @@ export type Database = {
       exercise_pattern: 'pull' | 'push';
       exercise_relation_kind: 'variation' | 'substitute';
       experience_level: 'beginner' | 'intermediate' | 'advanced';
+      fitness_test_type: 'max_pull_ups' | 'max_push_ups' | 'max_squats';
       goal_status: 'active' | 'achieved' | 'abandoned';
       goal_type:
         | 'build_muscle'
@@ -749,9 +1173,12 @@ export type Database = {
         | 'general_fitness'
         | 'maintain';
       override_action: 'moved' | 'skipped';
+      run_source: 'manual' | 'gps' | 'import';
       session_type: 'strength' | 'run' | 'recovery' | 'rest';
+      set_side: 'left' | 'right' | 'both';
       start_mode: 'next_monday' | 'this_week';
       unit_system: 'metric' | 'imperial';
+      workout_status: 'in_progress' | 'partial' | 'completed' | 'abandoned';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -881,6 +1308,7 @@ export const Constants = {
       exercise_pattern: ['pull', 'push'],
       exercise_relation_kind: ['variation', 'substitute'],
       experience_level: ['beginner', 'intermediate', 'advanced'],
+      fitness_test_type: ['max_pull_ups', 'max_push_ups', 'max_squats'],
       goal_status: ['active', 'achieved', 'abandoned'],
       goal_type: [
         'build_muscle',
@@ -891,9 +1319,12 @@ export const Constants = {
         'maintain',
       ],
       override_action: ['moved', 'skipped'],
+      run_source: ['manual', 'gps', 'import'],
       session_type: ['strength', 'run', 'recovery', 'rest'],
+      set_side: ['left', 'right', 'both'],
       start_mode: ['next_monday', 'this_week'],
       unit_system: ['metric', 'imperial'],
+      workout_status: ['in_progress', 'partial', 'completed', 'abandoned'],
     },
   },
 } as const;
