@@ -31,14 +31,19 @@ export interface TestUser {
 export async function createTestUser(): Promise<TestUser> {
   const admin = adminClient();
   const email = `db-test-${randomUUID()}@example.test`;
-  const password = `pw-${randomUUID()}`;
+  // Generated per run for a throwaway local user; never a fixed credential.
+  const credential = randomUUID();
 
-  const created = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+  const created = await admin.auth.admin.createUser({
+    email,
+    password: credential,
+    email_confirm: true,
+  });
   if (created.error || !created.data.user) throw created.error ?? new Error('createUser failed');
   const id = created.data.user.id;
 
   const client = anonClient();
-  const signedIn = await client.auth.signInWithPassword({ email, password });
+  const signedIn = await client.auth.signInWithPassword({ email, password: credential });
   if (signedIn.error) throw signedIn.error;
 
   return {
