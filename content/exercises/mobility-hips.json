@@ -1,0 +1,44 @@
+{
+  "slug": "mobility-hips",
+  "category": "mobility",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["hips", "hip_flexors", "glutes"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Mobilité des hanches",
+    "altNames": ["mobilité hanches", "hanches"],
+    "description": "Mouvements doux pour assouplir les hanches, utiles après la course et avant les séances jambes.",
+    "instructions": [
+      "Debout, mains sur les hanches, dessine de grands cercles avec le bassin, dans un sens puis dans l’autre.",
+      "Mets-toi en fente basse, genou arrière au sol, et avance doucement le bassin jusqu’à sentir l’avant de la hanche s’étirer.",
+      "Assis au sol, jambes pliées à 90° devant et sur le côté, bascule lentement les genoux d’un côté à l’autre.",
+      "Bouge sans forcer et respire calmement ; la sensation doit rester confortable."
+    ],
+    "commonMistakes": [
+      "Forcer l’amplitude ou faire des à-coups.",
+      "Cambrer le bas du dos dans la fente.",
+      "Retenir sa respiration."
+    ],
+    "mediaAlt": "Mobilité des hanches : personne en fente basse, genou arrière au sol, bassin avancé."
+  },
+  "en": {
+    "name": "Hip mobility",
+    "altNames": ["hip mobility drill", "hips"],
+    "description": "Gentle movements to loosen the hips, useful after running and before leg sessions.",
+    "instructions": [
+      "Standing with hands on your hips, draw large circles with your pelvis, one way then the other.",
+      "Kneel in a low lunge, back knee on the floor, and ease your hips forward until you feel the front of the hip stretch.",
+      "Sitting on the floor with both legs bent at 90°, one in front and one to the side, slowly rock your knees from side to side.",
+      "Move without forcing and breathe calmly; it should stay comfortable."
+    ],
+    "commonMistakes": [
+      "Forcing the range or bouncing.",
+      "Arching the lower back in the lunge.",
+      "Holding your breath."
+    ],
+    "mediaAlt": "Hip mobility: a person in a low lunge, back knee on the floor, hips eased forward."
+  }
+}

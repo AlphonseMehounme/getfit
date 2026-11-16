@@ -1,0 +1,44 @@
+{
+  "slug": "standing-calf-raise",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["calves"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Extension des mollets debout",
+    "altNames": ["extensions mollets debout", "élévation des mollets", "calf raise"],
+    "description": "Montée sur la pointe des pieds qui renforce les mollets, utiles pour la course.",
+    "instructions": [
+      "Tiens-toi debout, pieds à la largeur des hanches, sur le sol ou la pointe des pieds au bord d’une marche.",
+      "Pose une main contre un mur pour l’équilibre si besoin.",
+      "Monte sur la pointe des pieds le plus haut possible, talons bien levés, et marque une courte pause.",
+      "Redescends lentement, talons sous le niveau de la marche si tu en utilises une."
+    ],
+    "commonMistakes": [
+      "Monter à moitié sans lever franchement les talons.",
+      "Rebondir en bas au lieu de contrôler la descente.",
+      "Laisser les chevilles partir vers l’extérieur."
+    ],
+    "mediaAlt": "Extension des mollets debout : personne debout sur la pointe des pieds, talons nettement levés."
+  },
+  "en": {
+    "name": "Standing calf raise",
+    "altNames": ["heel raise"],
+    "description": "Rising onto your toes to build the calves, which helps with running.",
+    "instructions": [
+      "Stand with your feet hip-width apart, on the floor or with the balls of your feet on the edge of a step.",
+      "Rest one hand on a wall for balance if you need to.",
+      "Rise onto your toes as high as you can, heels clearly lifted, and pause briefly.",
+      "Lower slowly, letting your heels drop below the step if you use one."
+    ],
+    "commonMistakes": [
+      "Rising only halfway without clearly lifting the heels.",
+      "Bouncing at the bottom instead of controlling the descent.",
+      "Letting the ankles roll outwards."
+    ],
+    "mediaAlt": "Standing calf raise: a person standing on their toes, heels clearly lifted."
+  }
+}

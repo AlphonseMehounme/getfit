@@ -1,0 +1,46 @@
+{
+  "slug": "long-run",
+  "category": "running",
+  "pattern": null,
+  "difficulty": "intermediate",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["cardio", "quadriceps", "calves"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Sortie longue",
+    "altNames": ["course", "course longue", "long run"],
+    "description": "Course longue à allure conversationnelle, effort 5/10 ou moins. La distance prévue est un plafond, pas un objectif à battre.",
+    "instructions": [
+      "Commence par quelques minutes de marche ou de course très lente pour t’échauffer.",
+      "Cours à une allure qui te permet de parler en phrases complètes.",
+      "Marche quelques minutes si besoin : c’est prévu et ça compte.",
+      "Arrête-toi au plus tard à la distance prévue, même si tu te sens bien.",
+      "Termine par quelques minutes de marche pour récupérer."
+    ],
+    "commonMistakes": [
+      "Partir trop vite et transformer la sortie en contre-la-montre.",
+      "Chercher à battre son temps ou sa distance de référence.",
+      "Dépasser la distance prévue."
+    ],
+    "mediaAlt": "Sortie longue : personne qui court tranquillement sur une route, en extérieur."
+  },
+  "en": {
+    "name": "Long run",
+    "altNames": ["long-distance run", "course longue"],
+    "description": "A long run at a conversational pace, effort 5/10 or lower. The planned distance is a ceiling, not a target to beat.",
+    "instructions": [
+      "Start with a few minutes of walking or very slow running to warm up.",
+      "Run at a pace that lets you speak in full sentences.",
+      "Walk for a few minutes if you need to: it’s part of the plan and it counts.",
+      "Stop at the planned distance at the latest, even if you feel good.",
+      "Finish with a few minutes of walking to recover."
+    ],
+    "commonMistakes": [
+      "Starting too fast and turning the run into a time trial.",
+      "Trying to beat your reference time or distance.",
+      "Going past the planned distance."
+    ],
+    "mediaAlt": "Long run: a person running easily on a road, outdoors."
+  }
+}

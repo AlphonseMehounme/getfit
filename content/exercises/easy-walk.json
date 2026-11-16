@@ -1,0 +1,42 @@
+{
+  "slug": "easy-walk",
+  "category": "recovery",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["cardio"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Marche facile",
+    "altNames": ["marche douce", "marche"],
+    "description": "Marche tranquille de récupération, sans objectif de vitesse. Elle aide à récupérer entre deux séances.",
+    "instructions": [
+      "Marche à une allure qui te permet de parler sans effort.",
+      "Garde les épaules relâchées et laisse les bras se balancer naturellement.",
+      "Respire calmement par le nez si c’est confortable.",
+      "Arrête-toi quand tu veux : en cas de fatigue, le repos complet reste une bonne option."
+    ],
+    "commonMistakes": [
+      "Accélérer jusqu’à transformer la marche en séance d’effort.",
+      "Rallonger la sortie au-delà du temps prévu."
+    ],
+    "mediaAlt": "Marche facile : personne qui marche tranquillement en extérieur, bras relâchés."
+  },
+  "en": {
+    "name": "Easy walk",
+    "altNames": ["recovery walk", "walk"],
+    "description": "A relaxed recovery walk with no speed target. It helps you recover between sessions.",
+    "instructions": [
+      "Walk at a pace that lets you talk without effort.",
+      "Keep your shoulders relaxed and let your arms swing naturally.",
+      "Breathe calmly through your nose if that feels comfortable.",
+      "Stop whenever you like: if you feel tired, full rest is still a good option."
+    ],
+    "commonMistakes": [
+      "Speeding up until the walk becomes a workout.",
+      "Going on longer than planned."
+    ],
+    "mediaAlt": "Easy walk: a person walking calmly outdoors, arms relaxed."
+  }
+}

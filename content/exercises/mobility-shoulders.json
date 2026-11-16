@@ -1,0 +1,44 @@
+{
+  "slug": "mobility-shoulders",
+  "category": "mobility",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["shoulders", "upper_back"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Mobilité des épaules",
+    "altNames": ["mobilité épaules", "épaules"],
+    "description": "Mouvements doux pour assouplir les épaules et le haut du dos, sollicités par les tractions et les pompes.",
+    "instructions": [
+      "Debout, bras tendus sur les côtés, fais de petits cercles qui s’agrandissent peu à peu, puis change de sens.",
+      "Dos contre un mur, bras en chandelier, fais glisser lentement les bras vers le haut puis vers le bas.",
+      "Croise un bras devant la poitrine et tiens-le doucement avec l’autre main quelques respirations.",
+      "Fais les deux côtés sans forcer ni hausser les épaules."
+    ],
+    "commonMistakes": [
+      "Hausser les épaules vers les oreilles.",
+      "Décoller le bas du dos du mur.",
+      "Forcer l’amplitude."
+    ],
+    "mediaAlt": "Mobilité des épaules : personne dos au mur, bras en chandelier levés contre le mur."
+  },
+  "en": {
+    "name": "Shoulder mobility",
+    "altNames": ["shoulder mobility drill", "shoulders"],
+    "description": "Gentle movements to loosen the shoulders and upper back, which work hard in pull-ups and push-ups.",
+    "instructions": [
+      "Standing with arms straight out to the sides, make small circles that slowly grow, then change direction.",
+      "With your back against a wall and arms in a goalpost shape, slowly slide your arms up and down.",
+      "Bring one arm across your chest and hold it gently with the other hand for a few breaths.",
+      "Do both sides without forcing or shrugging."
+    ],
+    "commonMistakes": [
+      "Shrugging the shoulders towards the ears.",
+      "Letting the lower back come off the wall.",
+      "Forcing the range."
+    ],
+    "mediaAlt": "Shoulder mobility: a person with their back to a wall, arms raised in a goalpost shape against it."
+  }
+}
