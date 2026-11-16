@@ -23,16 +23,20 @@ versions independently and drift.
 
 | Component | Version | Notes |
 |---|---|---|
-| Node.js | _set in P1-01_ | Active LTS |
-| pnpm | _set in P1-01_ | `packageManager` field |
-| Next.js | _set in P1-01_ | App Router |
-| React | _set in P1-01_ | as required by Next.js |
-| TypeScript | _set in P1-01_ | |
-| Tailwind CSS | _set in P1-01_ | |
-| next-intl | _set in P1-01_ | see ADR 0003 |
-| Zod | _set in P1-01_ | |
-| Vitest | _set in P1-01_ | |
-| Playwright | _set in P1-01_ | |
+| Node.js | 26 (`.nvmrc`, engines `>=26 <27`) | Active LTS. Node 26 ships without Corepack, so pnpm is installed with npm |
+| pnpm | 12.21.0 | `packageManager` field; build scripts of `@parcel/watcher` and `@swc/core` (next-intl extraction tooling, prebuilt binaries) are denied in `pnpm-workspace.yaml` |
+| Next.js | 16.4.6 | App Router, Turbopack build |
+| React / React DOM | 19.3.1 | |
+| TypeScript | 6.0.3 | **Not 7.x:** typescript-eslint supports `<6.1`. Moving to 7 is its own PR once typescript-eslint supports it |
+| ESLint | 9.39.5 | **Not 10.x:** `eslint-config-next`'s React, import and jsx-a11y plugins don't support ESLint 10 yet |
+| eslint-config-next | 16.4.6 | flat config (`core-web-vitals` + `typescript`) |
+| Prettier | 3.10.1 | |
+| Tailwind CSS | 4.3.5 | via `@tailwindcss/postcss` |
+| next-intl | 4.15.1 | see ADR 0003 |
+| Zod | _set in P1-04_ | |
+| Vitest | 5.1.0 | root `projects`: `packages/domain`, `apps/web` |
+| Playwright | 1.65.1 | Chromium projects `mobile` (360 × 780) and `desktop` (1440 × 900) |
+| GitHub Actions | checkout v7, setup-node v7, pnpm/action-setup v6, upload-artifact v7 | |
 | Supabase CLI / `@supabase/ssr` / `@supabase/supabase-js` | _set in P1-02 / P1-04_ | |
 | date-fns / @date-fns/tz | _set in P1-05_ | see ADR 0002 |
 

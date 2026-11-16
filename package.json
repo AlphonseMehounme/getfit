@@ -1,0 +1,27 @@
+{
+  "name": "getfit",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @getfit/web dev",
+    "build": "pnpm --filter @getfit/web build",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r typecheck",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "26.6.6",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.6",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}
