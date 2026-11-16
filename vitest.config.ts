@@ -28,6 +28,7 @@ export default defineConfig({
         'packages/domain/src/running/**/*.ts',
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
+        'apps/web/lib/media/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.ts', 'supabase/seed/generate.ts'],

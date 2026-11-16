@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "exercises": {
+    "abdominal-crunch": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "bodyweight-squat": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "bulgarian-split-squat": {
+      "status": "placeholder",
+      "file": "bulgarian-split-squat.jpg",
+      "width": 99,
+      "height": 87,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Squat bulgare : personne en fente, pied arrière posé sur un banc.",
+        "en": "Bulgarian split squat: a person in a split stance, back foot on a bench."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/squat-bulgare.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "chin-up": {
+      "status": "fallback",
+      "reason": "No usable image; never traction.jpg, which shows an overhand grip (PRD §8)."
+    },
+    "easy-walk": {
+      "status": "fallback",
+      "reason": "No usable image; never course.jpg, which shows running (PRD §8)."
+    },
+    "glute-bridge": {
+      "status": "placeholder",
+      "file": "glute-bridge.jpg",
+      "width": 99,
+      "height": 82,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Pont fessier : personne allongée sur le dos, hanches levées.",
+        "en": "Glute bridge: a person lying on their back, hips raised."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/pont-fessier.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "hanging-knee-raise": {
+      "status": "placeholder",
+      "file": "hanging-knee-raise.jpg",
+      "width": 99,
+      "height": 80,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Relevé de genoux suspendu : personne suspendue à une barre, genoux montés à environ 90°.",
+        "en": "Hanging knee raise: a person hanging from a bar, knees raised to about 90°."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/releves-genoux.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "long-run": {
+      "status": "placeholder",
+      "file": "long-run.jpg",
+      "width": 217,
+      "height": 140,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Sortie longue : personne qui court sur une route en extérieur.",
+        "en": "Long run: a person running on an outdoor road."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/course.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "mobility-ankles": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "mobility-hips": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "mobility-shoulders": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "pike-push-up": {
+      "status": "placeholder",
+      "file": "pike-push-up.jpg",
+      "width": 99,
+      "height": 82,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Pike push-up : personne en V inversé, hanches hautes.",
+        "en": "Pike push-up: a person in an inverted V, hips high."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/pike-push-up.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "plank": {
+      "status": "placeholder",
+      "file": "plank.jpg",
+      "width": 99,
+      "height": 82,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Planche : personne en appui sur les avant-bras, corps aligné.",
+        "en": "Plank: a person supported on their forearms, body in line."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/planche.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "pull-up": {
+      "status": "placeholder",
+      "file": "pull-up.jpg",
+      "width": 99,
+      "height": 78,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Traction stricte, vue de dos : personne suspendue à une barre, mains en pronation.",
+        "en": "Pull-up seen from behind: a person hanging from a bar with an overhand grip."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/traction.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "push-up": {
+      "status": "placeholder",
+      "file": "push-up.jpg",
+      "width": 99,
+      "height": 82,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Pompe : personne en position haute, bras tendus, corps aligné.",
+        "en": "Push-up: a person in the top position, arms straight, body in line."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/pompes.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "reverse-lunge": {
+      "status": "fallback",
+      "reason": "No prototype image (PRD §4)."
+    },
+    "side-plank": {
+      "status": "placeholder",
+      "file": "side-plank.jpg",
+      "width": 95,
+      "height": 87,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Planche latérale bras tendu : personne sur le côté, main sur la hanche.",
+        "en": "Side plank on a straight arm: a person on their side, hand on hip."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/planche-laterale.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "single-leg-glute-bridge": {
+      "status": "placeholder",
+      "file": "single-leg-glute-bridge.jpg",
+      "width": 99,
+      "height": 87,
+      "format": "jpeg",
+      "alt": {
+        "fr": "Pont fessier une jambe : hanches levées, une jambe tendue.",
+        "en": "Single-leg glute bridge: hips raised, one leg extended."
+      },
+      "licence": "unknown-dev-only",
+      "source": "prototype ressources_images/pont-une-jambe.jpg",
+      "verified_by": "AL (PRD v2 §4 audit, 2026-11-16)"
+    },
+    "standing-calf-raise": {
+      "status": "fallback",
+      "reason": "mollets.jpg is rejected: the heels are not visibly raised (PRD §4)."
+    }
+  },
+  "categories": {
+    "upper": {
+      "status": "fallback"
+    },
+    "lower": {
+      "status": "fallback"
+    },
+    "core": {
+      "status": "fallback"
+    },
+    "recovery": {
+      "status": "fallback"
+    },
+    "mobility": {
+      "status": "fallback"
+    },
+    "running": {
+      "status": "fallback"
+    }
+  },
+  "rejected": [
+    {
+      "file": "mollets.jpg",
+      "reason": "Does not show the movement: heels not visibly raised (PRD §4)."
+    },
+    {
+      "file": "pont-fessier-reference.jpg",
+      "reason": "A PNG in a different style with branded footwear; not used (D19)."
+    }
+  ]
+}

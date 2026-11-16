@@ -19,7 +19,8 @@
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --schema public > apps/web/server/db/types.ts && prettier --write --log-level warn apps/web/server/db/types.ts",
     "test:db": "vitest run --config tests/db/vitest.config.ts",
-    "seed:generate": "node supabase/seed/generate.ts"
+    "seed:generate": "node supabase/seed/generate.ts",
+    "media:check": "node scripts/media-check.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
@@ -33,6 +34,7 @@
     "eslint-config-next": "16.4.6",
     "pg": "8.23.1",
     "prettier": "3.10.1",
+    "sharp": "0.35.5",
     "supabase": "3.1.0",
     "typescript": "6.0.3",
     "vitest": "5.1.0",
