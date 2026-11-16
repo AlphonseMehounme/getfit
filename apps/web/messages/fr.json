@@ -84,5 +84,29 @@
       "body": "Vérifie ta connexion, puis réessaie.",
       "retry": "Réessayer"
     }
+  },
+  "States": {
+    "loading": "Chargement…",
+    "errorTitle": "Un problème est survenu",
+    "errorBody": "Impossible de charger cette page. Vérifie ta connexion et réessaie.",
+    "retry": "Réessayer"
+  },
+  "Media": {
+    "fallback": "Illustration bientôt disponible",
+    "fallbackLabel": "{name} : illustration bientôt disponible"
+  },
+  "WeekStrip": {
+    "label": "Cette semaine",
+    "day": "{date} : {status}",
+    "status": {
+      "not_scheduled": "Non programmé",
+      "rest": "Repos",
+      "scheduled": "Prévu",
+      "in_progress": "En cours",
+      "partial": "Partiel",
+      "completed": "Terminé",
+      "skipped": "Passé",
+      "missed": "Manqué"
+    }
   }
 }
