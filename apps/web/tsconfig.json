@@ -6,6 +6,8 @@
     "incremental": true,
     "types": ["node"],
     "plugins": [{ "name": "next" }],
+    // content/schema uses explicit .ts imports for Node type stripping (ADR 0005).
+    "allowImportingTsExtensions": true,
     "paths": {
       "@/*": ["./*"]
     }

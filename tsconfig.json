@@ -8,5 +8,12 @@
     // ADR 0005: the seed scripts run on Node's built-in type stripping, which needs explicit .ts imports.
     "allowImportingTsExtensions": true
   },
-  "include": ["*.ts", "e2e/**/*.ts", "tests/**/*.ts", "content/**/*.ts", "supabase/**/*.ts"]
+  "include": [
+    "*.ts",
+    "e2e/**/*.ts",
+    "tests/**/*.ts",
+    "content/**/*.ts",
+    "supabase/**/*.ts",
+    "scripts/**/*.ts"
+  ]
 }

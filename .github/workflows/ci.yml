@@ -39,6 +39,9 @@ jobs:
       - name: Unit and integration tests
         run: pnpm test
 
+      - name: Media QA (PRD §8)
+        run: pnpm media:check
+
   database:
     name: Migrations, generated types, RLS and constraint tests
     runs-on: ubuntu-latest
