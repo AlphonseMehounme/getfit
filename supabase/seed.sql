@@ -118,4 +118,218 @@ from (values
 join public.exercises a on a.slug = v.slug
 join public.exercises b on b.slug = v.related_slug;
 
+-- Programme force-muscle-endurance-8w v1 (PRD §7, ADR 0004)
+insert into public.programmes
+  (slug, version, duration_weeks, difficulty, objectives, required_equipment)
+values
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 'intermediate'::public.difficulty_level, array['increase_strength', 'build_muscle', 'improve_endurance']::text[], array['pull_up_bar', 'bodyweight']::public.equipment_type[])
+on conflict (slug, version) do update set
+  duration_weeks = excluded.duration_weeks,
+  difficulty = excluded.difficulty,
+  objectives = excluded.objectives,
+  required_equipment = excluded.required_equipment;
+
+insert into public.programme_translations (programme_id, locale, title, description, safety_notes)
+select p.id, v.locale, v.title, v.description, v.safety_notes
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 'fr'::public.app_locale, 'Force, muscle & endurance — 8 semaines', '3 séances de renforcement par semaine, une sortie longue le dimanche et une récupération planifiée. Matériel : une barre de traction ; les autres exercices se font au poids du corps. Programme indicatif à adapter selon ta forme et ta récupération.', '["Garde 2–3 répétitions en réserve à chaque série.","N’ajoute pas les anciennes compositions quotidiennes à ce programme.","Si la fatigue persiste, réduis les séries ou repose-toi.","Arrête un mouvement en cas de douleur vive ou qui s’aggrave.","La sortie du dimanche doit rester maîtrisée, pas devenir un contre-la-montre."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'en'::public.app_locale, 'Strength, muscle & endurance — 8 weeks', '3 strength sessions a week, a long run on Sunday and planned recovery. Equipment: a pull-up bar; everything else is bodyweight. A guide to adapt to your fitness and recovery.', '["Keep 2–3 reps in reserve on every set.","Don’t add your old daily routines to this programme.","If fatigue persists, cut sets or rest.","Stop a movement if you feel sharp or worsening pain.","Keep the Sunday run under control; it is not a time trial."]'::jsonb)
+) as v (slug, version, locale, title, description, safety_notes)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+on conflict (programme_id, locale) do update set
+  title = excluded.title,
+  description = excluded.description,
+  safety_notes = excluded.safety_notes;
+
+insert into public.programme_weeks (programme_id, week_number, focus_key, volume_multiplier, long_run_ceiling_m)
+select p.id, v.week_number, v.focus_key, v.volume_multiplier, v.long_run_ceiling_m
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 'transition', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 'installation', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 'installation', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 'consolidation', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 'deload', 0.65::numeric, 7000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 'progression', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 'progression', 1::numeric, 11000::integer),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 'evaluation', 1::numeric, 11000::integer)
+) as v (slug, version, week_number, focus_key, volume_multiplier, long_run_ceiling_m)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+on conflict (programme_id, week_number) do update set
+  focus_key = excluded.focus_key,
+  volume_multiplier = excluded.volume_multiplier,
+  long_run_ceiling_m = excluded.long_run_ceiling_m;
+
+insert into public.programme_week_translations (programme_week_id, locale, label, focus)
+select w.id, v.locale, v.label, v.focus
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 'fr'::public.app_locale, 'Transition', 'Transition et récupération : reprendre le rythme en douceur.'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 'en'::public.app_locale, 'Transition', 'Transition and recovery: ease back into a rhythm.'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 'fr'::public.app_locale, 'Installation', 'Installer la routine.'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 'en'::public.app_locale, 'Establish', 'Establish the routine.'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 'fr'::public.app_locale, 'Installation', 'Installer la routine et la régularité.'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 'en'::public.app_locale, 'Establish', 'Establish the routine and consistency.'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 'fr'::public.app_locale, 'Consolidation', 'Consolider, avec une progression contrôlée.'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 'en'::public.app_locale, 'Consolidation', 'Consolidate, with controlled progression.'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 'fr'::public.app_locale, 'Allégée', 'Semaine allégée pour récupérer : environ un tiers de séries en moins et une sortie longue jusqu’à 7 km.'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 'en'::public.app_locale, 'Deload', 'A lighter week to recover: about a third fewer sets and a long run of up to 7 km.'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 'fr'::public.app_locale, 'Progression', 'Reprendre la progression si la récupération est bonne.'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 'en'::public.app_locale, 'Progression', 'Resume progression if recovery is good.'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 'fr'::public.app_locale, 'Progression', 'Progresser et consolider les performances.'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 'en'::public.app_locale, 'Progression', 'Progress and consolidate performance.'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 'fr'::public.app_locale, 'Évaluation', 'Évaluer les progrès sans aller systématiquement à l’échec. Tests de référence facultatifs : tractions, pompes et squats au maximum.'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 'en'::public.app_locale, 'Evaluation', 'Assess your progress without always training to failure. Optional baseline re-tests: max pull-ups, push-ups and squats.')
+) as v (slug, version, week_number, locale, label, focus)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+join public.programme_weeks w on w.programme_id = p.id and w.week_number = v.week_number
+on conflict (programme_week_id, locale) do update set
+  label = excluded.label,
+  focus = excluded.focus;
+
+insert into public.session_templates (programme_id, slug, session_type, body_focus, estimated_duration_min, counts_for_adherence)
+select p.id, v.template_slug, v.session_type, v.body_focus, v.estimated_duration_min, v.counts_for_adherence
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 'strength'::public.session_type, 'upper'::public.body_focus, 40::integer, true),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 'recovery'::public.session_type, 'none'::public.body_focus, null::integer, false),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 'strength'::public.session_type, 'lower'::public.body_focus, 45::integer, true),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 'rest'::public.session_type, 'none'::public.body_focus, null::integer, false),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 'strength'::public.session_type, 'upper'::public.body_focus, 30::integer, true),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-pre-run', 'rest'::public.session_type, 'none'::public.body_focus, null::integer, false),
+  ('force-muscle-endurance-8w', 1::integer, 'long-run', 'run'::public.session_type, 'lower'::public.body_focus, null::integer, true)
+) as v (slug, version, template_slug, session_type, body_focus, estimated_duration_min, counts_for_adherence)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+on conflict (programme_id, slug) do update set
+  session_type = excluded.session_type,
+  body_focus = excluded.body_focus,
+  estimated_duration_min = excluded.estimated_duration_min,
+  counts_for_adherence = excluded.counts_for_adherence;
+
+insert into public.session_template_translations (session_template_id, locale, title, purpose, guidance)
+select t.id, v.locale, v.title, v.purpose, v.guidance
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 'fr'::public.app_locale, 'Séance A — Haut du corps', 'Renforcer le tirage, la poussée et le gainage, en gardant les jambes légères après la sortie du dimanche.', '["Jambes légères après la sortie du dimanche.","Garde 2–3 répétitions en réserve à chaque série."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 'en'::public.app_locale, 'Strength A — Upper body', 'Build pulling, pushing and core strength while keeping the legs light after Sunday’s run.', '["Legs stay light after Sunday’s run.","Keep 2–3 reps in reserve on every set."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 'fr'::public.app_locale, 'Récupération et mobilité', 'Bouger en douceur pour récupérer entre deux séances, sans ajouter de fatigue.', '["Marche facile jusqu’à 30 min, sans objectif de vitesse.","Mobilité douce jusqu’à 10 min : hanches, chevilles, épaules.","Pas de circuit intense. Repos complet si fatigue."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 'en'::public.app_locale, 'Recovery and mobility', 'Move gently to recover between sessions, without adding fatigue.', '["Easy walk up to 30 min, with no speed target.","Gentle mobility up to 10 min: hips, ankles, shoulders.","No intense circuit. Rest completely if you feel tired."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 'fr'::public.app_locale, 'Séance B — Jambes et corps entier', 'Renforcer les jambes, le tirage et les abdominaux en milieu de semaine, pour laisser les jambes récupérer avant la sortie longue.', '["Garde 2–3 répétitions en réserve à chaque série.","Les exercices sur une jambe se font de chaque côté."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 'en'::public.app_locale, 'Strength B — Lower and full body', 'Build the legs, pulling and abs midweek, so the legs can recover before the long run.', '["Keep 2–3 reps in reserve on every set.","Single-leg exercises are done on each side."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 'fr'::public.app_locale, 'Repos ou mobilité', 'Récupérer : aucune séance de renforcement n’est nécessaire aujourd’hui.', '["Repos complet ou mobilité douce, au choix.","Aucune séance de renforcement nécessaire."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 'en'::public.app_locale, 'Rest or mobility', 'Recover: no strength session is needed today.', '["Full rest or gentle mobility, as you prefer.","No strength session needed."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 'fr'::public.app_locale, 'Séance C — Haut du corps', 'Une séance plus courte du haut du corps, sans charger les jambes avant le week-end.', '["Garde 2–3 répétitions en réserve à chaque série.","La planche latérale se tient de chaque côté."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 'en'::public.app_locale, 'Strength C — Upper body', 'A shorter upper-body session that leaves the legs fresh for the weekend.', '["Keep 2–3 reps in reserve on every set.","Hold the side plank on each side."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-pre-run', 'fr'::public.app_locale, 'Repos avant la sortie longue', 'Arriver frais à la sortie longue de demain.', '["Pas de séance jambes intense.","Marche facultative."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-pre-run', 'en'::public.app_locale, 'Rest before the long run', 'Arrive fresh for tomorrow’s long run.', '["No intense leg work.","An easy walk is optional."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'long-run', 'fr'::public.app_locale, 'Sortie longue', 'Développer l’endurance à allure conversationnelle, effort 5/10 ou moins.', '["La distance prévue est un plafond, pas un objectif à battre.","Allure conversationnelle, effort 5/10 ou moins. Marcher par moments est possible.","Ne cherche pas à battre ton temps de référence : ralentis si nécessaire."]'::jsonb),
+  ('force-muscle-endurance-8w', 1::integer, 'long-run', 'en'::public.app_locale, 'Long run', 'Build endurance at a conversational pace, effort 5/10 or lower.', '["The planned distance is a ceiling, not a target to beat.","Conversational pace, effort 5/10 or lower. Walking at times is fine.","Don’t try to beat your reference time: slow down if you need to."]'::jsonb)
+) as v (slug, version, template_slug, locale, title, purpose, guidance)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+join public.session_templates t on t.programme_id = p.id and t.slug = v.template_slug
+on conflict (session_template_id, locale) do update set
+  title = excluded.title,
+  purpose = excluded.purpose,
+  guidance = excluded.guidance;
+
+insert into public.programme_days (programme_week_id, day_of_week, session_template_id)
+select w.id, v.day_of_week, t.id
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 1::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 2::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 3::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 4::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 5::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 6::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 7::integer, 7::smallint, 'long-run'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 1::smallint, 'strength-a'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 2::smallint, 'recovery'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 3::smallint, 'strength-b'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 4::smallint, 'rest-mobility'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 5::smallint, 'strength-c'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 6::smallint, 'rest-pre-run'),
+  ('force-muscle-endurance-8w', 1::integer, 8::integer, 7::smallint, 'long-run')
+) as v (slug, version, week_number, day_of_week, template_slug)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+join public.programme_weeks w on w.programme_id = p.id and w.week_number = v.week_number
+join public.session_templates t on t.programme_id = p.id and t.slug = v.template_slug
+on conflict (programme_week_id, day_of_week) do update set
+  session_template_id = excluded.session_template_id;
+
+insert into public.template_exercises (session_template_id, sequence, exercise_id, target_sets, target_reps, target_duration_s, target_distance_m, per_side, rest_s)
+select t.id, v.sequence, e.id, v.target_sets, v.target_reps, v.target_duration_s, v.target_distance_m, v.per_side, v.rest_s
+from (values
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 1::integer, 'pull-up', 3::integer, 6::integer, null::integer, null::integer, false, 120::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 2::integer, 'push-up', 3::integer, 12::integer, null::integer, null::integer, false, 90::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 3::integer, 'pike-push-up', 2::integer, 8::integer, null::integer, null::integer, false, 90::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 4::integer, 'glute-bridge', 2::integer, 15::integer, null::integer, null::integer, false, 60::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-a', 5::integer, 'plank', 2::integer, null::integer, 45::integer, null::integer, false, 60::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 1::integer, 'easy-walk', 1::integer, null::integer, 1800::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 2::integer, 'mobility-hips', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 3::integer, 'mobility-ankles', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'recovery', 4::integer, 'mobility-shoulders', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 1::integer, 'chin-up', 3::integer, 6::integer, null::integer, null::integer, false, 120::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 2::integer, 'bulgarian-split-squat', 3::integer, 10::integer, null::integer, null::integer, true, 90::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 3::integer, 'single-leg-glute-bridge', 3::integer, 10::integer, null::integer, null::integer, true, 60::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 4::integer, 'standing-calf-raise', 3::integer, 20::integer, null::integer, null::integer, false, 60::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-b', 5::integer, 'hanging-knee-raise', 2::integer, 12::integer, null::integer, null::integer, false, 60::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 1::integer, 'mobility-hips', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 2::integer, 'mobility-ankles', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'rest-mobility', 3::integer, 'mobility-shoulders', 1::integer, null::integer, 180::integer, null::integer, false, null::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 1::integer, 'pull-up', 2::integer, 6::integer, null::integer, null::integer, false, 120::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 2::integer, 'push-up', 2::integer, 12::integer, null::integer, null::integer, false, 90::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 3::integer, 'pike-push-up', 2::integer, 8::integer, null::integer, null::integer, false, 90::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'strength-c', 4::integer, 'side-plank', 2::integer, null::integer, 30::integer, null::integer, true, 45::integer),
+  ('force-muscle-endurance-8w', 1::integer, 'long-run', 1::integer, 'long-run', 1::integer, null::integer, null::integer, 11000::integer, false, null::integer)
+) as v (slug, version, template_slug, sequence, exercise_slug, target_sets, target_reps, target_duration_s, target_distance_m, per_side, rest_s)
+join public.programmes p on p.slug = v.slug and p.version = v.version
+join public.session_templates t on t.programme_id = p.id and t.slug = v.template_slug
+join public.exercises e on e.slug = v.exercise_slug
+on conflict (session_template_id, sequence) do update set
+  exercise_id = excluded.exercise_id,
+  target_sets = excluded.target_sets,
+  target_reps = excluded.target_reps,
+  target_duration_s = excluded.target_duration_s,
+  target_distance_m = excluded.target_distance_m,
+  per_side = excluded.per_side,
+  rest_s = excluded.rest_s;
+
 commit;

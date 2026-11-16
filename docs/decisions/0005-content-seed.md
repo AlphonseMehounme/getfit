@@ -31,4 +31,6 @@ including preview.
   psql (P1-18 runbook).
 - The repository carries a generated file. It is reviewed through its sources in `content/`, not line by line.
 - Content changes need `pnpm seed:generate` before commit; CI catches a missed run.
-- P1-11 extends the same generator to the programme.
+- P1-11 extends the same generator to programmes, upserting on natural keys (slug and version, week number,
+  template slug, weekday, sequence). Once a programme version is in use, changing its content means publishing a
+  new version (PRD §11), since enrolments keep the version they started.

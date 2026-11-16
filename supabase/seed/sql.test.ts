@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import * as sqlModule from './sql.ts';
 import { array, bool, jsonb, literal, nullable } from './sql.ts';
 
 describe('SQL literals', () => {
@@ -25,5 +26,14 @@ describe('SQL literals', () => {
 
   it('writes jsonb with escaped quotes', () => {
     expect(jsonb(["Garde l'axe."])).toBe(`'["Garde l''axe."]'::jsonb`);
+  });
+});
+
+describe('num', () => {
+  it('types numbers and nulls', () => {
+    const { num } = sqlModule;
+    expect(num(0.65, 'numeric')).toBe('0.65::numeric');
+    expect(num(null, 'integer')).toBe('null::integer');
+    expect(() => num(Number.NaN, 'integer')).toThrow(RangeError);
   });
 });

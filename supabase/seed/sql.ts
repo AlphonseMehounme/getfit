@@ -17,3 +17,10 @@ export function array(values: readonly string[], type: string): string {
 }
 
 export const jsonb = (value: unknown) => `${literal(JSON.stringify(value))}::jsonb`;
+
+/** A typed number, or a typed null (`null::integer`), so VALUES rows keep their column types. */
+export function num(value: number | null, type: string): string {
+  if (value === null) return `null::${type}`;
+  if (!Number.isFinite(value)) throw new RangeError('SQL numbers must be finite');
+  return `${value}::${type}`;
+}

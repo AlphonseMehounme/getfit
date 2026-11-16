@@ -2,9 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ContentFile } from './library-check.ts';
 
-/** Reads every `content/exercises/*.json` file. I/O only; `checkLibrary` validates. */
-export function readExerciseFiles(contentDir: string): ContentFile[] {
-  const dir = join(contentDir, 'exercises');
+function readJsonFiles(dir: string): ContentFile[] {
   return readdirSync(dir)
     .filter((name) => name.endsWith('.json'))
     .sort()
@@ -13,3 +11,11 @@ export function readExerciseFiles(contentDir: string): ContentFile[] {
       data: JSON.parse(readFileSync(join(dir, name), 'utf8')) as unknown,
     }));
 }
+
+/** Reads every `content/exercises/*.json` file. I/O only; `checkLibrary` validates. */
+export const readExerciseFiles = (contentDir: string) =>
+  readJsonFiles(join(contentDir, 'exercises'));
+
+/** Reads every `content/programmes/*.json` file. I/O only; `checkProgrammes` validates. */
+export const readProgrammeFiles = (contentDir: string) =>
+  readJsonFiles(join(contentDir, 'programmes'));
