@@ -1,5 +1,10 @@
 import type { DbClient } from '@/server/db/client';
-import { loginSchema, signUpSchema } from '@/lib/validation/auth';
+import {
+  loginSchema,
+  resetPasswordSchema,
+  signUpSchema,
+  updatePasswordSchema,
+} from '@/lib/validation/auth';
 import { type AuthErrorKey, toAuthErrorKey } from './auth-errors';
 
 export type AuthResult = { ok: true } | { ok: false; error: AuthErrorKey };
@@ -49,13 +54,59 @@ export async function signOut(client: DbClient): Promise<AuthResult> {
   return error ? fail('sign-out', error) : OK;
 }
 
-/** Verifies the link from the confirmation email, which signs the user in on this device. */
-export async function confirmEmail(client: DbClient, tokenHash: unknown): Promise<AuthResult> {
+/** The two kinds of email link (supabase/templates/*.html). */
+export type EmailLinkType = 'email' | 'recovery';
+
+export function isEmailLinkType(value: unknown): value is EmailLinkType {
+  return value === 'email' || value === 'recovery';
+}
+
+/**
+ * Verifies a link from a confirmation or password-reset email, which signs the user in on this device.
+ * A token hash works on any device or browser, unlike a PKCE code.
+ */
+export async function verifyEmailLink(
+  client: DbClient,
+  type: EmailLinkType,
+  tokenHash: unknown,
+): Promise<AuthResult> {
   if (typeof tokenHash !== 'string' || tokenHash.length === 0 || tokenHash.length > 512) {
     return { ok: false, error: 'invalidLink' };
   }
-  const { error } = await client.auth.verifyOtp({ type: 'email', token_hash: tokenHash });
-  return error ? fail('confirm', error) : OK;
+  const { error } = await client.auth.verifyOtp({ type, token_hash: tokenHash });
+  return error ? fail(`verify-${type}`, error) : OK;
+}
+
+/**
+ * Sends a password-reset link. The answer is the same whether or not an account uses this email,
+ * so it can't be used to probe accounts (PRD §6.1, AGENTS §12).
+ */
+export async function requestPasswordReset(
+  client: DbClient,
+  input: unknown,
+  redirectTo: string,
+): Promise<AuthResult> {
+  const parsed = resetPasswordSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: 'invalidInput' };
+
+  const { error } = await client.auth.resetPasswordForEmail(parsed.data.email, { redirectTo });
+  return error ? fail('reset-request', error) : OK;
+}
+
+/**
+ * Sets a new password for the signed-in user (after a recovery link), then signs out every other
+ * device, so anyone who knew the old password loses access.
+ */
+export async function updatePassword(client: DbClient, input: unknown): Promise<AuthResult> {
+  const parsed = updatePasswordSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: 'invalidInput' };
+  if (!(await getCurrentUser(client))) return { ok: false, error: 'invalidLink' };
+
+  const { error } = await client.auth.updateUser({ password: parsed.data.password });
+  if (error) return fail('update-password', error);
+
+  const others = await client.auth.signOut({ scope: 'others' });
+  return others.error ? fail('sign-out-others', others.error) : OK;
 }
 
 export interface CurrentUser {

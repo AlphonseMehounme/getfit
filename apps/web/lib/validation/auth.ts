@@ -15,13 +15,12 @@ export type ValidationErrorKey = (typeof VALIDATION_ERROR_KEYS)[number];
 
 const email = z.string().trim().toLowerCase().pipe(z.email('emailInvalid'));
 
-export const signUpFormSchema = z.object({
-  email,
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, 'passwordTooShort')
-    .max(PASSWORD_MAX_LENGTH, 'passwordTooLong'),
-});
+const newPassword = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, 'passwordTooShort')
+  .max(PASSWORD_MAX_LENGTH, 'passwordTooLong');
+
+export const signUpFormSchema = z.object({ email, password: newPassword });
 
 // D29: the browser's language and time zone seed the profile; the database falls back to fr / UTC.
 export const signUpSchema = signUpFormSchema.extend({
@@ -34,6 +33,12 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'passwordRequired').max(PASSWORD_MAX_LENGTH, 'passwordTooLong'),
 });
 
+export const resetPasswordSchema = z.object({ email });
+
+export const updatePasswordSchema = z.object({ password: newPassword });
+
 export type SignUpFormValues = z.input<typeof signUpFormSchema>;
 export type SignUpInput = z.input<typeof signUpSchema>;
 export type LoginInput = z.input<typeof loginSchema>;
+export type ResetPasswordInput = z.input<typeof resetPasswordSchema>;
+export type UpdatePasswordInput = z.input<typeof updatePasswordSchema>;

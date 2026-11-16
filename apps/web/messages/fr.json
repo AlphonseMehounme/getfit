@@ -13,14 +13,16 @@
   "Auth": {
     "fields": {
       "email": "E-mail",
-      "password": "Mot de passe"
+      "password": "Mot de passe",
+      "newPassword": "Nouveau mot de passe"
     },
     "pending": "Un instant…",
     "login": {
       "title": "Se connecter",
       "submit": "Se connecter",
       "noAccount": "Pas encore de compte ?",
-      "signUpLink": "En créer un"
+      "signUpLink": "En créer un",
+      "forgotPassword": "Mot de passe oublié ?"
     },
     "signUp": {
       "title": "Crée ton compte",
@@ -45,7 +47,24 @@
       "rateLimited": "Trop de tentatives. Patiente quelques minutes, puis réessaie.",
       "invalidLink": "Ce lien a expiré ou a déjà été utilisé. Connecte-toi, ou inscris-toi de nouveau pour en recevoir un autre.",
       "invalidInput": "Vérifie les champs et réessaie.",
-      "unexpected": "Une erreur est survenue. Réessaie dans un instant."
+      "unexpected": "Une erreur est survenue. Réessaie dans un instant.",
+      "samePassword": "Choisis un mot de passe différent de l’actuel."
+    },
+    "resetPassword": {
+      "title": "Réinitialise ton mot de passe",
+      "intro": "Saisis l'adresse e-mail de ton compte. Nous t'enverrons un lien pour choisir un nouveau mot de passe.",
+      "submit": "Envoyer le lien",
+      "sentTitle": "Consulte ta boîte mail",
+      "sentBody": "Si un compte utilise l'adresse {email}, nous y avons envoyé un lien pour choisir un nouveau mot de passe. Le lien fonctionne sur n'importe quel appareil.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "updatePassword": {
+      "title": "Choisis un nouveau mot de passe",
+      "intro": "Cet appareil reste connecté. Tes autres appareils seront déconnectés.",
+      "submit": "Enregistrer le mot de passe",
+      "doneTitle": "Mot de passe mis à jour",
+      "doneBody": "Utilise ton nouveau mot de passe à ta prochaine connexion. Tes autres appareils ont été déconnectés.",
+      "continue": "Continuer"
     }
   },
   "Profile": {

@@ -7,6 +7,8 @@ describe('toAuthErrorKey', () => {
     ['invalid_credentials', 'invalidCredentials'],
     ['email_not_confirmed', 'emailNotConfirmed'],
     ['weak_password', 'weakPassword'],
+    ['same_password', 'samePassword'],
+    ['session_not_found', 'invalidLink'],
     ['over_request_rate_limit', 'rateLimited'],
     ['over_email_send_rate_limit', 'rateLimited'],
     ['otp_expired', 'invalidLink'],
