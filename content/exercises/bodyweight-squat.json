@@ -1,0 +1,44 @@
+{
+  "slug": "bodyweight-squat",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["quadriceps", "glutes", "hamstrings"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": ["bulgarian-split-squat", "reverse-lunge"] },
+  "fr": {
+    "name": "Squat au poids du corps",
+    "altNames": ["squat", "squats", "squat contrôlé"],
+    "description": "Flexion des jambes au poids du corps qui renforce les cuisses et les fessiers, avec un mouvement contrôlé.",
+    "instructions": [
+      "Tiens-toi debout, pieds à la largeur des épaules, pointes légèrement tournées vers l’extérieur.",
+      "Tends les bras devant toi pour t’équilibrer et garde le buste droit.",
+      "Descends en poussant les hanches vers l’arrière et en pliant les genoux, jusqu’à avoir les cuisses environ parallèles au sol.",
+      "Pousse dans tout le pied pour remonter, en gardant les genoux dans l’axe des pieds."
+    ],
+    "commonMistakes": [
+      "Laisser les genoux rentrer vers l’intérieur.",
+      "Décoller les talons du sol.",
+      "Arrondir le dos en bas du mouvement."
+    ],
+    "mediaAlt": "Squat au poids du corps : personne debout, genoux pliés, cuisses parallèles au sol, bras tendus devant elle."
+  },
+  "en": {
+    "name": "Bodyweight squat",
+    "altNames": ["air squat", "controlled squat"],
+    "description": "A bodyweight knee bend that builds the thighs and glutes, with a controlled movement.",
+    "instructions": [
+      "Stand with your feet shoulder-width apart, toes turned slightly out.",
+      "Reach your arms forward for balance and keep your chest up.",
+      "Lower by pushing your hips back and bending your knees until your thighs are about parallel to the floor.",
+      "Push through your whole foot to stand up, keeping your knees in line with your feet."
+    ],
+    "commonMistakes": [
+      "Letting the knees cave inwards.",
+      "Lifting the heels off the floor.",
+      "Rounding the back at the bottom."
+    ],
+    "mediaAlt": "Bodyweight squat: a person with knees bent, thighs parallel to the floor, arms reaching forward."
+  }
+}

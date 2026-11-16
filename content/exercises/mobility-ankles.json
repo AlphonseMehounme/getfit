@@ -1,0 +1,44 @@
+{
+  "slug": "mobility-ankles",
+  "category": "mobility",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["ankles", "calves"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": [] },
+  "fr": {
+    "name": "Mobilité des chevilles",
+    "altNames": ["mobilité chevilles", "chevilles"],
+    "description": "Mouvements doux pour garder des chevilles mobiles, importantes pour la course et les squats.",
+    "instructions": [
+      "Debout ou assis, lève un pied et dessine des cercles lents avec la cheville, dans les deux sens.",
+      "Face à un mur, pied à environ une main du mur, avance le genou vers le mur sans décoller le talon.",
+      "Reviens, puis recommence en gardant le genou dans l’axe du pied.",
+      "Fais les deux côtés et reste dans une amplitude confortable."
+    ],
+    "commonMistakes": [
+      "Décoller le talon quand le genou avance.",
+      "Laisser le genou partir vers l’intérieur.",
+      "Aller trop vite."
+    ],
+    "mediaAlt": "Mobilité des chevilles : personne face à un mur, genou avancé vers le mur, talon au sol."
+  },
+  "en": {
+    "name": "Ankle mobility",
+    "altNames": ["ankle mobility drill", "ankles"],
+    "description": "Gentle movements to keep the ankles mobile, which matters for running and squats.",
+    "instructions": [
+      "Standing or sitting, lift one foot and draw slow circles with your ankle, in both directions.",
+      "Facing a wall with your foot about a hand’s width from it, move your knee towards the wall without lifting your heel.",
+      "Come back, then repeat, keeping your knee in line with your foot.",
+      "Do both sides and stay within a comfortable range."
+    ],
+    "commonMistakes": [
+      "Lifting the heel as the knee moves forward.",
+      "Letting the knee drift inwards.",
+      "Going too fast."
+    ],
+    "mediaAlt": "Ankle mobility: a person facing a wall, knee moved towards the wall, heel on the floor."
+  }
+}

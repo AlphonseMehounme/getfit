@@ -1,0 +1,44 @@
+{
+  "slug": "single-leg-glute-bridge",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "intermediate",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["glutes", "hamstrings", "core"],
+  "isUnilateral": true,
+  "relations": { "variations": ["glute-bridge"], "substitutes": ["glute-bridge"] },
+  "fr": {
+    "name": "Pont fessier une jambe",
+    "altNames": ["pont une jambe", "pont fessier unilatéral"],
+    "description": "Pont fessier en appui sur une seule jambe, plus exigeant pour les fessiers et la stabilité du bassin. Les répétitions s’entendent par jambe.",
+    "instructions": [
+      "Allonge-toi sur le dos, genoux pliés, pieds à plat au sol.",
+      "Tends une jambe dans le prolongement de la cuisse opposée.",
+      "Pousse dans le talon au sol pour monter le bassin, en le gardant bien horizontal.",
+      "Redescends lentement, fais toutes les répétitions puis change de jambe."
+    ],
+    "commonMistakes": [
+      "Laisser le bassin pencher du côté de la jambe tendue.",
+      "Cambrer le bas du dos pour monter plus haut.",
+      "Prendre de l’élan avec la jambe tendue."
+    ],
+    "mediaAlt": "Pont fessier une jambe : personne allongée sur le dos, bassin levé, une jambe tendue en l’air."
+  },
+  "en": {
+    "name": "Single-leg glute bridge",
+    "altNames": ["one-leg glute bridge", "single-leg hip bridge"],
+    "description": "A glute bridge on one leg, harder on the glutes and on pelvic stability. Reps are per leg.",
+    "instructions": [
+      "Lie on your back with knees bent and feet flat on the floor.",
+      "Straighten one leg in line with the opposite thigh.",
+      "Push through the heel on the floor to lift your hips, keeping them level.",
+      "Lower slowly, finish all reps, then switch legs."
+    ],
+    "commonMistakes": [
+      "Letting the hips tilt towards the straight leg.",
+      "Arching the lower back to get higher.",
+      "Swinging the straight leg for momentum."
+    ],
+    "mediaAlt": "Single-leg glute bridge: a person lying on their back, hips lifted, one leg straight in the air."
+  }
+}

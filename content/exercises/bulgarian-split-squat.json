@@ -1,0 +1,44 @@
+{
+  "slug": "bulgarian-split-squat",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "intermediate",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["quadriceps", "glutes", "hamstrings"],
+  "isUnilateral": true,
+  "relations": { "variations": [], "substitutes": ["bodyweight-squat", "reverse-lunge"] },
+  "fr": {
+    "name": "Squat bulgare",
+    "altNames": ["squats bulgares", "fente bulgare"],
+    "description": "Fente pied arrière surélevé qui renforce chaque jambe séparément. Les répétitions s’entendent par jambe.",
+    "instructions": [
+      "Place-toi dos à une chaise ou un banc stable et pose le dessus du pied arrière dessus.",
+      "Avance le pied avant d’un grand pas pour que le genou reste au-dessus de la cheville en bas du mouvement.",
+      "Descends en pliant le genou avant jusqu’à ce que la cuisse soit environ parallèle au sol, buste légèrement penché.",
+      "Pousse dans le talon avant pour remonter, puis fais toutes les répétitions avant de changer de jambe."
+    ],
+    "commonMistakes": [
+      "Placer le pied avant trop près du support.",
+      "Laisser le genou avant rentrer vers l’intérieur.",
+      "Pousser surtout avec la jambe arrière."
+    ],
+    "mediaAlt": "Squat bulgare : personne en fente, pied arrière posé sur un banc, genou avant plié."
+  },
+  "en": {
+    "name": "Bulgarian split squat",
+    "altNames": ["rear-foot-elevated split squat"],
+    "description": "A split squat with the back foot raised, building each leg on its own. Reps are per leg.",
+    "instructions": [
+      "Stand with your back to a sturdy chair or bench and rest the top of your back foot on it.",
+      "Step your front foot far enough forward that your knee stays over your ankle at the bottom.",
+      "Lower by bending your front knee until your thigh is about parallel to the floor, chest leaning slightly forward.",
+      "Push through your front heel to come up, and finish all reps before switching legs."
+    ],
+    "commonMistakes": [
+      "Placing the front foot too close to the support.",
+      "Letting the front knee cave inwards.",
+      "Pushing mostly with the back leg."
+    ],
+    "mediaAlt": "Bulgarian split squat: a person in a split stance, back foot on a bench, front knee bent."
+  }
+}

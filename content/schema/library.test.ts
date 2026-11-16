@@ -13,19 +13,9 @@ const matching = (term: string) =>
   exercises.filter((e) => searchTermsOf(e).has(normaliseTerm(term))).map((e) => e.slug);
 
 describe('content/exercises', () => {
-  it('PRD §8: every file is a launch-library exercise (P1-10a: upper and core)', () => {
-    const slugs = exercises.map((e) => e.slug);
-    expect(slugs.every((slug) => slug in LAUNCH_LIBRARY)).toBe(true);
-    expect(slugs).toEqual([
-      'abdominal-crunch',
-      'chin-up',
-      'hanging-knee-raise',
-      'pike-push-up',
-      'plank',
-      'pull-up',
-      'push-up',
-      'side-plank',
-    ]);
+  it('PRD §8: holds exactly the 19 launch-library exercises', () => {
+    expect(exercises.map((e) => e.slug)).toEqual(Object.keys(LAUNCH_LIBRARY).sort());
+    expect(exercises).toHaveLength(19);
   });
 
   it('PRD §6.7 AC: "traction" and "pull-up" find the same exercise, pull-up', () => {
@@ -38,10 +28,23 @@ describe('content/exercises', () => {
     expect(bySlug.get('chin-up')?.fr.name).toBe('Chin-up (supination)');
     expect(bySlug.get('hanging-knee-raise')?.fr.name).toBe('Relevé de genoux suspendu');
     expect(bySlug.get('abdominal-crunch')?.en.name).toBe('Abdominal crunch');
+    expect(bySlug.get('standing-calf-raise')?.fr.name).toBe('Extension des mollets debout');
+    expect(bySlug.get('long-run')?.fr.name).toBe('Sortie longue');
+  });
+
+  it('PRD §4: keeps the prototype spellings as alt names', () => {
+    expect(matching('Squats bulgares')).toEqual(['bulgarian-split-squat']);
+    expect(matching('Extensions mollets debout')).toEqual(['standing-calf-raise']);
+    expect(matching('Relevés de genoux suspendu')).toEqual(['hanging-knee-raise']);
   });
 
   it('BR-16: per-side exercises are flagged unilateral', () => {
-    expect(exercises.filter((e) => e.isUnilateral).map((e) => e.slug)).toEqual(['side-plank']);
+    expect(exercises.filter((e) => e.isUnilateral).map((e) => e.slug)).toEqual([
+      'bulgarian-split-squat',
+      'reverse-lunge',
+      'side-plank',
+      'single-leg-glute-bridge',
+    ]);
   });
 
   it('§4: only bar exercises need equipment beyond bodyweight', () => {

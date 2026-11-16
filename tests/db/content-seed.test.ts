@@ -44,7 +44,8 @@ afterAll(async () => {
 });
 
 describe('content seed', () => {
-  it('seeds every content exercise in FR and EN, with its relations', async () => {
+  it('PRD §8: seeds the 19 exercises in FR and EN, with their relations', async () => {
+    expect(slugs).toHaveLength(19);
     await db.query(seedSql);
     expect(await seededCounts()).toEqual({
       exercises: slugs.length,

@@ -1,0 +1,44 @@
+{
+  "slug": "reverse-lunge",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["quadriceps", "glutes", "hamstrings"],
+  "isUnilateral": true,
+  "relations": { "variations": [], "substitutes": ["bodyweight-squat", "bulgarian-split-squat"] },
+  "fr": {
+    "name": "Fente arrière",
+    "altNames": ["fentes arrière", "fente"],
+    "description": "Grand pas en arrière puis flexion des deux genoux, plus facile à équilibrer que la fente avant. Les répétitions s’entendent par jambe.",
+    "instructions": [
+      "Tiens-toi debout, pieds à la largeur des hanches, mains sur les hanches.",
+      "Fais un grand pas en arrière avec une jambe et pose la pointe du pied.",
+      "Plie les deux genoux jusqu’à ce que le genou arrière frôle le sol, buste droit.",
+      "Pousse dans le talon avant pour revenir pieds joints, puis répète du même côté ou alterne."
+    ],
+    "commonMistakes": [
+      "Faire un pas trop court, ce qui avance le genou avant.",
+      "Laisser tomber le genou arrière au sol.",
+      "Pencher le buste en avant."
+    ],
+    "mediaAlt": "Fente arrière : personne en fente, une jambe reculée, les deux genoux pliés."
+  },
+  "en": {
+    "name": "Reverse lunge",
+    "altNames": ["backward lunge", "lunge"],
+    "description": "A long step back then a bend of both knees, easier to balance than a forward lunge. Reps are per leg.",
+    "instructions": [
+      "Stand with your feet hip-width apart, hands on your hips.",
+      "Take a long step back with one leg and land on the ball of your foot.",
+      "Bend both knees until your back knee nearly touches the floor, chest upright.",
+      "Push through your front heel to bring your feet together, then repeat on the same side or alternate."
+    ],
+    "commonMistakes": [
+      "Taking too short a step, which pushes the front knee forward.",
+      "Dropping the back knee onto the floor.",
+      "Leaning the chest forward."
+    ],
+    "mediaAlt": "Reverse lunge: a person in a lunge, one leg stepped back, both knees bent."
+  }
+}

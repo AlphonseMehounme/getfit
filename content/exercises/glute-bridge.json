@@ -1,0 +1,44 @@
+{
+  "slug": "glute-bridge",
+  "category": "lower",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["glutes", "hamstrings", "core"],
+  "isUnilateral": false,
+  "relations": { "variations": ["single-leg-glute-bridge"], "substitutes": [] },
+  "fr": {
+    "name": "Pont fessier",
+    "altNames": ["ponts fessiers", "relevé de bassin", "glute bridge"],
+    "description": "Élévation du bassin au sol qui renforce les fessiers et l’arrière des cuisses, sans charger les genoux.",
+    "instructions": [
+      "Allonge-toi sur le dos, genoux pliés, pieds à plat à la largeur des hanches, bras le long du corps.",
+      "Serre les fessiers et pousse dans les talons pour monter le bassin.",
+      "Monte jusqu’à aligner les épaules, les hanches et les genoux, et marque une courte pause.",
+      "Redescends lentement le bassin jusqu’à frôler le sol."
+    ],
+    "commonMistakes": [
+      "Cambrer le bas du dos au lieu de serrer les fessiers.",
+      "Pousser sur la pointe des pieds.",
+      "Laisser les genoux s’écarter ou se rapprocher."
+    ],
+    "mediaAlt": "Pont fessier : personne allongée sur le dos, pieds au sol, bassin levé et aligné avec les genoux."
+  },
+  "en": {
+    "name": "Glute bridge",
+    "altNames": ["hip bridge", "pont fessier"],
+    "description": "A hip lift from the floor that builds the glutes and hamstrings without loading the knees.",
+    "instructions": [
+      "Lie on your back with knees bent, feet flat and hip-width apart, arms by your sides.",
+      "Squeeze your glutes and push through your heels to lift your hips.",
+      "Rise until your shoulders, hips and knees are in line, and pause briefly.",
+      "Lower your hips slowly until they nearly touch the floor."
+    ],
+    "commonMistakes": [
+      "Arching the lower back instead of squeezing the glutes.",
+      "Pushing through the toes.",
+      "Letting the knees fall out or in."
+    ],
+    "mediaAlt": "Glute bridge: a person lying on their back, feet on the floor, hips lifted in line with the knees."
+  }
+}
