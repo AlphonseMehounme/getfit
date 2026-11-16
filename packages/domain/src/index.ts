@@ -14,3 +14,6 @@ export * from './status/missed';
 export * from './status/late-logging';
 export * from './status/session-status';
 export * from './metrics/adherence';
+export * from './recovery/rules';
+export * from './recovery/evaluate-move';
+export * from './recovery/candidates';
