@@ -9,7 +9,7 @@ import { signInAction } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
 import { FormField } from '@/components/ui/form-field';
-import { SIGN_UP_PATH } from '@/lib/auth/paths';
+import { RESET_PASSWORD_PATH, SIGN_UP_PATH } from '@/lib/auth/paths';
 import { type LoginInput, loginSchema, type ValidationErrorKey } from '@/lib/validation/auth';
 import type { AuthErrorKey } from '@/server/services/auth-errors';
 
@@ -58,6 +58,12 @@ export function LoginForm({ next, initialError }: LoginFormProps) {
         error={fieldError(errors.password?.message)}
         {...register('password')}
       />
+      <Link
+        href={RESET_PASSWORD_PATH}
+        className="text-accent -my-2 self-start py-2 text-sm font-medium underline underline-offset-4"
+      >
+        {t('login.forgotPassword')}
+      </Link>
       <Button type="submit" width="full" disabled={isSubmitting}>
         {isSubmitting ? t('pending') : t('login.submit')}
       </Button>

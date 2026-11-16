@@ -13,14 +13,16 @@
   "Auth": {
     "fields": {
       "email": "Email",
-      "password": "Password"
+      "password": "Password",
+      "newPassword": "New password"
     },
     "pending": "Please wait…",
     "login": {
       "title": "Log in",
       "submit": "Log in",
       "noAccount": "No account yet?",
-      "signUpLink": "Create one"
+      "signUpLink": "Create one",
+      "forgotPassword": "Forgot your password?"
     },
     "signUp": {
       "title": "Create your account",
@@ -45,7 +47,24 @@
       "rateLimited": "Too many attempts. Wait a few minutes, then try again.",
       "invalidLink": "This link has expired or was already used. Log in, or sign up again to get a new one.",
       "invalidInput": "Check the fields and try again.",
-      "unexpected": "Something went wrong. Try again in a moment."
+      "unexpected": "Something went wrong. Try again in a moment.",
+      "samePassword": "Choose a password different from your current one."
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "intro": "Enter the email address of your account. We will send you a link to choose a new password.",
+      "submit": "Send the link",
+      "sentTitle": "Check your inbox",
+      "sentBody": "If an account uses {email}, we have sent it a link to choose a new password. The link works on any device.",
+      "backToLogin": "Back to log in"
+    },
+    "updatePassword": {
+      "title": "Choose a new password",
+      "intro": "You will stay signed in on this device. Your other devices will be signed out.",
+      "submit": "Save the new password",
+      "doneTitle": "Password updated",
+      "doneBody": "Use your new password the next time you log in. Your other devices have been signed out.",
+      "continue": "Continue"
     }
   },
   "Profile": {

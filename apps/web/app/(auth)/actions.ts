@@ -5,7 +5,7 @@ import { CONFIRM_PATH } from '@/lib/auth/paths';
 import { safeNextPath } from '@/lib/auth/safe-next-path';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { appOrigin } from '@/server/config/app-origin';
-import { type AuthResult, signIn, signUp } from '@/server/services/auth';
+import { type AuthResult, requestPasswordReset, signIn, signUp } from '@/server/services/auth';
 
 export async function signUpAction(input: unknown): Promise<AuthResult> {
   const supabase = await createSupabaseServerClient();
@@ -18,4 +18,9 @@ export async function signInAction(input: unknown, next: unknown): Promise<AuthR
   const result = await signIn(supabase, input);
   if (result.ok) redirect(safeNextPath(next));
   return result;
+}
+
+export async function requestPasswordResetAction(input: unknown): Promise<AuthResult> {
+  const supabase = await createSupabaseServerClient();
+  return requestPasswordReset(supabase, input, `${appOrigin()}${CONFIRM_PATH}`);
 }

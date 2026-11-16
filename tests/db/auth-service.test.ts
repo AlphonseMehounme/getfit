@@ -2,11 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from 'vitest';
 import { getAccount } from '../../apps/web/server/services/account';
 import {
-  confirmEmail,
   getCurrentUser,
+  requestPasswordReset,
   signIn,
   signOut,
   signUp,
+  updatePassword,
+  verifyEmailLink,
 } from '../../apps/web/server/services/auth';
 import { anonClient, connectDb, createTestUser } from './helpers';
 
@@ -118,15 +120,78 @@ describe('signIn and signOut', () => {
   });
 });
 
-describe('confirmEmail', () => {
+describe('verifyEmailLink', () => {
   it.each([undefined, '', 'x'.repeat(513)])('rejects a malformed token %#', async (token) => {
-    expect(await confirmEmail(anonClient(), token)).toEqual({ ok: false, error: 'invalidLink' });
-  });
-
-  it('rejects a token that Supabase does not know', async () => {
-    expect(await confirmEmail(anonClient(), randomUUID())).toEqual({
+    expect(await verifyEmailLink(anonClient(), 'email', token)).toEqual({
       ok: false,
       error: 'invalidLink',
     });
+  });
+
+  it.each(['email', 'recovery'] as const)('rejects an unknown %s token', async (type) => {
+    expect(await verifyEmailLink(anonClient(), type, randomUUID())).toEqual({
+      ok: false,
+      error: 'invalidLink',
+    });
+  });
+});
+
+/** A confirmed account with a known password, signed in on `client`. */
+async function signedInUser() {
+  const email = newEmail();
+  const password = newPassword();
+  await signUp(anonClient(), { email, password }, REDIRECT);
+  await markConfirmed(email);
+  const client = anonClient();
+  expect(await signIn(client, { email, password })).toEqual({ ok: true });
+  return { email, password, client };
+}
+
+describe('password reset', () => {
+  it('answers the same for a known and an unknown email', async () => {
+    const { email } = await signedInUser();
+    expect(await requestPasswordReset(anonClient(), { email }, REDIRECT)).toEqual({ ok: true });
+    expect(await requestPasswordReset(anonClient(), { email: newEmail() }, REDIRECT)).toEqual({
+      ok: true,
+    });
+  });
+
+  it('rejects an invalid email on the server too', async () => {
+    expect(await requestPasswordReset(anonClient(), { email: 'nope' }, REDIRECT)).toEqual({
+      ok: false,
+      error: 'invalidInput',
+    });
+  });
+
+  it('needs a session to set a new password', async () => {
+    expect(await updatePassword(anonClient(), { password: newPassword() })).toEqual({
+      ok: false,
+      error: 'invalidLink',
+    });
+  });
+
+  it('refuses the current password as the new one', async () => {
+    const { password, client } = await signedInUser();
+    expect(await updatePassword(client, { password })).toEqual({
+      ok: false,
+      error: 'samePassword',
+    });
+  });
+
+  it('replaces the password and signs out the other devices', async () => {
+    const { email, password, client } = await signedInUser();
+    const otherDevice = anonClient();
+    expect(await signIn(otherDevice, { email, password })).toEqual({ ok: true });
+
+    const replacement = newPassword();
+    expect(await updatePassword(client, { password: replacement })).toEqual({ ok: true });
+
+    expect(await getCurrentUser(client)).toMatchObject({ email });
+    expect(await getCurrentUser(otherDevice)).toBeNull();
+    expect(await signIn(anonClient(), { email, password })).toEqual({
+      ok: false,
+      error: 'invalidCredentials',
+    });
+    expect(await signIn(anonClient(), { email, password: replacement })).toEqual({ ok: true });
   });
 });

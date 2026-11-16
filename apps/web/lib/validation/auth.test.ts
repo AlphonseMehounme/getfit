@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import en from '@/messages/en.json';
-import { loginSchema, signUpSchema, VALIDATION_ERROR_KEYS } from './auth';
+import {
+  loginSchema,
+  resetPasswordSchema,
+  signUpSchema,
+  updatePasswordSchema,
+  VALIDATION_ERROR_KEYS,
+} from './auth';
 
 const firstError = (result: { success: boolean; error?: { issues: { message: string }[] } }) =>
   result.error?.issues[0]?.message;
@@ -29,6 +35,18 @@ describe('auth validation', () => {
     expect(firstError(signUp('1234567'))).toBe('passwordTooShort');
     expect(firstError(signUp('x'.repeat(73)))).toBe('passwordTooLong');
     expect(signUp('12345678').success).toBe(true);
+  });
+
+  it('a reset request needs a valid email', () => {
+    expect(resetPasswordSchema.parse({ email: ' A@Example.test' }).email).toBe('a@example.test');
+    expect(firstError(resetPasswordSchema.safeParse({ email: 'nope' }))).toBe('emailInvalid');
+  });
+
+  it('a new password follows the sign-up rules', () => {
+    expect(firstError(updatePasswordSchema.safeParse({ password: 'short' }))).toBe(
+      'passwordTooShort',
+    );
+    expect(updatePasswordSchema.safeParse({ password: '12345678' }).success).toBe(true);
   });
 
   it('accepts only supported locales (D15)', () => {

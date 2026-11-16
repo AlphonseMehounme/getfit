@@ -1,56 +1,28 @@
-import { randomUUID } from 'node:crypto';
-import AxeBuilder from '@axe-core/playwright';
-import { expect, type Page, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import fr from '../apps/web/messages/fr.json' with { type: 'json' };
-import { readLocalSupabase } from '../tests/support/local-supabase';
-import { findEmailLink } from '../tests/support/mailpit';
+import {
+  expectNoAxeViolations,
+  formAlert,
+  logIn,
+  newEmail,
+  newPassword,
+  openEmailLink,
+  signUp,
+  signUpAndConfirm,
+} from './support/auth-flow';
 
 // PRD §6.1 / D8: real email/password auth against local Supabase, confirmation email via Mailpit.
-const { mailpitUrl } = readLocalSupabase();
 const TIME_ZONE = 'America/New_York';
 
 test.use({ locale: 'en-US', timezoneId: TIME_ZONE });
-
-const newEmail = () => `e2e-${randomUUID()}@example.test`;
-const newPassword = () => `pw-${randomUUID()}`;
-
-async function signUp(page: Page, email: string, password: string) {
-  await page.goto('/sign-up');
-  await page.getByLabel(en.Auth.fields.email).fill(email);
-  await page.getByLabel(en.Auth.fields.password).fill(password);
-  await page.getByRole('button', { name: en.Auth.signUp.submit }).click();
-  await expect(page.getByRole('heading', { name: en.Auth.checkInbox.title })).toBeVisible();
-}
-
-async function confirm(page: Page, email: string) {
-  let link: string | null = null;
-  await expect
-    .poll(async () => (link = await findEmailLink(mailpitUrl, email, '/auth/confirm')), {
-      timeout: 15_000,
-    })
-    .not.toBeNull();
-  await page.goto(link!);
-}
-
-async function logIn(page: Page, email: string, password: string) {
-  await page.getByLabel(en.Auth.fields.email).fill(email);
-  await page.getByLabel(en.Auth.fields.password).fill(password);
-  await page.getByRole('button', { name: en.Auth.login.submit }).click();
-}
-
-// Next.js's route announcer is also role=alert, so match the form's alert by its text.
-const formAlert = (page: Page, text: string) => page.getByRole('alert').filter({ hasText: text });
-
-const expectNoAxeViolations = async (page: Page) =>
-  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
 test('sign up, confirm by email, log out, and log back in', async ({ page }) => {
   const email = newEmail();
   const password = newPassword();
 
   await signUp(page, email, password);
-  await confirm(page, email);
+  await openEmailLink(page, email, 'email');
 
   // The confirmation link signs the user in and lands on the profile (D29: browser language and zone).
   await expect(page).toHaveURL('/profile');
@@ -73,8 +45,7 @@ test('sign up, confirm by email, log out, and log back in', async ({ page }) => 
 
 test('a wrong password shows one generic message', async ({ page }) => {
   const email = newEmail();
-  await signUp(page, email, newPassword());
-  await confirm(page, email);
+  await signUpAndConfirm(page, email, newPassword());
   await page.getByRole('button', { name: en.Profile.signOut }).click();
 
   await logIn(page, email, 'not-the-password');
@@ -98,7 +69,7 @@ test('the forms validate before submitting', async ({ page }) => {
 });
 
 test('the auth pages are accessible and fit a 360 px screen', async ({ page }) => {
-  for (const path of ['/login', '/sign-up']) {
+  for (const path of ['/login', '/sign-up', '/reset-password']) {
     await page.goto(path);
     await expectNoAxeViolations(page);
     const overflow = await page.evaluate(
