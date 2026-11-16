@@ -1,42 +1,133 @@
 @import 'tailwindcss';
 
-/* Minimal tokens for the first screens. The full design-token set (D16, AGENTS §9) lands in P1-13. */
+/*
+ * GetFit design tokens (PRD §9, D16, AGENTS §9). Components use these through Tailwind utilities only;
+ * ESLint bans colour literals in app/ and components/. Contrast is tested in lib/design/tokens.test.ts.
+ * The theme follows the system (prefers-color-scheme); the Settings theme control comes later (P1-13 plan).
+ */
 :root {
+  /* Surfaces */
   --background: #ffffff;
+  --surface: #f3f4f6; /* secondary surfaces: cards, inputs at rest, hover */
+  --border: #dde0e5; /* decorative dividers only */
+  --border-control: #80868f; /* outlines that identify a control: ≥ 3:1 (WCAG 1.4.11) */
+
+  /* Text */
   --foreground: #16181d;
-  --surface: #f2f3f5;
-  --border: #c9cdd4;
-  --muted: #5b6270;
+  --muted: #525866;
+
+  /* Brand accent: cobalt (D16) */
   --accent: #2f5bea;
+  --accent-hover: #2548c4;
   --accent-foreground: #ffffff;
-  --danger: #b42318; /* errors only (AGENTS §9) */
+  --focus: #2f5bea;
+
+  /* Status, reserved (AGENTS §9) */
+  --success: #15803d; /* completed */
+  --warning: #a15c00; /* attention, recovery */
+  --danger: #b42318; /* errors and pain-related warnings only */
+
+  /* Shape */
+  --radius-control: 12px;
+  --radius-card: 16px;
+
+  /* Motion: short transitions, disabled under reduced motion */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #111215;
-    --foreground: #f4f5f7;
     --surface: #1c1e23;
-    --border: #3a3e47;
+    --border: #2c2f36;
+    --border-control: #7a808c;
+
+    --foreground: #f4f5f7;
     --muted: #a3a9b5;
+
     --accent: #7b93ff;
+    --accent-hover: #9aadff;
     --accent-foreground: #0b0d12;
+    --focus: #7b93ff;
+
+    --success: #4ade80;
+    --warning: #fbbf24;
     --danger: #ff8a80;
+
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-border: var(--border);
+  --color-control: var(--border-control);
+  --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
+  --color-focus: var(--focus);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-danger: var(--danger);
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* PRD §9: key workout numbers are 32 px or larger */
+  --text-metric: 2rem;
+  --text-metric--line-height: 1.1;
+
+  --ease-standard: var(--ease-standard);
+}
+
+/* Durations as utilities: duration-fast, duration-base, duration-slow */
+@utility duration-fast {
+  transition-duration: var(--duration-fast);
+}
+@utility duration-base {
+  transition-duration: var(--duration-base);
+}
+@utility duration-slow {
+  transition-duration: var(--duration-slow);
+}
+
+/* PRD §9: a tabular-numeral style for every metric */
+@utility metric {
+  font-size: var(--text-metric);
+  line-height: 1.1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans);
 }
