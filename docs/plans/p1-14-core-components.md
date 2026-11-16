@@ -101,7 +101,7 @@ D18 and D27 (media fallback).
   - `apps/web/messages/{fr,en}.json`
   - `vitest.config.ts` (coverage)
 
-## P1-14b (next PR, sketched)
+## P1-14b (#36, branch `claude/36-interactive-components`)
 - **`dialog`:** native `<dialog>` with `showModal`, which gives a focus trap and an inert background. Esc closes it,
   focus returns to the opener, and it has a labelled title.
 - **`sheet`:** the same dialog base, as a bottom sheet on mobile and a side panel on desktop.
@@ -110,6 +110,16 @@ D18 and D27 (media fallback).
   support.
 - **`app-nav`:** a bottom bar under `md`, a sidebar from `md`. It renders only the destinations passed in, so only
   existing routes, with `aria-current="page"`.
+
+**Decisions made while building P1-14b:**
+- jsdom has no `<dialog>` methods. `apps/web/test/dialog-shim.ts` mirrors the browser behaviour the dialog relies
+  on: `showModal`, `close` and its event, and Escape firing `cancel`. The dialog restores focus to its opener
+  itself, so that part doesn't depend on the browser. A real-browser check comes with the first page that uses
+  the dialog (P1-17b's leave guard).
+- Toasts are for confirmations only (`success` and `info`). Errors use `ErrorState` or inline field errors, so red
+  stays reserved for errors (AGENTS §9).
+- The number stepper's value uses the `metric` style (32 px, tabular numerals). PageUp and PageDown step by 10,
+  Home and End jump to the bounds, and typed values are clamped on blur or Enter.
 
 ## Verification
 - `pnpm lint && pnpm typecheck && pnpm test`; coverage stays at 100%.

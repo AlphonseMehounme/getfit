@@ -108,5 +108,18 @@
       "skipped": "Passé",
       "missed": "Manqué"
     }
+  },
+  "Dialog": {
+    "close": "Fermer"
+  },
+  "Toast": {
+    "dismiss": "Fermer la notification"
+  },
+  "Stepper": {
+    "decrease": "Diminuer : {label}",
+    "increase": "Augmenter : {label}"
+  },
+  "Nav": {
+    "label": "Navigation principale"
   }
 }
