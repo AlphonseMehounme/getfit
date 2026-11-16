@@ -6,6 +6,64 @@
   "Landing": {
     "title": "GetFit",
     "tagline": "Renforcement et course à pied, réunis dans un seul programme structuré.",
-    "subtitle": "Chaque jour, sache quoi faire, pourquoi, et quand récupérer."
+    "subtitle": "Chaque jour, sache quoi faire, pourquoi, et quand récupérer.",
+    "login": "Se connecter",
+    "signUp": "Créer un compte"
+  },
+  "Auth": {
+    "fields": {
+      "email": "E-mail",
+      "password": "Mot de passe"
+    },
+    "pending": "Un instant…",
+    "login": {
+      "title": "Se connecter",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "signUpLink": "En créer un"
+    },
+    "signUp": {
+      "title": "Crée ton compte",
+      "submit": "Créer le compte",
+      "passwordHint": "Au moins {min} caractères.",
+      "haveAccount": "Déjà un compte ?",
+      "loginLink": "Se connecter"
+    },
+    "checkInbox": {
+      "title": "Consulte ta boîte mail",
+      "body": "Si l'adresse {email} peut être utilisée, nous y avons envoyé un lien de confirmation. Ouvre-le pour activer ton compte.",
+      "hint": "Le lien fonctionne sur n'importe quel appareil. Vérifie tes spams si rien n'arrive d'ici quelques minutes."
+    },
+    "errors": {
+      "emailInvalid": "Saisis une adresse e-mail valide.",
+      "passwordRequired": "Saisis ton mot de passe.",
+      "passwordTooShort": "Utilise au moins 8 caractères.",
+      "passwordTooLong": "Utilise 72 caractères au maximum.",
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "emailNotConfirmed": "Confirme d'abord ton adresse e-mail avec le lien que nous t'avons envoyé.",
+      "weakPassword": "Ce mot de passe est trop facile à deviner. Choisis-en un autre.",
+      "rateLimited": "Trop de tentatives. Patiente quelques minutes, puis réessaie.",
+      "invalidLink": "Ce lien a expiré ou a déjà été utilisé. Connecte-toi, ou inscris-toi de nouveau pour en recevoir un autre.",
+      "invalidInput": "Vérifie les champs et réessaie.",
+      "unexpected": "Une erreur est survenue. Réessaie dans un instant."
+    }
+  },
+  "Profile": {
+    "title": "Profil",
+    "account": "Compte",
+    "email": "E-mail",
+    "language": "Langue",
+    "timeZone": "Fuseau horaire",
+    "languages": {
+      "fr": "Français",
+      "en": "Anglais"
+    },
+    "signOut": "Se déconnecter",
+    "loading": "Chargement du profil…",
+    "error": {
+      "title": "Impossible de charger ton profil",
+      "body": "Vérifie ta connexion, puis réessaie.",
+      "retry": "Réessayer"
+    }
   }
 }

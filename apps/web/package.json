@@ -11,10 +11,18 @@
   },
   "dependencies": {
     "@getfit/domain": "workspace:*",
+    "@hookform/resolvers": "7.0.6",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.119.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
     "next": "16.4.6",
     "next-intl": "4.15.1",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "react-hook-form": "7.92.0",
+    "tailwind-merge": "3.7.0",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.5",

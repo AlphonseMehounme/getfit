@@ -2,7 +2,9 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "lib": ["DOM", "ES2023"],
-    "types": ["node"]
+    "types": ["node"],
+    // tests/db imports app services, which use the app's alias (apps/web/tsconfig.json).
+    "paths": { "@/*": ["./apps/web/*"] }
   },
   "include": ["*.ts", "e2e/**/*.ts", "tests/**/*.ts"]
 }

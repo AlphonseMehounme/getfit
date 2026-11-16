@@ -1,0 +1,13 @@
+{{ if and .Data .Data.locale (eq .Data.locale "en") }}
+<h2>Confirm your email</h2>
+<p>Welcome to GetFit. Confirm your email address to activate your account:</p>
+<p><a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=email">Confirm my email</a></p>
+<p>If you did not create a GetFit account, you can ignore this email.</p>
+{{ else }}
+<h2>Confirme ton adresse e-mail</h2>
+<p>Bienvenue sur GetFit. Confirme ton adresse e-mail pour activer ton compte :</p>
+<p>
+  <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=email">Confirmer mon adresse</a>
+</p>
+<p>Si tu n'as pas créé de compte GetFit, tu peux ignorer cet e-mail.</p>
+{{ end }}

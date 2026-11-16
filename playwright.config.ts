@@ -1,7 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
+import { readLocalSupabase } from './tests/support/local-supabase';
 
 const PORT = 3100;
 const isCI = Boolean(process.env.CI);
+const origin = `http://localhost:${PORT}`;
+
+// E2E runs against the local Supabase stack (`pnpm db:start`): real auth, real RLS (D8).
+const supabase = readLocalSupabase();
 
 // AGENTS §9: every screen is checked at 360 px (mobile) and 1440 px (desktop).
 export default defineConfig({
@@ -11,7 +16,7 @@ export default defineConfig({
   retries: 0,
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: origin,
     trace: 'retain-on-failure',
   },
   projects: [
@@ -29,7 +34,12 @@ export default defineConfig({
     command: isCI
       ? `pnpm --filter @getfit/web start --port ${PORT}`
       : `pnpm --filter @getfit/web dev --port ${PORT}`,
-    url: `http://localhost:${PORT}`,
+    url: origin,
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: supabase.apiUrl,
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.publishableKey,
+      APP_ORIGIN: origin,
+    },
     reuseExistingServer: !isCI,
     timeout: 120_000,
   },
