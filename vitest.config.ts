@@ -13,6 +13,7 @@ export default defineConfig({
         'packages/domain/src/status/**/*.ts',
         'packages/domain/src/metrics/**/*.ts',
         'packages/domain/src/recovery/**/*.ts',
+        'packages/domain/src/prescription/**/*.ts',
       ],
       exclude: ['**/*.test.ts'],
       thresholds: { branches: 100, functions: 100, lines: 100, statements: 100 },

@@ -17,3 +17,8 @@ export * from './metrics/adherence';
 export * from './recovery/rules';
 export * from './recovery/evaluate-move';
 export * from './recovery/candidates';
+export * from './prescription/types';
+export * from './prescription/deload';
+export * from './prescription/resolve';
+export * from './prescription/volume';
+export * from './prescription/snapshot';
