@@ -1,0 +1,44 @@
+{
+  "slug": "abdominal-crunch",
+  "category": "core",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["core"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": ["plank"] },
+  "fr": {
+    "name": "Crunch abdominal",
+    "altNames": ["crunch", "crunchs"],
+    "description": "Enroulement du buste au sol, de faible amplitude, qui cible les abdominaux.",
+    "instructions": [
+      "Allonge-toi sur le dos, genoux pliés, pieds à plat au sol.",
+      "Place les mains sur la poitrine ou légèrement derrière la tête, sans tirer dessus.",
+      "Enroule le haut du dos pour décoller les omoplates du sol, en expirant.",
+      "Redescends lentement, sans reposer complètement la tête entre deux répétitions."
+    ],
+    "commonMistakes": [
+      "Tirer sur la nuque avec les mains.",
+      "Monter trop haut en décollant le bas du dos.",
+      "Enchaîner vite avec de l’élan."
+    ],
+    "mediaAlt": "Crunch abdominal : personne allongée sur le dos, genoux pliés, omoplates décollées du sol."
+  },
+  "en": {
+    "name": "Abdominal crunch",
+    "altNames": ["crunch"],
+    "description": "A short curl of the upper body on the floor that targets the abs.",
+    "instructions": [
+      "Lie on your back with knees bent and feet flat on the floor.",
+      "Place your hands on your chest or lightly behind your head, without pulling on it.",
+      "Curl your upper back to lift your shoulder blades off the floor as you breathe out.",
+      "Lower slowly, without fully resting your head between reps."
+    ],
+    "commonMistakes": [
+      "Pulling on the neck with the hands.",
+      "Coming up so high that the lower back leaves the floor.",
+      "Rushing the reps with momentum."
+    ],
+    "mediaAlt": "Abdominal crunch: a person lying on their back, knees bent, shoulder blades lifted off the floor."
+  }
+}

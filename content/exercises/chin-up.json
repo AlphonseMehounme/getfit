@@ -1,0 +1,44 @@
+{
+  "slug": "chin-up",
+  "category": "upper",
+  "pattern": "pull",
+  "difficulty": "intermediate",
+  "equipment": ["pull_up_bar"],
+  "muscleGroups": ["lats", "biceps", "upper_back"],
+  "isUnilateral": false,
+  "relations": { "variations": ["pull-up"], "substitutes": [] },
+  "fr": {
+    "name": "Chin-up (supination)",
+    "altNames": ["chin-up", "chin-ups (supination)", "traction en supination"],
+    "description": "Traction mains en supination, paumes vers toi. Les biceps travaillent davantage qu’en pronation.",
+    "instructions": [
+      "Suspends-toi à la barre, paumes tournées vers toi, mains à la largeur des épaules.",
+      "Gaine le corps et garde les jambes immobiles.",
+      "Tire en amenant la poitrine vers la barre jusqu’à passer le menton au-dessus.",
+      "Redescends lentement jusqu’à avoir les bras tendus."
+    ],
+    "commonMistakes": [
+      "Écarter les mains trop largement, ce qui gêne les poignets.",
+      "Balancer les jambes pour monter.",
+      "Remonter avant d’avoir les bras tendus en bas."
+    ],
+    "mediaAlt": "Chin-up (supination) : personne suspendue à une barre, paumes vers elle, menton au-dessus de la barre."
+  },
+  "en": {
+    "name": "Chin-up",
+    "altNames": ["underhand pull-up", "supinated pull-up"],
+    "description": "A pull-up with an underhand grip, palms facing you. The biceps work more than with an overhand grip.",
+    "instructions": [
+      "Hang from the bar with your palms facing you, hands shoulder-width apart.",
+      "Brace your body and keep your legs still.",
+      "Pull your chest towards the bar until your chin clears it.",
+      "Lower slowly until your arms are straight."
+    ],
+    "commonMistakes": [
+      "Placing the hands too wide, which strains the wrists.",
+      "Swinging the legs to get up.",
+      "Starting the next rep before the arms are straight at the bottom."
+    ],
+    "mediaAlt": "Chin-up: a person hanging from a bar with palms facing them, chin above the bar."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "side-plank",
+  "category": "core",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["obliques", "core", "shoulders"],
+  "isUnilateral": true,
+  "relations": { "variations": ["plank"], "substitutes": [] },
+  "fr": {
+    "name": "Planche latérale",
+    "altNames": ["gainage latéral", "side plank"],
+    "description": "Gainage sur le côté qui renforce les obliques et la stabilité du bassin. Le temps s’applique à chaque côté.",
+    "instructions": [
+      "Allonge-toi sur le côté, avant-bras au sol, coude sous l’épaule, jambes tendues et pieds empilés.",
+      "Monte les hanches pour aligner la tête, le bassin et les pieds.",
+      "Garde le bassin face à l’avant, sans le laisser tourner ni descendre.",
+      "Tiens le temps prévu, puis change de côté."
+    ],
+    "commonMistakes": [
+      "Laisser la hanche s’affaisser vers le sol.",
+      "Placer le coude loin de l’épaule.",
+      "Pencher le buste en avant ou en arrière."
+    ],
+    "mediaAlt": "Planche latérale : personne sur le côté, en appui sur un avant-bras, hanches levées, corps aligné."
+  },
+  "en": {
+    "name": "Side plank",
+    "altNames": ["lateral plank"],
+    "description": "A hold on your side that builds the obliques and pelvic stability. The time applies to each side.",
+    "instructions": [
+      "Lie on your side with your forearm on the floor, elbow under your shoulder, legs straight and feet stacked.",
+      "Lift your hips so your head, pelvis and feet are in line.",
+      "Keep your pelvis facing forward, without letting it rotate or drop.",
+      "Hold for the set time, then switch sides."
+    ],
+    "commonMistakes": [
+      "Letting the hip sag towards the floor.",
+      "Placing the elbow far from the shoulder.",
+      "Leaning the chest forwards or backwards."
+    ],
+    "mediaAlt": "Side plank: a person on their side, supported on one forearm, hips lifted, body in a straight line."
+  }
+}

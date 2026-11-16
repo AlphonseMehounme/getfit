@@ -1,0 +1,44 @@
+{
+  "slug": "hanging-knee-raise",
+  "category": "core",
+  "pattern": null,
+  "difficulty": "intermediate",
+  "equipment": ["pull_up_bar"],
+  "muscleGroups": ["core", "hip_flexors"],
+  "isUnilateral": false,
+  "relations": { "variations": [], "substitutes": ["abdominal-crunch", "plank"] },
+  "fr": {
+    "name": "Relevé de genoux suspendu",
+    "altNames": ["relevés de genoux suspendu", "relevé de genoux", "hanging knee raise"],
+    "description": "Suspendu à la barre, tu montes les genoux pour renforcer les abdominaux sans prendre d’élan.",
+    "instructions": [
+      "Suspends-toi à la barre, bras tendus, épaules légèrement abaissées.",
+      "Stabilise le corps pour ne pas te balancer.",
+      "Monte les genoux vers la poitrine en enroulant légèrement le bassin.",
+      "Redescends les jambes lentement, sous contrôle."
+    ],
+    "commonMistakes": [
+      "Se balancer pour monter les jambes.",
+      "Laisser retomber les jambes d’un coup.",
+      "Monter les genoux sans enrouler le bassin."
+    ],
+    "mediaAlt": "Relevé de genoux suspendu : personne suspendue à une barre, genoux montés à hauteur des hanches."
+  },
+  "en": {
+    "name": "Hanging knee raise",
+    "altNames": ["hanging knee tuck"],
+    "description": "Hanging from the bar, you raise your knees to build the abs without swinging.",
+    "instructions": [
+      "Hang from the bar with straight arms, shoulders slightly drawn down.",
+      "Steady your body so you don’t swing.",
+      "Raise your knees towards your chest, tilting your pelvis slightly up.",
+      "Lower your legs slowly, under control."
+    ],
+    "commonMistakes": [
+      "Swinging to lift the legs.",
+      "Letting the legs drop.",
+      "Raising the knees without tilting the pelvis."
+    ],
+    "mediaAlt": "Hanging knee raise: a person hanging from a bar, knees raised to hip height."
+  }
+}

@@ -4,7 +4,9 @@
     "lib": ["DOM", "ES2023"],
     "types": ["node"],
     // tests/db imports app services, which use the app's alias (apps/web/tsconfig.json).
-    "paths": { "@/*": ["./apps/web/*"] }
+    "paths": { "@/*": ["./apps/web/*"] },
+    // ADR 0005: the seed scripts run on Node's built-in type stripping, which needs explicit .ts imports.
+    "allowImportingTsExtensions": true
   },
-  "include": ["*.ts", "e2e/**/*.ts", "tests/**/*.ts"]
+  "include": ["*.ts", "e2e/**/*.ts", "tests/**/*.ts", "content/**/*.ts", "supabase/**/*.ts"]
 }

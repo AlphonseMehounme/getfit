@@ -2,7 +2,17 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    projects: ['packages/domain', 'apps/web'],
+    projects: [
+      'packages/domain',
+      'apps/web',
+      // ADR 0005: content schema and seed generator (Node scripts, no package of their own).
+      {
+        test: {
+          name: 'content',
+          include: ['content/**/*.test.ts', 'supabase/seed/**/*.test.ts'],
+        },
+      },
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html'],
@@ -16,8 +26,11 @@ export default defineConfig({
         'packages/domain/src/prescription/**/*.ts',
         'packages/domain/src/units/**/*.ts',
         'packages/domain/src/running/**/*.ts',
+        'content/schema/**/*.ts',
+        'supabase/seed/**/*.ts',
       ],
-      exclude: ['**/*.test.ts'],
+      // generate.ts is the thin CLI around the tested builder (ADR 0005).
+      exclude: ['**/*.test.ts', 'supabase/seed/generate.ts'],
       thresholds: { branches: 100, functions: 100, lines: 100, statements: 100 },
     },
   },

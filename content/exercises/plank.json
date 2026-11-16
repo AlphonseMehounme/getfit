@@ -1,0 +1,44 @@
+{
+  "slug": "plank",
+  "category": "core",
+  "pattern": null,
+  "difficulty": "beginner",
+  "equipment": ["bodyweight"],
+  "muscleGroups": ["core", "shoulders", "glutes"],
+  "isUnilateral": false,
+  "relations": { "variations": ["side-plank"], "substitutes": ["abdominal-crunch"] },
+  "fr": {
+    "name": "Planche",
+    "altNames": ["gainage", "planche sur les avant-bras", "plank"],
+    "description": "Gainage statique sur les avant-bras qui renforce la sangle abdominale et la stabilité du tronc.",
+    "instructions": [
+      "Pose les avant-bras au sol, coudes sous les épaules, et tends les jambes derrière toi.",
+      "Décolle le corps pour former une ligne droite de la tête aux talons.",
+      "Serre les abdominaux et les fessiers, et respire calmement.",
+      "Tiens la position sans bouger jusqu’à la fin du temps prévu."
+    ],
+    "commonMistakes": [
+      "Creuser le bas du dos en laissant le bassin descendre.",
+      "Monter les fesses trop haut.",
+      "Bloquer sa respiration."
+    ],
+    "mediaAlt": "Planche : personne en appui sur les avant-bras et les pointes de pied, corps aligné."
+  },
+  "en": {
+    "name": "Plank",
+    "altNames": ["forearm plank", "front plank"],
+    "description": "A static hold on the forearms that builds the abdominal wall and trunk stability.",
+    "instructions": [
+      "Place your forearms on the floor, elbows under your shoulders, and stretch your legs out behind you.",
+      "Lift your body into a straight line from head to heels.",
+      "Tighten your abs and glutes, and breathe steadily.",
+      "Hold still until the time is up."
+    ],
+    "commonMistakes": [
+      "Arching the lower back by letting the hips sag.",
+      "Lifting the hips too high.",
+      "Holding your breath."
+    ],
+    "mediaAlt": "Plank: a person supported on forearms and toes, body in a straight line."
+  }
+}

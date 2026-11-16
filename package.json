@@ -18,7 +18,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --schema public > apps/web/server/db/types.ts && prettier --write --log-level warn apps/web/server/db/types.ts",
-    "test:db": "vitest run --config tests/db/vitest.config.ts"
+    "test:db": "vitest run --config tests/db/vitest.config.ts",
+    "seed:generate": "node supabase/seed/generate.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
@@ -33,6 +34,7 @@
     "prettier": "3.10.1",
     "supabase": "3.1.0",
     "typescript": "6.0.3",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "zod": "4.6.7"
   }
 }
