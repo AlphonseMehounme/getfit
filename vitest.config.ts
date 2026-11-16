@@ -31,6 +31,7 @@ export default defineConfig({
         'apps/web/lib/design/**/*.ts',
         // P1-14: design-system components, tested with Testing Library and axe.
         'apps/web/components/ui/{card,skeleton,empty-state,error-state,week-strip}.tsx',
+        'apps/web/components/ui/{dialog,sheet,toast,number-stepper,app-nav}.tsx',
         'apps/web/components/exercise/**/*.tsx',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).

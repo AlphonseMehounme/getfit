@@ -108,5 +108,18 @@
       "skipped": "Skipped",
       "missed": "Missed"
     }
+  },
+  "Dialog": {
+    "close": "Close"
+  },
+  "Toast": {
+    "dismiss": "Dismiss"
+  },
+  "Stepper": {
+    "decrease": "Decrease {label}",
+    "increase": "Increase {label}"
+  },
+  "Nav": {
+    "label": "Main navigation"
   }
 }
