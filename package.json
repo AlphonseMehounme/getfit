@@ -13,14 +13,23 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r typecheck",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --schema public > apps/web/server/db/types.ts && prettier --write --log-level warn apps/web/server/db/types.ts",
+    "test:db": "vitest run --config tests/db/vitest.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
+    "@supabase/supabase-js": "2.119.0",
     "@types/node": "26.6.6",
+    "@types/pg": "8.23.1",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.6",
+    "pg": "8.23.1",
     "prettier": "3.10.1",
+    "supabase": "3.1.0",
     "typescript": "6.0.3",
     "vitest": "5.1.0"
   }

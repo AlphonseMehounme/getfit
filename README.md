@@ -30,12 +30,16 @@ Copy `.env.example` to `.env.local` when variables are added. None are needed ye
 | `pnpm typecheck` | `tsc --noEmit` across the workspace |
 | `pnpm test` | Vitest: unit and integration tests |
 | `pnpm test:e2e` | Playwright, mobile (360 px) and desktop (1440 px) projects |
+| `pnpm db:start` / `pnpm db:stop` | Start / stop local Supabase (needs Docker running) |
+| `pnpm db:reset` | Reapply every migration to the local database |
+| `pnpm db:types` | Regenerate `apps/web/server/db/types.ts`; commit the result after any schema change |
+| `pnpm test:db` | Vitest against local Supabase: constraints, RLS and grants |
 
 Before the first E2E run: `pnpm exec playwright install chromium`. Locally, Playwright starts the dev server on
 port 3100 (or reuses a running one); in CI it tests the production build.
 
-Database (`db:*`, `test:db`) and media (`media:check`) commands are added by the tasks that introduce them
-(see the Phase 1 plan).
+The Supabase CLI is a pinned dev dependency (`pnpm exec supabase …`). The media command (`media:check`) is added
+by P1-12.
 
 ## Layout
 
