@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.1 (D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.2 (D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -51,6 +51,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D27 | Placeholder media handling | Placeholders keep their native size and format, renamed `<slug>.jpg`; the 4:3, 1200 × 900 WebP checks apply only to `final` assets. Placeholders may declare licence `unknown-dev-only` (allowed only for `placeholder`), verified by AL in the 16 Nov 2026 audit. Fallback slugs carry `status: fallback` and no file; category fallbacks are listed separately, and until the commissioned set arrives they render as a category icon with "Illustration coming soon". Media QA rule 6 ships with the exercise library page (Phase 2); until then the milestone E2E checks Strength A's media. | 16 Nov 2026 |
 | D28 | Exercise categories | Category is one of upper, lower, core, recovery, mobility, running (matching the six fallbacks), with an optional pattern (pull \| push) for display. | 16 Nov 2026 |
 | D29 | Phase 1 scope details | A database trigger creates a minimal profile at sign-up (id, locale, time zone from the browser); `first_name` stays empty until onboarding. Test fixtures may use the service-role key to create and confirm test users, only inside test code. Sentry and PostHog (EU) are wired in Phase 1 so that events ship with each feature. Phase 1 builds only the design-system components the first milestone uses; others are built with the features that need them. | 16 Nov 2026 |
+| D30 | Per-test clock in E2E | In addition to `GETFIT_TEST_NOW` (D20), an `x-getfit-test-now` request header overrides the server clock for that request, only when `NODE_ENV=test`, so each end-to-end test can pick its own day against one server. It is never honoured in development, preview or production. | 17 Nov 2026 |
 
 ## 1. Vision, principles and users
 
