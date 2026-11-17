@@ -1,4 +1,5 @@
 import {
+  activeSeconds,
   buildSnapshot,
   buildWeek,
   calendarDate,
@@ -17,6 +18,8 @@ import {
   type StartCheck,
   type WorkoutProgress,
   workoutProgress,
+  type WorkoutTotals,
+  workoutTotals,
 } from '@getfit/domain';
 import { type Track, track } from '@/lib/observability/analytics';
 import { finishSessionSchema, logSetSchema, startSessionSchema } from '@/lib/validation/workout';
@@ -211,10 +214,23 @@ export interface WorkoutView {
   progress: WorkoutProgress;
   /** D31: what the session can be saved as right now. */
   finishOptions: FinishStatus[];
+  /** Over the sets logged as done (PRD §6.5 summary). */
+  totals: WorkoutTotals;
+  /** Time spent so far, at the request clock: the summary's duration while the workout is open. */
+  activeSecondsNow: number;
+  /** Saved values, set once the session is saved as completed or partial. */
+  durationS: number | null;
+  completedAt: Date | null;
+  rpe: number | null;
+  notes: string | null;
 }
 
 /** What the workout screen needs to resume at the right set (BR-6). Null when not found for this user. */
-export async function getWorkout(client: DbClient, sessionId: string): Promise<WorkoutView | null> {
+export async function getWorkout(
+  client: DbClient,
+  sessionId: string,
+  clock: Clock,
+): Promise<WorkoutView | null> {
   const user = await getCurrentUser(client);
   if (!user) return null;
   const session = await findSession(client, sessionId); // RLS: nobody else's session is ever found
@@ -249,6 +265,12 @@ export async function getWorkout(client: DbClient, sessionId: string): Promise<W
     sets,
     progress,
     finishOptions: finishOptions(progress),
+    totals: workoutTotals(sets),
+    activeSecondsNow: activeSeconds(session.startedAt, clock.now(), session.pausedS),
+    durationS: session.durationS,
+    completedAt: session.completedAt,
+    rpe: session.rpe,
+    notes: session.notes,
   };
 }
 
@@ -273,8 +295,7 @@ export async function finishSession(
   if (!finishOptions(progress).includes(save)) return { ok: false, error: 'incomplete' };
 
   const now = clock.now();
-  const elapsedS = Math.floor((now.getTime() - open.session.startedAt.getTime()) / 1000);
-  const durationS = Math.max(0, elapsedS - open.session.pausedS);
+  const durationS = activeSeconds(open.session.startedAt, now, open.session.pausedS);
   const saved = await finishSessionRow(client, sessionId, {
     status: save,
     completedAt: now,

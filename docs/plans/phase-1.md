@@ -219,7 +219,7 @@ P1-05 depends on P1-01 only. P1-06 to P1-09 can run in parallel after P1-05.
 - **Tests:** component tests for `set-row` (prefill, adjust, per-side rows for unilateral exercises); Playwright: log two sets → reload → resume at the same set with both sets present; leaving the screen prompts a partial save; axe; tap-target size assertion.
 - **Exit:** E2E green on both projects.
 
-- **Split (AL, 17 Nov 2026):** delivered as P1-17b1 (Today's Start / Resume, the workout screen with set rows, exercise list and resume; #47) and P1-17b2 (finish summary with RPE, save as completed or partial from the summary and the Leave dialog, the completed view and its "View workout" action). Load and reps in reserve move to Phase 2.
+- **Split (AL, 17 Nov 2026):** delivered as P1-17b1 (Today's Start / Resume, the workout screen with set rows, exercise list and resume; #47) and P1-17b2 (finish summary with RPE, save as completed or partial from the summary and the Leave dialog, the completed view and its "View workout" action; #49). Load and reps in reserve move to Phase 2.
 
 #### P1-18 · test(e2e): first milestone and preview verification
 - **Goal:** Prove the Phase 1 exit criteria.

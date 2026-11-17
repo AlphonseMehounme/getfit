@@ -1,7 +1,6 @@
 // Workout progress against the prescription snapshot (BR-5, BR-14, BR-16, BR-25, D31).
 // A set counts once it is logged as done, whatever the reps or seconds achieved (BR-14: 2–3 reps in reserve
 // are expected). "Completed" needs every prescribed set; with any missing, only "partial" can be saved (D31).
-import type { PrescriptionSnapshot } from '../prescription/snapshot';
 import type { Prescription } from '../prescription/types';
 import { sidesOf } from '../prescription/volume';
 
@@ -43,12 +42,20 @@ export function exerciseSlots(
   ).flat();
 }
 
-/** Every set the snapshot prescribes, in programme order. */
-export function prescribedSlots(snapshot: PrescriptionSnapshot): SetSlot[] {
+/**
+ * What progress is measured against: a stored snapshot (BR-25), or the same prescriptions on the workout screen,
+ * so the server and the screen reach the same answer (AGENTS §5.3).
+ */
+export interface PrescribedWorkout {
+  exercises: readonly Pick<Prescription, 'exerciseId' | 'sets' | 'perSide' | 'sequence'>[];
+}
+
+/** Every set the workout prescribes, in programme order. */
+export function prescribedSlots(snapshot: PrescribedWorkout): SetSlot[] {
   return [...snapshot.exercises].sort((a, b) => a.sequence - b.sequence).flatMap(exerciseSlots);
 }
 
-export function isPrescribedSlot(snapshot: PrescriptionSnapshot, slot: SetSlot): boolean {
+export function isPrescribedSlot(snapshot: PrescribedWorkout, slot: SetSlot): boolean {
   const key = slotKey(slot);
   return prescribedSlots(snapshot).some((s) => slotKey(s) === key);
 }
@@ -62,7 +69,7 @@ export interface WorkoutProgress {
 }
 
 export function workoutProgress(
-  snapshot: PrescriptionSnapshot,
+  snapshot: PrescribedWorkout,
   sets: readonly LoggedSet[],
 ): WorkoutProgress {
   const slots = new Set(prescribedSlots(snapshot).map(slotKey));
@@ -72,7 +79,7 @@ export function workoutProgress(
 
 /** BR-6: where a resumed workout reopens: the first prescribed set not yet logged as done, or null when complete. */
 export function firstOpenSlot(
-  snapshot: PrescriptionSnapshot,
+  snapshot: PrescribedWorkout,
   sets: readonly LoggedSet[],
 ): SetSlot | null {
   const done = doneKeys(sets);

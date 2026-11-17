@@ -70,7 +70,7 @@ async function mondayWorkoutId(user: TestUser, clock: ReturnType<typeof at>) {
 }
 
 async function slotsOf(user: TestUser, sessionId: string) {
-  const workout = await getWorkout(user.client, sessionId);
+  const workout = await getWorkout(user.client, sessionId, MONDAY);
   return prescribedSlots(workout!.snapshot);
 }
 
@@ -86,7 +86,7 @@ describe('workout service', () => {
     const slots = await slotsOf(user, sessionId);
     expect(slots).toHaveLength(12);
     // Display content for the workout screen, in the user's language.
-    const opened = (await getWorkout(user.client, sessionId))!;
+    const opened = (await getWorkout(user.client, sessionId, MONDAY))!;
     expect(opened.title).toBe('Strength A — Upper body');
     expect(opened.exercises.map((e) => e.slug)).toEqual([
       'pull-up',
@@ -113,7 +113,7 @@ describe('workout service', () => {
         trackEvent,
       ),
     ).toEqual({ ok: true, sessionId, resumed: true });
-    let workout = await getWorkout(user.client, sessionId);
+    let workout = await getWorkout(user.client, sessionId, MONDAY);
     expect(workout).toMatchObject({
       status: 'in_progress',
       scheduledDate: '2026-11-23',
@@ -144,12 +144,21 @@ describe('workout service', () => {
     for (const slot of slots.slice(2)) {
       await logSet(user.client, setInput(sessionId, slot), MONDAY);
     }
-    workout = await getWorkout(user.client, sessionId);
+    workout = await getWorkout(user.client, sessionId, MONDAY);
     expect(workout).toMatchObject({
       status: 'in_progress',
       progress: { logged: 12, complete: true },
       finishOptions: ['completed', 'partial'],
+      totals: { sets: 12, reps: 72, holdSeconds: 0 },
+      activeSecondsNow: 0,
+      // D32: a reopened partial keeps what it was saved with until it is saved again.
+      durationS: 0,
+      rpe: 6,
     });
+    // The summary's running time follows the injected clock (D30).
+    expect((await getWorkout(user.client, sessionId, MONDAY_LATER))!.activeSecondsNow).toBe(
+      45 * 60,
+    );
     expect(
       await finishSession(
         user.client,
@@ -160,6 +169,15 @@ describe('workout service', () => {
     ).toEqual({ ok: true, status: 'completed' });
     expect(await mondayStatus(user, TUESDAY)).toBe('completed');
     expect(await mondayWorkoutId(user, MONDAY_LATER)).toBe(sessionId);
+    // The saved record: what the completed view shows.
+    const saved = (await getWorkout(user.client, sessionId, TUESDAY))!;
+    expect(saved).toMatchObject({
+      status: 'completed',
+      durationS: 45 * 60,
+      rpe: 7,
+      notes: 'Felt strong',
+      completedAt: new Date('2026-11-23T07:45:00.000Z'),
+    });
 
     expect(trackEvent.mock.calls.map(([event]) => event)).toEqual([
       {
@@ -223,7 +241,7 @@ describe('workout service', () => {
     for (let i = 0; i < 3; i++) {
       expect(await logSet(user.client, input, MONDAY)).toEqual({ ok: true });
     }
-    expect((await getWorkout(user.client, sessionId))!.sets).toHaveLength(1);
+    expect((await getWorkout(user.client, sessionId, MONDAY))!.sets).toHaveLength(1);
 
     // Another ID for a slot already logged is a conflict, not a second row.
     expect(await logSet(user.client, { ...input, id: randomUUID() }, MONDAY)).toEqual({
@@ -332,8 +350,8 @@ describe('workout service', () => {
     );
     const [slot] = await slotsOf(alice.user, sessionId);
 
-    expect(await getWorkout(bob.user.client, sessionId)).toBeNull();
-    expect(await getWorkout(anonClient(), sessionId)).toBeNull();
+    expect(await getWorkout(bob.user.client, sessionId, MONDAY)).toBeNull();
+    expect(await getWorkout(anonClient(), sessionId, MONDAY)).toBeNull();
     expect(await logSet(bob.user.client, setInput(sessionId, slot!), MONDAY)).toEqual({
       ok: false,
       error: 'not_found',
@@ -346,14 +364,14 @@ describe('workout service', () => {
         noTrack,
       ),
     ).toEqual({ ok: false, error: 'not_found' });
-    expect((await getWorkout(alice.user.client, sessionId))!.sets).toHaveLength(0);
+    expect((await getWorkout(alice.user.client, sessionId, MONDAY))!.sets).toHaveLength(0);
   });
 
   it('BR-25: the snapshot keeps the prescription the session started with', async () => {
     const { user, monday } = await enrolledUser();
     const sessionId = randomUUID();
     await startSession(user.client, { sessionId, programmeDayId: monday }, MONDAY, noTrack);
-    const pullUp = (await getWorkout(user.client, sessionId))!.snapshot.exercises[0]!;
+    const pullUp = (await getWorkout(user.client, sessionId, MONDAY))!.snapshot.exercises[0]!;
     expect(pullUp.target).toEqual({ kind: 'reps', reps: 6 });
 
     // A progression accepted later (BR-19) changes what Today prescribes, not the logged session.
@@ -371,7 +389,9 @@ describe('workout service', () => {
       target: { kind: 'reps', reps: 7 },
       overridden: true,
     });
-    expect((await getWorkout(user.client, sessionId))!.snapshot.exercises[0]!.target).toEqual({
+    expect(
+      (await getWorkout(user.client, sessionId, MONDAY))!.snapshot.exercises[0]!.target,
+    ).toEqual({
       kind: 'reps',
       reps: 6,
     });

@@ -178,7 +178,8 @@
       "start": "Commencer la séance",
       "resume": "Reprendre la séance",
       "pending": "Ouverture…",
-      "error": "Impossible d’ouvrir la séance. Réessaie."
+      "error": "Impossible d’ouvrir la séance. Réessaie.",
+      "view": "Voir la séance"
     }
   },
   "Workout": {
@@ -212,6 +213,42 @@
     "leaveLater": "Quitter et reprendre plus tard",
     "saveError": "Impossible d’enregistrer cette série. Vérifie ta connexion et réessaie.",
     "saving": "Enregistrement…",
-    "saved": "Toutes les séries sont enregistrées"
+    "saved": "Toutes les séries sont enregistrées",
+    "finish": "Terminer",
+    "finishWorkout": "Terminer la séance",
+    "savePartialLeave": "Enregistrer comme partielle",
+    "leaveError": "Impossible d’enregistrer la séance. Réessaie.",
+    "summary": {
+      "title": "Terminer la séance",
+      "setsLogged": "{logged} séries enregistrées sur {total}",
+      "reps": "{reps, plural, one {# répétition} other {# répétitions}} au total",
+      "hold": "{seconds} s de gainage",
+      "duration": "Durée {duration}",
+      "complete": "Toutes les séries sont enregistrées.",
+      "incomplete": "{missing, plural, one {# série n’est pas enregistrée} other {# séries ne sont pas enregistrées}} : cette séance peut être enregistrée comme partielle.",
+      "rpe": "Quel effort ? (facultatif)",
+      "rpeHint": "Effort de 1 (très facile) à 10 (maximal).",
+      "notes": "Notes (facultatif)",
+      "saveCompleted": "Enregistrer comme terminée",
+      "savePartial": "Enregistrer comme partielle",
+      "back": "Revenir à la séance",
+      "saving": "Enregistrement…",
+      "error": "Impossible d’enregistrer la séance. Réessaie."
+    },
+    "record": {
+      "status": {
+        "completed": "Terminée",
+        "partial": "Partielle"
+      },
+      "statusLine": "{date} · {status}",
+      "duration": "Durée {duration}",
+      "rpe": "Effort {value}/10",
+      "rpeNone": "Effort —",
+      "rpeNoneHint": "Aucun effort n’a été indiqué à l’enregistrement.",
+      "notes": "Notes",
+      "notLogged": "Non enregistrée",
+      "back": "Revenir à Aujourd’hui",
+      "durationNone": "Durée —"
+    }
   }
 }

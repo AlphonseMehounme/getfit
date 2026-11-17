@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils/cn';
 
@@ -18,12 +19,15 @@ export function ExerciseListSheet({
   items,
   current,
   onSelect,
+  onFinish,
 }: {
   open: boolean;
   onClose: () => void;
   items: readonly ExerciseListItem[];
   current: number;
   onSelect: (index: number) => void;
+  /** Opens the finish summary (PRD §6.5). */
+  onFinish: () => void;
 }) {
   const t = useTranslations('Workout');
   return (
@@ -48,6 +52,9 @@ export function ExerciseListSheet({
           </li>
         ))}
       </ol>
+      <Button width="full" onClick={onFinish}>
+        {t('finishWorkout')}
+      </Button>
     </Sheet>
   );
 }

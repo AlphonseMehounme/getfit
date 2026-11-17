@@ -13,12 +13,16 @@ export interface WorkoutSessionRecord {
   status: LoggedStatus;
   startedAt: Date;
   pausedS: number;
+  completedAt: Date | null;
+  durationS: number | null;
+  rpe: number | null;
+  notes: string | null;
   /** jsonb as stored; the service parses it with the domain schema (BR-25). */
   snapshot: unknown;
 }
 
 const SESSION_COLUMNS =
-  'id, user_programme_id, programme_day_id, scheduled_date, status, started_at, paused_s, prescription_snapshot';
+  'id, user_programme_id, programme_day_id, scheduled_date, status, started_at, paused_s, completed_at, duration_s, rpe, notes, prescription_snapshot';
 
 type SessionRow = {
   id: string;
@@ -28,6 +32,10 @@ type SessionRow = {
   status: LoggedStatus;
   started_at: string;
   paused_s: number;
+  completed_at: string | null;
+  duration_s: number | null;
+  rpe: number | null;
+  notes: string | null;
   prescription_snapshot: unknown;
 };
 
@@ -39,6 +47,10 @@ const toSession = (row: SessionRow): WorkoutSessionRecord => ({
   status: row.status,
   startedAt: new Date(row.started_at),
   pausedS: row.paused_s,
+  completedAt: row.completed_at ? new Date(row.completed_at) : null,
+  durationS: row.duration_s,
+  rpe: row.rpe,
+  notes: row.notes,
   snapshot: row.prescription_snapshot,
 });
 
