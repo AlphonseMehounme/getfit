@@ -55,7 +55,7 @@ export type StartCheck =
         'not_scheduled' | 'rest_day' | 'already_logged' | 'skipped' | 'too_early' | 'window_closed';
     };
 
-/** D14 / D23: whether the user can start (or resume) a session now. */
+/** D14 / D23 / D32: whether the user can start a session now, or resume one in progress or saved as partial. */
 export function canStartSession(
   status: SessionStatus,
   date: LocalDate,
@@ -67,7 +67,6 @@ export function canStartSession(
       return { allowed: false, reason: 'not_scheduled' };
     case 'rest':
       return { allowed: false, reason: 'rest_day' };
-    case 'partial':
     case 'completed':
       return { allowed: false, reason: 'already_logged' };
     case 'skipped':
@@ -76,5 +75,9 @@ export function canStartSession(
   const window = loggingWindow(date, now, timeZone);
   if (window === 'too_early') return { allowed: false, reason: 'too_early' };
   if (window === 'closed') return { allowed: false, reason: 'window_closed' };
-  return { allowed: true, mode: status === 'in_progress' ? 'resume' : 'start' };
+  // D32: a saved partial session can be reopened and finished later, within the same window.
+  return {
+    allowed: true,
+    mode: status === 'in_progress' || status === 'partial' ? 'resume' : 'start',
+  };
 }
