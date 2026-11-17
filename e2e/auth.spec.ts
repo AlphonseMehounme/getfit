@@ -24,8 +24,10 @@ test('sign up, confirm by email, log out, and log back in', async ({ page }) => 
   await signUp(page, email, password);
   await openEmailLink(page, email, 'email');
 
-  // The confirmation link signs the user in and lands on the profile (D29: browser language and zone).
-  await expect(page).toHaveURL('/profile');
+  // The confirmation link signs the user in; a new user lands on the Start step (D20).
+  await expect(page).toHaveURL('/start');
+  // The profile has the browser language and zone (D29).
+  await page.goto('/profile');
   await expect(page.getByRole('heading', { level: 1, name: en.Profile.title })).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
   await expect(page.getByText(en.Profile.languages.en)).toBeVisible();
@@ -46,6 +48,7 @@ test('sign up, confirm by email, log out, and log back in', async ({ page }) => 
 test('a wrong password shows one generic message', async ({ page }) => {
   const email = newEmail();
   await signUpAndConfirm(page, email, newPassword());
+  await page.goto('/profile');
   await page.getByRole('button', { name: en.Profile.signOut }).click();
 
   await logIn(page, email, 'not-the-password');

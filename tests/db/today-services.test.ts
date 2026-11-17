@@ -3,7 +3,7 @@ import { fixedClock } from '@getfit/domain';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { Track } from '../../apps/web/lib/observability/analytics';
 import { findActiveEnrolment } from '../../apps/web/server/repositories/enrolment';
-import { startProgramme } from '../../apps/web/server/services/enrolment';
+import { getStartOptions, startProgramme } from '../../apps/web/server/services/enrolment';
 import { getToday, type TodayView } from '../../apps/web/server/services/schedule';
 import { insertProgrammeSkeleton } from './content-fixtures';
 import { anonClient, connectDb, createTestUser, type TestUser } from './helpers';
@@ -171,12 +171,18 @@ describe('getToday', () => {
       kind: 'before_start',
       today: '2026-11-18',
       startDate: '2026-11-23',
+      firstSessionTitle: 'Strength A — Upper body',
     });
   });
 
   it('BR-14: week-1 Monday is Strength A with single targets, and the week strip has Monday to Sunday', async () => {
     const day = asDay(await getToday(user.client, MONDAY_W1));
-    expect(day).toMatchObject({ today: '2026-11-23', weekNumber: 1, durationWeeks: 8 });
+    expect(day).toMatchObject({
+      today: '2026-11-23',
+      units: 'metric',
+      weekNumber: 1,
+      durationWeeks: 8,
+    });
     expect(day.weekLabel).not.toBe('');
     expect(day.week.map((d) => d.date)).toEqual([
       '2026-11-23',
@@ -255,6 +261,7 @@ describe('getToday', () => {
       kind: 'finished',
       today: '2027-01-18',
       endDate: '2027-01-17',
+      durationWeeks: 8,
     });
   });
 
@@ -318,5 +325,26 @@ describe('time zones (BR-1, BR-4)', () => {
       'scheduled',
     ]);
     expect(day.sessions[0]).toMatchObject({ sessionType: 'strength', bodyFocus: 'lower' });
+  });
+});
+
+describe('getStartOptions (BR-2)', () => {
+  it('offers next Monday or this week, and nothing once enrolled', async () => {
+    const user = await newUser();
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toMatchObject({
+      kind: 'options',
+      programmeTitle: expect.any(String),
+      today: '2026-11-18',
+      nextMonday: '2026-11-23',
+      thisWeekMonday: '2026-11-16',
+    });
+    // On a Monday both choices start today.
+    expect(await getStartOptions(user.client, MONDAY_W1)).toMatchObject({
+      nextMonday: '2026-11-23',
+      thisWeekMonday: '2026-11-23',
+    });
+    await startProgramme(user.client, { mode: 'next_monday' }, WEDNESDAY_PARIS, noTrack);
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toEqual({ kind: 'enrolled' });
+    expect(await getStartOptions(anonClient(), WEDNESDAY_PARIS)).toBeNull();
   });
 });

@@ -13,6 +13,7 @@ import {
   type SessionStatus,
   type SessionType,
   type StartCheck,
+  type UnitSystem,
 } from '@getfit/domain';
 import type { DbClient } from '@/server/db/client';
 import { findActiveEnrolment } from '@/server/repositories/enrolment';
@@ -56,11 +57,13 @@ export interface WeekDay {
 export type TodayView =
   | { kind: 'not_enrolled' }
   /** "Programme starts Monday 23 Nov" (BR-2). */
-  | { kind: 'before_start'; today: LocalDate; startDate: LocalDate }
-  | { kind: 'finished'; today: LocalDate; endDate: LocalDate }
+  | { kind: 'before_start'; today: LocalDate; startDate: LocalDate; firstSessionTitle: string }
+  | { kind: 'finished'; today: LocalDate; endDate: LocalDate; durationWeeks: number }
   | {
       kind: 'day';
       today: LocalDate;
+      /** For distances (km or mi); converted only at display (AGENTS §6). */
+      units: UnitSystem;
       programmeTitle: string;
       weekNumber: number;
       durationWeeks: number;
@@ -103,10 +106,14 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
   );
   if (week.weekNumber === null) {
     if (compareLocalDates(today, enrolment.startDate) < 0) {
-      return { kind: 'before_start', today, startDate: enrolment.startDate };
+      const first = programme.shape.days
+        .filter((d) => d.weekNumber === 1)
+        .sort((a, b) => a.dayOfWeek - b.dayOfWeek)[0]!;
+      const firstSessionTitle = programme.templates.get(first.template.id)!.title;
+      return { kind: 'before_start', today, startDate: enrolment.startDate, firstSessionTitle };
     }
     const endDate = addDays(enrolment.startDate, programme.shape.durationWeeks * 7 - 1);
-    return { kind: 'finished', today, endDate };
+    return { kind: 'finished', today, endDate, durationWeeks: programme.shape.durationWeeks };
   }
 
   const weekContent = programme.weeks.get(week.weekNumber);
@@ -141,6 +148,7 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
   return {
     kind: 'day',
     today,
+    units: profile.preferred_units,
     programmeTitle: programme.title,
     weekNumber: week.weekNumber,
     durationWeeks: programme.shape.durationWeeks,

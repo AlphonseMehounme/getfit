@@ -106,7 +106,8 @@
       "partial": "Partly done",
       "completed": "Done",
       "skipped": "Skipped",
-      "missed": "Missed"
+      "missed": "Missed",
+      "none": "Nothing planned"
     }
   },
   "Dialog": {
@@ -120,6 +121,58 @@
     "increase": "Increase {label}"
   },
   "Nav": {
-    "label": "Main navigation"
+    "label": "Main navigation",
+    "today": "Today",
+    "profile": "Profile"
+  },
+  "Start": {
+    "title": "Start your programme",
+    "intro": "Choose when week 1 begins. Nothing is scheduled before that day.",
+    "options": "When do you want to start?",
+    "nextMonday": "Start on {date}",
+    "nextMondayHint": "Week 1 begins next Monday, with a full week ahead.",
+    "thisWeek": "Start this week",
+    "thisWeekHint": "Week 1 began on Monday. Days already past are not scheduled and do not count.",
+    "today": "Start today",
+    "todayHint": "Week 1 begins today.",
+    "pending": "Starting…",
+    "error": "The programme could not be started. Please try again."
+  },
+  "Today": {
+    "title": "Today",
+    "week": "Week {week} of {total} · {label}",
+    "duration": "About {minutes} min",
+    "type": {
+      "strength": "Strength",
+      "run": "Run",
+      "recovery": "Recovery",
+      "rest": "Rest day"
+    },
+    "status": "Status: {status}",
+    "movedFrom": "Moved from {date}",
+    "guidance": "Guidance",
+    "optional": "Optional",
+    "exercises": "Exercises",
+    "target": {
+      "reps": "{sets} × {reps}",
+      "repsPerSide": "{sets} × {reps} per side",
+      "seconds": "{sets, plural, =1 {} other {# × }}{seconds} s",
+      "secondsPerSide": "{sets, plural, =1 {} other {# × }}{seconds} s per side",
+      "minutes": "{sets, plural, =1 {} other {# × }}{minutes} min",
+      "minutesPerSide": "{sets, plural, =1 {} other {# × }}{minutes} min per side",
+      "distance": "Up to {distance, number} {unit}"
+    },
+    "rest": {
+      "seconds": "Rest {seconds} s",
+      "minutes": "Rest {minutes} min"
+    },
+    "beforeStart": {
+      "title": "Your programme starts on {date}",
+      "body": "Week 1 begins with {session}. Nothing is scheduled until then."
+    },
+    "finished": {
+      "title": "You have reached the end of the programme",
+      "body": "All {weeks} weeks are behind you. Your logged sessions stay in your history."
+    }
   }
 }

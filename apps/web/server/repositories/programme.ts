@@ -43,6 +43,7 @@ export interface ProgrammeContent {
   id: string;
   version: number;
   title: string;
+  description: string;
   shape: ProgrammeShape;
   /** By week number. */
   weeks: Map<number, WeekContent>;
@@ -51,7 +52,7 @@ export interface ProgrammeContent {
 }
 
 const SELECT = `id, version, duration_weeks,
-  programme_translations (locale, title),
+  programme_translations (locale, title, description),
   programme_weeks (id, week_number, volume_multiplier, long_run_ceiling_m,
     programme_week_translations (locale, label, focus),
     programme_days (id, day_of_week, session_template_id)),
@@ -73,6 +74,11 @@ function inLocale<T extends { locale: Locale }>(
   if (!row) throw new Error(`content: no ${locale} translation for ${what}`);
   return row;
 }
+
+const pickText = ({ title, description }: { title: string; description: string }) => ({
+  title,
+  description,
+});
 
 type ProgrammeFilter = { id: string; version: number } | { slug: string };
 
@@ -162,7 +168,7 @@ export async function findProgramme(
   return {
     id: data.id,
     version: data.version,
-    title: inLocale(data.programme_translations, locale, 'programme').title,
+    ...pickText(inLocale(data.programme_translations, locale, 'programme')),
     shape: { durationWeeks: data.duration_weeks, days },
     weeks,
     templates,

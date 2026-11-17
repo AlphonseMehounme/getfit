@@ -75,6 +75,17 @@ describe('WeekStrip', () => {
     expect(new Set(icons).size).toBe(7);
   });
 
+  it('names a day left empty by a move, and days before a "start this week" enrolment', () => {
+    const days: WeekStripDay[] = week(STANDARD).map((day, i) =>
+      i === 0 ? { ...day, status: 'not_scheduled' } : i === 1 ? { ...day, status: 'none' } : day,
+    );
+    renderWithIntl(<WeekStrip days={days} />);
+    const items = screen.getAllByRole('listitem');
+    expect(items[0]!.textContent).toContain('Not scheduled');
+    expect(items[1]!.textContent).toContain('Nothing planned');
+    expect(items[1]!.querySelector('[data-status="none"]')).toBeTruthy();
+  });
+
   it('AGENTS §9: green for done, amber for missed, never red', () => {
     renderWithIntl(
       <WeekStrip

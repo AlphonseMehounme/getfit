@@ -1,4 +1,4 @@
-import { type Clock, localDateAt, week1Monday } from '@getfit/domain';
+import { type Clock, type LocalDate, localDateAt, week1Monday } from '@getfit/domain';
 import { z } from 'zod';
 import { type Track, track } from '@/lib/observability/analytics';
 import { LAUNCH_PROGRAMME_SLUG } from '@/server/config/programme';
@@ -81,4 +81,41 @@ export async function startProgramme(
     user.id,
   );
   return { ok: true, enrolment: inserted.enrolment, created: true };
+}
+
+export type StartOptions =
+  | { kind: 'enrolled' }
+  | {
+      kind: 'options';
+      programmeTitle: string;
+      programmeDescription: string;
+      today: LocalDate;
+      /** BR-2: week 1 starts on the Monday on or after today… */
+      nextMonday: LocalDate;
+      /** …or on this week's Monday, with the days already past not scheduled. Equal to nextMonday on a Monday. */
+      thisWeekMonday: LocalDate;
+    };
+
+/** What the Start step offers. Null when nobody is signed in. */
+export async function getStartOptions(
+  client: DbClient,
+  clock: Clock,
+): Promise<StartOptions | null> {
+  const user = await getCurrentUser(client);
+  if (!user) return null;
+  const profile = await findProfileSettings(client, user.id);
+  if (!profile) throw new Error('profile missing for signed-in user');
+  if (await findActiveEnrolment(client, user.id)) return { kind: 'enrolled' };
+
+  const programme = await findProgramme(client, { slug: LAUNCH_PROGRAMME_SLUG }, profile.locale);
+  if (!programme) throw new Error('content: launch programme not published');
+  const today = localDateAt(clock.now(), profile.timezone);
+  return {
+    kind: 'options',
+    programmeTitle: programme.title,
+    programmeDescription: programme.description,
+    today,
+    nextMonday: week1Monday(today, 'next_monday'),
+    thisWeekMonday: week1Monday(today, 'this_week'),
+  };
 }

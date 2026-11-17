@@ -35,6 +35,10 @@ export default defineConfig({
         'apps/web/components/ui/{card,skeleton,empty-state,error-state,week-strip}.tsx',
         'apps/web/components/ui/{dialog,sheet,toast,number-stepper,app-nav}.tsx',
         'apps/web/components/exercise/**/*.tsx',
+        // P1-16b: Today and Start components, the nav wrapper and target formatting.
+        'apps/web/components/today/**/*.tsx',
+        'apps/web/components/layout/**/*.tsx',
+        'apps/web/lib/format/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

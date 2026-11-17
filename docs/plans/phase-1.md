@@ -203,6 +203,7 @@ P1-05 depends on P1-01 only. P1-06 to P1-09 can run in parallel after P1-05.
 - **Rules:** BR-1 to BR-3, BR-5, BR-7, BR-14, BR-17, BR-24, D20, D5, PRD §6.3 (subset).
 - **Tests:** service integration tests (enrolment idempotent, a second active enrolment surfaces a clear error, week computed in the profile's time zone); Playwright with `GETFIT_TEST_NOW` on a Monday shows Strength A with "3 × 6" for the pull-up; a Tuesday shows recovery guidance; the primary action is visible without scrolling at 360 px; axe in both themes.
 - **Exit:** E2E green on both projects, and the definition of done is met.
+- **Split (AL, 17 Nov 2026):** delivered as P1-16a (clock, repositories, services; #41) and P1-16b (Start and Today pages, nav, E2E; #43). The clock header for E2E is D30. The primary action and its "visible without scrolling at 360 px" check moved to P1-17b, because they open the workout screen.
 
 #### P1-17a · feat(workout): workout service and server actions
 - **Goal:** Start, log set, resume, and save as completed or partial, all idempotent by client UUID.
@@ -212,7 +213,7 @@ P1-05 depends on P1-01 only. P1-06 to P1-09 can run in parallel after P1-05.
 - **Exit:** integration and DB tests green.
 
 #### P1-17b · feat(workout): workout screen (milestone subset)
-- **Goal:** One exercise per screen, set rows pre-filled from the target, "done as planned" in one tap, adjustable reps or seconds, and a finish summary with RPE and save as completed or partial.
+- **Goal:** Today's primary action (Start / Resume / View completed, visible without scrolling at 360 px; moved from P1-16). One exercise per screen, set rows pre-filled from the target, "done as planned" in one tap, adjustable reps or seconds, and a finish summary with RPE and save as completed or partial.
 - **Files:** `app/(app)/train/[sessionId]/page.tsx` plus loading and error states, `components/workout/{exercise-step,set-row,exercise-list-sheet,finish-summary,leave-guard}.tsx`, messages FR/EN. The rest timer, substitute, pause, timed countdown and wake lock are **not rendered** in Phase 1, so there are no dead buttons; they ship in Phase 2.
 - **Rules:** PRD §6.5 (subset), §9 workout principles (≥ 48 px targets, key numbers ≥ 32 px, controls in the lower half, leaving prompts a partial save), BR-5, BR-6, BR-16.
 - **Tests:** component tests for `set-row` (prefill, adjust, per-side rows for unilateral exercises); Playwright: log two sets → reload → resume at the same set with both sets present; leaving the screen prompts a partial save; axe; tap-target size assertion.

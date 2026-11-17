@@ -106,7 +106,8 @@
       "partial": "Partiel",
       "completed": "Terminé",
       "skipped": "Passé",
-      "missed": "Manqué"
+      "missed": "Manqué",
+      "none": "Rien de prévu"
     }
   },
   "Dialog": {
@@ -120,6 +121,58 @@
     "increase": "Augmenter : {label}"
   },
   "Nav": {
-    "label": "Navigation principale"
+    "label": "Navigation principale",
+    "today": "Aujourd’hui",
+    "profile": "Profil"
+  },
+  "Start": {
+    "title": "Commencer ton programme",
+    "intro": "Choisis quand commence la semaine 1. Rien n’est programmé avant ce jour.",
+    "options": "Quand veux-tu commencer ?",
+    "nextMonday": "Commencer le {date}",
+    "nextMondayHint": "La semaine 1 commence lundi prochain, avec une semaine complète.",
+    "thisWeek": "Commencer cette semaine",
+    "thisWeekHint": "La semaine 1 a commencé lundi. Les jours déjà passés ne sont pas programmés et ne comptent pas.",
+    "today": "Commencer aujourd’hui",
+    "todayHint": "La semaine 1 commence aujourd’hui.",
+    "pending": "Démarrage…",
+    "error": "Impossible de démarrer le programme. Réessaie."
+  },
+  "Today": {
+    "title": "Aujourd’hui",
+    "week": "Semaine {week} sur {total} · {label}",
+    "duration": "Environ {minutes} min",
+    "type": {
+      "strength": "Renforcement",
+      "run": "Course",
+      "recovery": "Récupération",
+      "rest": "Jour de repos"
+    },
+    "status": "Statut : {status}",
+    "movedFrom": "Déplacée depuis le {date}",
+    "guidance": "Conseils",
+    "optional": "Facultatif",
+    "exercises": "Exercices",
+    "target": {
+      "reps": "{sets} × {reps}",
+      "repsPerSide": "{sets} × {reps} par côté",
+      "seconds": "{sets, plural, =1 {} other {# × }}{seconds} s",
+      "secondsPerSide": "{sets, plural, =1 {} other {# × }}{seconds} s par côté",
+      "minutes": "{sets, plural, =1 {} other {# × }}{minutes} min",
+      "minutesPerSide": "{sets, plural, =1 {} other {# × }}{minutes} min par côté",
+      "distance": "Jusqu’à {distance, number} {unit}"
+    },
+    "rest": {
+      "seconds": "Repos {seconds} s",
+      "minutes": "Repos {minutes} min"
+    },
+    "beforeStart": {
+      "title": "Ton programme commence le {date}",
+      "body": "La semaine 1 commence par : {session}. Rien n’est programmé d’ici là."
+    },
+    "finished": {
+      "title": "Tu as terminé le programme",
+      "body": "Les {weeks} semaines sont derrière toi. Tes séances enregistrées restent dans ton historique."
+    }
   }
 }

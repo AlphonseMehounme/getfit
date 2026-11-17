@@ -36,6 +36,9 @@ export default defineConfig({
       : `pnpm --filter @getfit/web dev --port ${PORT}`,
     url: origin,
     env: {
+      // D30: the per-test clock header is honoured only under NODE_ENV=test. Next then loads .env.test, not
+      // .env.local, so every variable the app needs is set here.
+      NODE_ENV: 'test',
       NEXT_PUBLIC_SUPABASE_URL: supabase.apiUrl,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.publishableKey,
       APP_ORIGIN: origin,
