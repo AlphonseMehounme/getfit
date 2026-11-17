@@ -39,6 +39,9 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_URL: supabase.apiUrl,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.publishableKey,
       APP_ORIGIN: origin,
+      // Keep test runs out of the real monitoring and analytics projects, even when .env.local has keys (P1-15).
+      NEXT_PUBLIC_SENTRY_DSN: '',
+      POSTHOG_API_KEY: '',
     },
     reuseExistingServer: !isCI,
     timeout: 120_000,

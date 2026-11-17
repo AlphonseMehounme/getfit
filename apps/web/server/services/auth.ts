@@ -1,3 +1,4 @@
+import { type Track, track } from '@/lib/observability/analytics';
 import type { DbClient } from '@/server/db/client';
 import {
   loginSchema,
@@ -26,17 +27,25 @@ export async function signUp(
   client: DbClient,
   input: unknown,
   emailRedirectTo: string,
+  trackEvent: Track = track,
 ): Promise<AuthResult> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'invalidInput' };
   const { email, password, locale, timezone } = parsed.data;
 
-  const { error } = await client.auth.signUp({
+  const { data, error } = await client.auth.signUp({
     email,
     password,
     options: { emailRedirectTo, data: { locale, timezone } },
   });
   if (error && error.code !== 'user_already_exists') return fail('sign-up', error);
+
+  // PRD §12: count real new accounts only. For an address that is already registered, Supabase returns a user
+  // with no identities (enumeration protection), which must not be counted.
+  const user = data.user;
+  if (!error && user && (user.identities?.length ?? 0) > 0) {
+    await trackEvent({ name: 'account_created', properties: {} }, user.id);
+  }
   return OK;
 }
 
