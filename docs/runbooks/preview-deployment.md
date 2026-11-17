@@ -14,7 +14,13 @@ The first section is done once. The last section is repeated for every preview y
 
 You need the Supabase CLI from this repository (`pnpm exec supabase …`), signed in to your account.
 
-1. **Link the repository to the project.** Use the project ref from the dashboard URL.
+> **Always pass `--remote`.** With Supabase CLI v3, `db push`, `migration list` and `db diff` act on the
+> **local** stack unless `--remote` is given, even when the repository is linked. Without it, `db push` says
+> "Local database is up to date" and the hosted database is left untouched. Each command prints its `Target:`
+> first; check that it names the hosted project.
+
+1. **Link the repository to the project.** Use the project ref from the dashboard URL, or from
+   `pnpm exec supabase projects list`.
    ```sh
    pnpm exec supabase login
    pnpm exec supabase link --project-ref <project-ref>
@@ -22,13 +28,20 @@ You need the Supabase CLI from this repository (`pnpm exec supabase …`), signe
 2. **Apply the migrations and the content seed.** The seed contains only the programme and the exercise library,
    never user data (AGENTS §7), and it is safe to apply more than once.
    ```sh
-   pnpm exec supabase db push --include-seed
+   pnpm exec supabase migration list --remote        # an empty "remote" means not applied yet
+   pnpm exec supabase db push --remote --include-seed
+   pnpm exec supabase migration list --remote        # every migration now has a "remote" timestamp
    ```
    Later schema changes are applied the same way, after their PR merges (AGENTS §6).
-3. **Check the generated types still match.** This should print nothing:
+3. **Check the hosted schema matches the migrations.** This needs Docker, because it builds a shadow database
+   from `supabase/migrations`:
    ```sh
-   pnpm exec supabase gen types typescript --remote --schema public | pnpm exec prettier --stdin-filepath types.ts | diff - apps/web/server/db/types.ts
+   pnpm exec supabase db diff --remote --schema public
    ```
+   The only expected difference is `public.rls_auto_enable()`: Supabase adds it to new projects to turn on RLS
+   for new tables, and it doesn't come from our migrations. Anything else means the hosted schema has drifted;
+   stop and raise it. Don't compare `gen types --remote` with `apps/web/server/db/types.ts`: the hosted generator
+   formats the file differently, so that diff is never empty, even when the schema is the same.
 4. **Auth settings** (Dashboard → Authentication):
    - **Sign-in providers → Email:** enabled, with **Confirm email** on (PRD §6.1).
    - **URL Configuration:**
@@ -109,6 +122,8 @@ This is the Phase 1 exit (PRD §14).
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
+| Sign-up works, then signing in fails with `profiles: PGRST205` in the server log | The hosted database has no tables: migrations not applied, often because `db push` ran without `--remote` | Run section 1, step 2 with `--remote`. Then delete any account created before the push (Authentication → Users), since it has no profile row, and sign up again |
+| `PGRST205` although the tables exist in the dashboard | The preview points to another project, or the API's schema cache is stale | Check `NEXT_PUBLIC_SUPABASE_URL` for Preview in Vercel and redeploy; or run `notify pgrst, 'reload schema';` in the SQL Editor |
 | Sign-up fails, and the server log says "APP_ORIGIN must be set" | `APP_ORIGIN` unset on Production | Set `APP_ORIGIN` for Production; previews need nothing |
 | The confirmation email opens localhost or another preview | `APP_ORIGIN` set on the Preview environment | Unset it for Preview |
 | "Redirect URL not allowed", or the link lands on the Site URL | The preview wildcard is missing from Supabase redirect URLs | Add `https://*-<team>.vercel.app/**` |
