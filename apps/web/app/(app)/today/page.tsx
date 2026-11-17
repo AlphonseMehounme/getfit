@@ -2,10 +2,12 @@ import type { LocalDate } from '@getfit/domain';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { PrimaryAction } from '@/components/today/primary-action';
 import { SessionCard } from '@/components/today/session-card';
+import { startSessionAction } from '../train/actions';
 import { Card, CardHeader } from '@/components/ui/card';
 import { WeekStrip } from '@/components/ui/week-strip';
-import { START_PATH } from '@/lib/auth/paths';
+import { START_PATH, TRAIN_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
@@ -70,7 +72,21 @@ export default async function TodayPage() {
         <p className="text-muted text-sm">{view.weekFocus}</p>
       </header>
       {view.sessions.map((session) => (
-        <SessionCard key={session.programmeDayId} session={session} units={view.units} />
+        <SessionCard
+          key={session.programmeDayId}
+          session={session}
+          units={view.units}
+          action={
+            session.sessionType === 'strength' && session.start.allowed ? (
+              <PrimaryAction
+                programmeDayId={session.programmeDayId}
+                mode={session.start.mode}
+                action={startSessionAction}
+                trainPath={TRAIN_PATH}
+              />
+            ) : undefined
+          }
+        />
       ))}
       <WeekStrip days={view.week} />
     </div>

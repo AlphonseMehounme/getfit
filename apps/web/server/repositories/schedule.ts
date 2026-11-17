@@ -30,15 +30,20 @@ export async function findOverrides(
   });
 }
 
+/** A logged session plus the workout row behind it (null for a run), so Today can open or resume it. */
+export interface LoggedRecord extends LoggedSession {
+  workoutSessionId: string | null;
+}
+
 /** Workouts and runs linked to a programme day. Soft-deleted rows never count (D26). */
 export async function findLoggedSessions(
   client: DbClient,
   userProgrammeId: string,
-): Promise<LoggedSession[]> {
+): Promise<LoggedRecord[]> {
   const [workouts, runs] = await Promise.all([
     client
       .from('workout_sessions')
-      .select('programme_day_id, status')
+      .select('id, programme_day_id, status')
       .eq('user_programme_id', userProgrammeId)
       .not('programme_day_id', 'is', null)
       .is('deleted_at', null),
@@ -52,11 +57,16 @@ export async function findLoggedSessions(
   if (workouts.error) throw new Error(`workout_sessions: ${workouts.error.code}`);
   if (runs.error) throw new Error(`running_sessions: ${runs.error.code}`);
   return [
-    ...workouts.data.map((w) => ({ programmeDayId: w.programme_day_id!, status: w.status })),
+    ...workouts.data.map((w) => ({
+      programmeDayId: w.programme_day_id!,
+      status: w.status,
+      workoutSessionId: w.id,
+    })),
     // A logged run is always complete (D26).
     ...runs.data.map((r) => ({
       programmeDayId: r.programme_day_id!,
       status: 'completed' as const,
+      workoutSessionId: null,
     })),
   ];
 }

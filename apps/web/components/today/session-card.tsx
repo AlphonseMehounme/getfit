@@ -1,5 +1,6 @@
 import type { LocalDate, UnitSystem } from '@getfit/domain';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 import { ExerciseCard } from '@/components/exercise/exercise-card';
 import { Card, CardHeader } from '@/components/ui/card';
 import { restMessage, targetMessage } from '@/lib/format/target';
@@ -8,12 +9,20 @@ import { resolveExerciseMedia } from '@/lib/media/resolve';
 import type { TodaySession } from '@/server/services/schedule';
 
 // PRD §6.3 Today card (Phase 1 subset): what to do today. Presentation only: every value comes from getToday.
-// The primary action (Start / Resume / View completed) arrives with the workout screen in P1-17b.
 
 /** Noon UTC, formatted in UTC, so the calendar date never shifts with the viewer's time zone. */
 const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
 
-export function SessionCard({ session, units }: { session: TodaySession; units: UnitSystem }) {
+export function SessionCard({
+  session,
+  units,
+  action,
+}: {
+  session: TodaySession;
+  units: UnitSystem;
+  /** The primary action (PRD §6.3), right under the title so it is reachable without scrolling. */
+  action?: ReactNode;
+}) {
   const t = useTranslations('Today');
   const tStatus = useTranslations('WeekStrip.status');
   const format = useFormatter();
@@ -30,6 +39,7 @@ export function SessionCard({ session, units }: { session: TodaySession; units: 
     <Card aria-labelledby="today-session">
       <CardHeader id="today-session" title={session.title} description={details.join(' · ')} />
       <div className="flex flex-col gap-4">
+        {action}
         <p className="text-muted">{session.purpose}</p>
         <p className="text-sm font-medium">{t('status', { status: tStatus(session.status) })}</p>
         {session.movedFrom ? (

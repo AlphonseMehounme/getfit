@@ -173,6 +173,45 @@
     "finished": {
       "title": "Tu as terminé le programme",
       "body": "Les {weeks} semaines sont derrière toi. Tes séances enregistrées restent dans ton historique."
+    },
+    "action": {
+      "start": "Commencer la séance",
+      "resume": "Reprendre la séance",
+      "pending": "Ouverture…",
+      "error": "Impossible d’ouvrir la séance. Réessaie."
     }
+  },
+  "Workout": {
+    "exerciseOf": "Exercice {current} sur {total}",
+    "progress": "{logged} séries faites sur {total}",
+    "cues": "Comment faire",
+    "sets": "Séries",
+    "set": "Série {number}",
+    "setLeft": "Série {number} · gauche",
+    "setRight": "Série {number} · droite",
+    "doneAsPlanned": "Fait comme prévu",
+    "saveReps": "Enregistrer {value} rép.",
+    "saveSeconds": "Enregistrer {value} s",
+    "stepperReps": "Répétitions pour : {set}",
+    "stepperSeconds": "Secondes pour : {set}",
+    "unitReps": "rép.",
+    "unitSeconds": "s",
+    "loggedReps": "{value} rép.",
+    "loggedSeconds": "{value} s",
+    "loggedLabel": "{set} : faite, {value}",
+    "edit": "Modifier",
+    "editLabel": "Modifier : {set}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "exercises": "Exercices",
+    "exerciseProgress": "{logged} séries sur {total}",
+    "leave": "Quitter",
+    "leaveTitle": "Quitter la séance ?",
+    "leaveBody": "Chaque série enregistrée est sauvegardée. Tu peux reprendre cette séance depuis Aujourd’hui.",
+    "keepGoing": "Continuer",
+    "leaveLater": "Quitter et reprendre plus tard",
+    "saveError": "Impossible d’enregistrer cette série. Vérifie ta connexion et réessaie.",
+    "saving": "Enregistrement…",
+    "saved": "Toutes les séries sont enregistrées"
   }
 }

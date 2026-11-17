@@ -3,6 +3,7 @@ import {
   metresTo,
   type Prescription,
   roundTo,
+  type Target,
   type UnitSystem,
 } from '@getfit/domain';
 
@@ -52,4 +53,17 @@ export function restMessage(restS: number): RestMessage {
   return inMinutes(restS)
     ? { key: 'minutes', values: { minutes: restS / 60 } }
     : { key: 'seconds', values: { seconds: restS } };
+}
+
+export interface SetMeasure {
+  kind: 'reps' | 'seconds';
+  /** The target a set row is pre-filled with (BR-14). */
+  value: number;
+}
+
+/** What one set of a strength exercise records: reps, or seconds for a hold. */
+export function setMeasure(target: Target): SetMeasure {
+  if (target.kind === 'reps') return { kind: 'reps', value: target.reps };
+  if (target.kind === 'duration') return { kind: 'seconds', value: target.seconds };
+  throw new RangeError('A distance target is not logged as sets (BR-15)');
 }

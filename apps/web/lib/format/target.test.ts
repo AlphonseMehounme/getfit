@@ -1,6 +1,6 @@
 import type { Prescription, Target } from '@getfit/domain';
 import { describe, expect, it } from 'vitest';
-import { restMessage, targetMessage } from './target';
+import { restMessage, setMeasure, targetMessage } from './target';
 
 const prescription = (target: Target, sets = 3, perSide = false): Prescription => ({
   templateExerciseId: 'te',
@@ -65,5 +65,13 @@ describe('restMessage', () => {
   it('shows 90 s in seconds and 120 s as 2 min', () => {
     expect(restMessage(90)).toEqual({ key: 'seconds', values: { seconds: 90 } });
     expect(restMessage(120)).toEqual({ key: 'minutes', values: { minutes: 2 } });
+  });
+});
+
+describe('setMeasure', () => {
+  it('BR-14: a set row is pre-filled with reps or seconds; a distance is never a set', () => {
+    expect(setMeasure({ kind: 'reps', reps: 6 })).toEqual({ kind: 'reps', value: 6 });
+    expect(setMeasure({ kind: 'duration', seconds: 45 })).toEqual({ kind: 'seconds', value: 45 });
+    expect(() => setMeasure({ kind: 'distance', metres: 11000 })).toThrow(/BR-15/);
   });
 });

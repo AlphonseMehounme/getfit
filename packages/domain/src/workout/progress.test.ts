@@ -3,7 +3,9 @@ import { resolveSession } from '../prescription/resolve';
 import { buildSnapshot } from '../prescription/snapshot';
 import { STRENGTH_A, STRENGTH_B, week } from '../test-support/standard-prescriptions';
 import {
+  exerciseSlots,
   finishOptions,
+  firstOpenSlot,
   isPrescribedSlot,
   type LoggedSet,
   prescribedSlots,
@@ -106,5 +108,50 @@ describe('workoutProgress and finishOptions (D31)', () => {
         : set,
     );
     expect(workoutProgress(A, sets).complete).toBe(true);
+  });
+});
+
+describe('firstOpenSlot (BR-6: resume at the right set)', () => {
+  it('starts at the first set, and moves past the sets already done', () => {
+    const slots = prescribedSlots(A);
+    expect(firstOpenSlot(A, [])).toEqual(slots[0]);
+    expect(firstOpenSlot(A, done(slots.slice(0, 2)))).toEqual(slots[2]);
+  });
+
+  it('a set marked not done is still open, and a gap is found before later sets', () => {
+    const slots = prescribedSlots(A);
+    const sets = [...done(slots.slice(1, 4)), { ...slots[0]!, completed: false }];
+    expect(firstOpenSlot(A, sets)).toEqual(slots[0]);
+  });
+
+  it('BR-16: the right side is still open after the left', () => {
+    const left = prescribedSlots(B).filter(
+      (s) =>
+        s.exerciseId === 'chin-up' ||
+        (s.exerciseId === 'bulgarian-split-squat' && s.side === 'left' && s.setNumber === 1),
+    );
+    expect(firstOpenSlot(B, done(left))).toEqual({
+      exerciseId: 'bulgarian-split-squat',
+      setNumber: 1,
+      side: 'right',
+    });
+  });
+
+  it('null once every set is done, counting substitutes', () => {
+    const sets = done(prescribedSlots(A)).map((set, i) =>
+      i === 0 ? { ...set, exerciseId: 'chin-up', substitutedForExerciseId: 'pull-up' } : set,
+    );
+    expect(firstOpenSlot(A, sets)).toBeNull();
+  });
+});
+
+describe('exerciseSlots', () => {
+  it('BR-16: lists one exercise’s sets, both sides for a per-side exercise', () => {
+    expect(exerciseSlots({ exerciseId: 'side-plank', sets: 2, perSide: true })).toEqual([
+      { exerciseId: 'side-plank', setNumber: 1, side: 'left' },
+      { exerciseId: 'side-plank', setNumber: 1, side: 'right' },
+      { exerciseId: 'side-plank', setNumber: 2, side: 'left' },
+      { exerciseId: 'side-plank', setNumber: 2, side: 'right' },
+    ]);
   });
 });

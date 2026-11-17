@@ -28,6 +28,7 @@ import {
 import { findProfileSettings, type ProfileSettings } from '@/server/repositories/profiles';
 import {
   findLoggedSessions,
+  type LoggedRecord,
   findOverrides,
   findPrescriptionOverrides,
 } from '@/server/repositories/schedule';
@@ -52,6 +53,8 @@ export interface TodaySession {
   start: StartCheck;
   /** Set when the session was moved to today (PRD §6.4 "Moved from Mon"). */
   movedFrom: LocalDate | null;
+  /** The workout logged for this day, if any: the one its status comes from. */
+  workoutSessionId: string | null;
   exercises: TodayExercise[];
 }
 
@@ -86,6 +89,8 @@ export interface ScheduleContext {
   enrolment: EnrolmentRecord;
   programme: ProgrammeContent;
   scheduleInput: ScheduleInput;
+  /** The same logged sessions, with their workout IDs. */
+  logged: LoggedRecord[];
   prescriptionOverrides: PrescriptionOverride[];
   now: Instant;
   /** BR-1, BR-4: always in the profile's current zone. */
@@ -128,10 +133,29 @@ export async function loadSchedule(
     enrolment,
     programme,
     scheduleInput: { enrolment, programme: programme.shape, overrides, logged, timeZone },
+    logged,
     prescriptionOverrides,
     now,
     today: localDateAt(now, timeZone),
   };
+}
+
+const PRECEDENCE: Partial<Record<LoggedRecord['status'], number>> = {
+  completed: 0,
+  partial: 1,
+  in_progress: 2,
+};
+
+/** The workout a day's status comes from: completed first, then partial, then in progress. */
+function workoutFor(logged: readonly LoggedRecord[], programmeDayId: string): string | null {
+  const candidates = logged.filter(
+    (l) =>
+      l.programmeDayId === programmeDayId &&
+      l.workoutSessionId !== null &&
+      PRECEDENCE[l.status] !== undefined,
+  );
+  candidates.sort((a, b) => PRECEDENCE[a.status]! - PRECEDENCE[b.status]!);
+  return candidates[0]?.workoutSessionId ?? null;
 }
 
 /** Null when nobody is signed in. */
@@ -176,6 +200,7 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
       status: s.status,
       start: s.start,
       movedFrom: s.movedFrom,
+      workoutSessionId: workoutFor(context.logged, s.programmeDayId),
       exercises: prescriptions.map((prescription) => ({
         ...template.exerciseInfo.get(prescription.exerciseId)!,
         prescription,

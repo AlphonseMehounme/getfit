@@ -7,6 +7,7 @@ import {
   finishOptions,
   isPrescribedSlot,
   loggingWindow,
+  type Prescription,
   type LocalDate,
   type LoggedStatus,
   mondayOf,
@@ -20,6 +21,7 @@ import {
 import { type Track, track } from '@/lib/observability/analytics';
 import { finishSessionSchema, logSetSchema, startSessionSchema } from '@/lib/validation/workout';
 import type { DbClient } from '@/server/db/client';
+import { type ExerciseInfo, findProgramme } from '@/server/repositories/programme';
 import { findProfileSettings } from '@/server/repositories/profiles';
 import {
   findOpenSessionForDay,
@@ -191,8 +193,16 @@ export async function logSet(
   return written.ok ? { ok: true } : { ok: false, error: 'set_conflict' };
 }
 
+export interface WorkoutExercise extends ExerciseInfo {
+  prescription: Prescription;
+}
+
 export interface WorkoutView {
   sessionId: string;
+  /** The session template's title in the user's language, e.g. "Strength A — Upper body". */
+  title: string;
+  /** In programme order, from the snapshot (BR-25), with their display text. */
+  exercises: WorkoutExercise[];
   status: LoggedStatus;
   scheduledDate: LocalDate | null;
   startedAt: Date;
@@ -205,13 +215,33 @@ export interface WorkoutView {
 
 /** What the workout screen needs to resume at the right set (BR-6). Null when not found for this user. */
 export async function getWorkout(client: DbClient, sessionId: string): Promise<WorkoutView | null> {
-  const session = await findSession(client, sessionId);
+  const user = await getCurrentUser(client);
+  if (!user) return null;
+  const session = await findSession(client, sessionId); // RLS: nobody else's session is ever found
   if (!session) return null;
+  const profile = await findProfileSettings(client, user.id);
+  if (!profile) throw new Error('profile missing for signed-in user');
   const snapshot = readSnapshot(session);
-  const sets = await findSets(client, sessionId);
+  const [sets, programme] = await Promise.all([
+    findSets(client, sessionId),
+    findProgramme(
+      client,
+      { id: snapshot.programmeId, version: snapshot.programmeVersion },
+      profile.locale,
+    ),
+  ]);
+  const template = programme?.templates.get(snapshot.sessionTemplateId);
+  if (!template) throw new Error(`content: template for workout ${sessionId} not found`);
   const progress = workoutProgress(snapshot, sets);
   return {
     sessionId,
+    title: template.title,
+    exercises: [...snapshot.exercises]
+      .sort((a, b) => a.sequence - b.sequence)
+      .map((prescription) => ({
+        ...template.exerciseInfo.get(prescription.exerciseId)!,
+        prescription,
+      })),
     status: session.status,
     scheduledDate: session.scheduledDate,
     startedAt: session.startedAt,

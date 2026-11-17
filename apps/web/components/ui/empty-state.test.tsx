@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import Link from 'next/link';
 import { screen } from '@testing-library/react';
 import { Footprints } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
@@ -12,7 +13,7 @@ describe('EmptyState', () => {
         title="No runs yet"
         description="Log a run to see your pace."
         icon={<Footprints />}
-        action={<a href="/train">Log a run</a>}
+        action={<Link href="/train">Log a run</Link>}
       />,
     );
     expect(screen.getByRole('heading', { level: 2, name: 'No runs yet' })).toBeTruthy();

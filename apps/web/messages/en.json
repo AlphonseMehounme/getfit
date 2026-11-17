@@ -173,6 +173,45 @@
     "finished": {
       "title": "You have reached the end of the programme",
       "body": "All {weeks} weeks are behind you. Your logged sessions stay in your history."
+    },
+    "action": {
+      "start": "Start workout",
+      "resume": "Resume workout",
+      "pending": "Opening…",
+      "error": "The workout could not be opened. Please try again."
     }
+  },
+  "Workout": {
+    "exerciseOf": "Exercise {current} of {total}",
+    "progress": "{logged} of {total} sets done",
+    "cues": "How to do it",
+    "sets": "Sets",
+    "set": "Set {number}",
+    "setLeft": "Set {number} · left",
+    "setRight": "Set {number} · right",
+    "doneAsPlanned": "Done as planned",
+    "saveReps": "Save {value, plural, one {# rep} other {# reps}}",
+    "saveSeconds": "Save {value} s",
+    "stepperReps": "Reps for {set}",
+    "stepperSeconds": "Seconds for {set}",
+    "unitReps": "reps",
+    "unitSeconds": "s",
+    "loggedReps": "{value, plural, one {# rep} other {# reps}}",
+    "loggedSeconds": "{value} s",
+    "loggedLabel": "{set}: done, {value}",
+    "edit": "Edit",
+    "editLabel": "Edit {set}",
+    "previous": "Previous",
+    "next": "Next",
+    "exercises": "Exercises",
+    "exerciseProgress": "{logged} of {total} sets",
+    "leave": "Leave",
+    "leaveTitle": "Leave the workout?",
+    "leaveBody": "Every set you logged is saved. You can resume this workout from Today.",
+    "keepGoing": "Keep going",
+    "leaveLater": "Leave and resume later",
+    "saveError": "This set could not be saved. Check your connection and try again.",
+    "saving": "Saving…",
+    "saved": "All sets saved"
   }
 }
