@@ -92,6 +92,14 @@ describe('canStartSession (D14, D23)', () => {
     });
   });
 
+  it('D32: a partial session can be reopened within the window, and not after it', () => {
+    expect(check('partial')).toEqual({ allowed: true, mode: 'resume' });
+    expect(check('partial', parseInstant('2026-11-30T23:00:00Z'))).toEqual({
+      allowed: false,
+      reason: 'window_closed',
+    });
+  });
+
   it('BR-7: refuses on day +8', () => {
     expect(check('missed', parseInstant('2026-11-30T23:00:00Z'))).toEqual({
       allowed: false,
@@ -109,7 +117,6 @@ describe('canStartSession (D14, D23)', () => {
   it.each([
     ['not_scheduled', 'not_scheduled'],
     ['rest', 'rest_day'],
-    ['partial', 'already_logged'],
     ['completed', 'already_logged'],
     ['skipped', 'skipped'],
   ] as const)('refuses a %s session (%s)', (s, reason) => {

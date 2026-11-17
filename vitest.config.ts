@@ -26,6 +26,7 @@ export default defineConfig({
         'packages/domain/src/prescription/**/*.ts',
         'packages/domain/src/units/**/*.ts',
         'packages/domain/src/running/**/*.ts',
+        'packages/domain/src/workout/**/*.ts',
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',
@@ -39,6 +40,7 @@ export default defineConfig({
         'apps/web/components/today/**/*.tsx',
         'apps/web/components/layout/**/*.tsx',
         'apps/web/lib/format/**/*.ts',
+        'apps/web/lib/validation/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

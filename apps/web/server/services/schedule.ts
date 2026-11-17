@@ -8,17 +8,24 @@ import {
   type LocalDate,
   localDateAt,
   mondayOf,
+  type Instant,
   type Prescription,
+  type PrescriptionOverride,
   resolveSession,
+  type ScheduleInput,
   type SessionStatus,
   type SessionType,
   type StartCheck,
   type UnitSystem,
 } from '@getfit/domain';
 import type { DbClient } from '@/server/db/client';
-import { findActiveEnrolment } from '@/server/repositories/enrolment';
-import { type ExerciseInfo, findProgramme } from '@/server/repositories/programme';
-import { findProfileSettings } from '@/server/repositories/profiles';
+import { type EnrolmentRecord, findActiveEnrolment } from '@/server/repositories/enrolment';
+import {
+  type ExerciseInfo,
+  findProgramme,
+  type ProgrammeContent,
+} from '@/server/repositories/programme';
+import { findProfileSettings, type ProfileSettings } from '@/server/repositories/profiles';
 import {
   findLoggedSessions,
   findOverrides,
@@ -73,20 +80,36 @@ export type TodayView =
       sessions: TodaySession[];
     };
 
-/** Null when nobody is signed in. */
-export async function getToday(client: DbClient, clock: Clock): Promise<TodayView | null> {
+export interface ScheduleContext {
+  userId: string;
+  profile: ProfileSettings;
+  enrolment: EnrolmentRecord;
+  programme: ProgrammeContent;
+  scheduleInput: ScheduleInput;
+  prescriptionOverrides: PrescriptionOverride[];
+  now: Instant;
+  /** BR-1, BR-4: always in the profile's current zone. */
+  today: LocalDate;
+}
+
+/**
+ * Everything the schedule engine needs for the signed-in user's active enrolment, read once.
+ * Shared by Today and the workout service so both see the same schedule.
+ */
+export async function loadSchedule(
+  client: DbClient,
+  clock: Clock,
+): Promise<ScheduleContext | 'not_signed_in' | 'not_enrolled'> {
   const user = await getCurrentUser(client);
-  if (!user) return null;
+  if (!user) return 'not_signed_in';
   const profile = await findProfileSettings(client, user.id);
   if (!profile) throw new Error('profile missing for signed-in user');
 
   const enrolment = await findActiveEnrolment(client, user.id);
-  if (!enrolment) return { kind: 'not_enrolled' };
+  if (!enrolment) return 'not_enrolled';
 
   const now = clock.now();
   const timeZone = profile.timezone;
-  const today = localDateAt(now, timeZone); // BR-1, BR-4: always in the profile's current zone
-
   const [programme, overrides, logged, prescriptionOverrides] = await Promise.all([
     findProgramme(
       client,
@@ -99,11 +122,26 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
   ]);
   if (!programme) throw new Error('content: enrolled programme not found');
 
-  const week = buildWeek(
-    { enrolment, programme: programme.shape, overrides, logged, timeZone },
-    mondayOf(today),
+  return {
+    userId: user.id,
+    profile,
+    enrolment,
+    programme,
+    scheduleInput: { enrolment, programme: programme.shape, overrides, logged, timeZone },
+    prescriptionOverrides,
     now,
-  );
+    today: localDateAt(now, timeZone),
+  };
+}
+
+/** Null when nobody is signed in. */
+export async function getToday(client: DbClient, clock: Clock): Promise<TodayView | null> {
+  const context = await loadSchedule(client, clock);
+  if (context === 'not_signed_in') return null;
+  if (context === 'not_enrolled') return { kind: 'not_enrolled' };
+  const { profile, enrolment, programme, prescriptionOverrides, now, today } = context;
+
+  const week = buildWeek(context.scheduleInput, mondayOf(today), now);
   if (week.weekNumber === null) {
     if (compareLocalDates(today, enrolment.startDate) < 0) {
       const first = programme.shape.days
