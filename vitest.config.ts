@@ -30,6 +30,7 @@ export default defineConfig({
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',
         'apps/web/lib/observability/**/*.ts',
+        'apps/web/server/clock.ts',
         // P1-14: design-system components, tested with Testing Library and axe.
         'apps/web/components/ui/{card,skeleton,empty-state,error-state,week-strip}.tsx',
         'apps/web/components/ui/{dialog,sheet,toast,number-stepper,app-nav}.tsx',
