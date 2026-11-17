@@ -5,6 +5,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
+import type { FinishAction } from './finish-summary';
 import { type LogSetAction, WorkoutScreen, type WorkoutScreenExercise } from './workout-screen';
 
 const push = vi.fn();
@@ -50,6 +51,7 @@ function renderScreen(
   initialSets: Record<string, { id: string; value: number }> = {
     'pull-up|1|both': { id: 'set-1', value: 6 },
   },
+  finish: FinishAction = vi.fn<FinishAction>(async () => ({ ok: true })),
 ) {
   return renderWithIntl(
     <WorkoutScreen
@@ -59,6 +61,8 @@ function renderScreen(
       initialSets={initialSets}
       initialIndex={initialIndex}
       logSet={logSet}
+      finish={finish}
+      activeSecondsAtLoad={600}
       exitHref="/today"
     />,
   );
@@ -168,7 +172,9 @@ describe('WorkoutScreen', () => {
     expect(screen.getByText('30 s per side')).toBeTruthy();
     expect(screen.getByRole('group', { name: 'Set 1 · left' })).toBeTruthy();
     expect(screen.getByRole('group', { name: 'Set 1 · right' })).toBeTruthy();
-    expect((screen.getByRole('button', { name: 'Next' }) as HTMLButtonElement).disabled).toBe(true);
+    // On the last exercise, Next becomes Finish.
+    expect(screen.queryByRole('button', { name: 'Next' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Finish' })).toBeTruthy();
 
     const [left] = screen.getAllByRole('button', { name: 'Done as planned' });
     await userEvent.click(left!);
@@ -199,5 +205,67 @@ describe('WorkoutScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Leave' }));
     await userEvent.click(screen.getByRole('button', { name: 'Leave and resume later' }));
     expect(push).toHaveBeenCalledWith('/today');
+  });
+
+  it('PRD §6.5: Finish opens the summary with the same totals the server uses, and saves (D31)', async () => {
+    const finish = vi.fn<FinishAction>(async () => ({ ok: true }));
+    const all = {
+      'pull-up|1|both': { id: 'a', value: 6 },
+      'pull-up|2|both': { id: 'b', value: 5 },
+      'side-plank|1|left': { id: 'c', value: 30 },
+      'side-plank|1|right': { id: 'd', value: 28 },
+    };
+    renderScreen(vi.fn(), 1, all, finish);
+    await userEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    expect(screen.getByRole('heading', { name: 'Finish the workout' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { level: 2, name: 'Side plank' })).toBeNull();
+    expect(screen.queryByRole('navigation', { name: 'Exercises' })).toBeNull();
+    expect(screen.getByText('4 of 4 sets logged')).toBeTruthy();
+    expect(screen.getByText('11 reps in total')).toBeTruthy();
+    expect(screen.getByText('58 s held')).toBeTruthy();
+    expect(screen.getByText(/Duration 10:0\d/)).toBeTruthy();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Back to the workout' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Side plank' })).toBeTruthy();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Exercises' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Finish workout' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save as completed' }));
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/today'));
+    expect(finish).toHaveBeenCalledWith(
+      expect.objectContaining({ sessionId: SESSION, save: 'completed' }),
+    );
+  });
+
+  it('choosing an exercise from the list leaves the summary', async () => {
+    renderScreen(vi.fn(), 1);
+    await userEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Exercises' }));
+    await userEvent.click(screen.getByRole('button', { name: /Pull-up/ }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeTruthy();
+  });
+
+  it('PRD §5.2: the Leave dialog saves as partial and goes to Today, or stays when it fails', async () => {
+    push.mockClear();
+    const finish = vi
+      .fn<FinishAction>()
+      .mockResolvedValueOnce({ ok: false })
+      .mockResolvedValueOnce({ ok: true });
+    renderScreen(vi.fn(), 0, undefined, finish);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save as partial' }));
+    await waitFor(() =>
+      expect(screen.getByText('The workout could not be saved. Please try again.')).toBeTruthy(),
+    );
+    expect(push).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Save as partial' }));
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/today'));
+    expect(finish).toHaveBeenLastCalledWith({
+      sessionId: SESSION,
+      save: 'partial',
+      confirm: true,
+      rpe: null,
+      notes: null,
+    });
   });
 });

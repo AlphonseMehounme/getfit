@@ -104,3 +104,92 @@ test('the workout screen passes axe in dark mode', async ({ page }, testInfo) =>
     contentType: 'image/png',
   });
 });
+
+/** Logs every open set of the current exercise as planned, then moves on; ends on the finish summary. */
+async function logEverySet(page: Page, exerciseCount: number) {
+  const main = page.getByRole('main');
+  for (let i = 0; i < exerciseCount; i++) {
+    const done = main.getByRole('button', { name: en.Workout.doneAsPlanned });
+    while ((await done.count()) > 0) {
+      const before = await done.count();
+      await done.first().click();
+      await expect(done).toHaveCount(before - 1);
+    }
+    const isLast = i === exerciseCount - 1;
+    await page
+      .getByRole('button', { name: isLast ? en.Workout.finish : en.Workout.next, exact: true })
+      .click();
+  }
+}
+
+test('milestone: log every set of Strength A, save as completed, and see it saved', async ({
+  page,
+}, testInfo) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
+
+  await logEverySet(page, strengthA.exercises.length);
+  await expect(
+    page.getByRole('heading', { level: 2, name: en.Workout.summary.title }),
+  ).toBeVisible();
+  await expect(page.getByText('12 of 12 sets logged')).toBeVisible();
+  await expect(page.getByText(en.Workout.summary.complete)).toBeVisible();
+  await expect(page.getByText('90 s held')).toBeVisible();
+  await expectNoAxeViolations(page);
+  await testInfo.attach('finish-summary', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  });
+
+  // BR-5: completed only on the user's explicit choice, with an optional effort and note.
+  // Users tap the visible number; the radio inside it is visually hidden.
+  await page.locator('label').filter({ hasText: /^7$/ }).click();
+  await expect(page.getByRole('radio', { name: '7' })).toBeChecked();
+  await page.getByLabel(en.Workout.summary.notes).fill('Felt strong');
+  await page.getByRole('button', { name: en.Workout.summary.saveCompleted }).click();
+  await expect(page).toHaveURL('/today');
+  await expect(page.locator('li[aria-current="date"]')).toContainText('Monday, November 23: Done');
+  await expect(page.getByText('Status: Done')).toBeVisible();
+
+  // BR-25: the saved workout, as it was logged.
+  await page.getByRole('link', { name: en.Today.action.view }).click();
+  await expect(page.getByRole('heading', { level: 1, name: strengthA.en.title })).toBeVisible();
+  await expect(page.getByText('Monday, November 23 · Completed')).toBeVisible();
+  await expect(page.getByText('Effort 7/10')).toBeVisible();
+  await expect(page.getByText('Felt strong')).toBeVisible();
+  const pullUp = page.getByRole('region', { name: 'Pull-up' });
+  await expect(pullUp.getByRole('listitem')).toHaveCount(3);
+  await expect(pullUp.getByText('6 reps')).toHaveCount(3);
+  await expectNoAxeViolations(page);
+  await testInfo.attach('workout-record', {
+    body: await page.screenshot({ fullPage: true }),
+    contentType: 'image/png',
+  });
+});
+
+test('D31 / D32: save as partial from Leave, then resume; completed is not offered with sets missing', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+
+  await page.getByRole('button', { name: en.Workout.leave }).click();
+  await page.getByRole('button', { name: en.Workout.savePartialLeave }).click();
+  await expect(page).toHaveURL('/today');
+  await expect(page.getByText('Status: Partly done')).toBeVisible();
+
+  // D32: a partial workout is reopened from Today, with its set still there.
+  await page.getByRole('button', { name: en.Today.action.resume }).click();
+  await expect(page.getByText('1 of 12 sets done')).toBeVisible();
+  await page.getByRole('button', { name: en.Workout.exercises }).click();
+  await page.getByRole('button', { name: en.Workout.finishWorkout }).click();
+  await expect(page.getByText('11 sets are not logged', { exact: false })).toBeVisible();
+  await expect(page.getByRole('button', { name: en.Workout.summary.saveCompleted })).toHaveCount(0);
+  await expectNoAxeViolations(page);
+  await page.getByRole('button', { name: en.Workout.summary.savePartial }).click();
+  await expect(page).toHaveURL('/today');
+});

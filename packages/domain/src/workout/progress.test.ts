@@ -155,3 +155,19 @@ describe('exerciseSlots', () => {
     ]);
   });
 });
+
+describe('PrescribedWorkout', () => {
+  it('AGENTS §5.3: the screen’s prescriptions give the same answer as the stored snapshot', () => {
+    const fromScreen = {
+      exercises: A.exercises.map(({ exerciseId, sets, perSide, sequence }) => ({
+        exerciseId,
+        sets,
+        perSide,
+        sequence,
+      })),
+    };
+    const sets = done(prescribedSlots(A).slice(0, 5));
+    expect(workoutProgress(fromScreen, sets)).toEqual(workoutProgress(A, sets));
+    expect(firstOpenSlot(fromScreen, sets)).toEqual(firstOpenSlot(A, sets));
+  });
+});

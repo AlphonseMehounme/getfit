@@ -178,7 +178,8 @@
       "start": "Start workout",
       "resume": "Resume workout",
       "pending": "Opening…",
-      "error": "The workout could not be opened. Please try again."
+      "error": "The workout could not be opened. Please try again.",
+      "view": "View workout"
     }
   },
   "Workout": {
@@ -212,6 +213,42 @@
     "leaveLater": "Leave and resume later",
     "saveError": "This set could not be saved. Check your connection and try again.",
     "saving": "Saving…",
-    "saved": "All sets saved"
+    "saved": "All sets saved",
+    "finish": "Finish",
+    "finishWorkout": "Finish workout",
+    "savePartialLeave": "Save as partial",
+    "leaveError": "The workout could not be saved. Please try again.",
+    "summary": {
+      "title": "Finish the workout",
+      "setsLogged": "{logged} of {total} sets logged",
+      "reps": "{reps, plural, one {# rep} other {# reps}} in total",
+      "hold": "{seconds} s held",
+      "duration": "Duration {duration}",
+      "complete": "Every set is logged.",
+      "incomplete": "{missing, plural, one {# set is} other {# sets are}} not logged, so this workout can be saved as partial.",
+      "rpe": "How hard was it? (optional)",
+      "rpeHint": "Effort from 1 (very easy) to 10 (maximal).",
+      "notes": "Notes (optional)",
+      "saveCompleted": "Save as completed",
+      "savePartial": "Save as partial",
+      "back": "Back to the workout",
+      "saving": "Saving…",
+      "error": "The workout could not be saved. Please try again."
+    },
+    "record": {
+      "status": {
+        "completed": "Completed",
+        "partial": "Partly done"
+      },
+      "statusLine": "{date} · {status}",
+      "duration": "Duration {duration}",
+      "rpe": "Effort {value}/10",
+      "rpeNone": "Effort —",
+      "rpeNoneHint": "No effort was given when this workout was saved.",
+      "notes": "Notes",
+      "notLogged": "Not logged",
+      "back": "Back to Today",
+      "durationNone": "Duration —"
+    }
   }
 }

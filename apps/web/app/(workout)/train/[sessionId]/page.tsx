@@ -3,13 +3,15 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { z } from 'zod';
+import { WorkoutRecord } from '@/components/workout/workout-record';
 import { type LoggedSetValue, WorkoutScreen } from '@/components/workout/workout-screen';
 import { HOME_PATH } from '@/lib/auth/paths';
 import type { Locale } from '@/lib/i18n/config';
 import { resolveExerciseMedia } from '@/lib/media/resolve';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getWorkout } from '@/server/services/workout';
-import { logSetAction } from '../../../(app)/train/actions';
+import { getRequestClock } from '@/server/request-clock';
+import { finishSessionAction, logSetAction } from '../../../(app)/train/actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Workout');
@@ -20,10 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function WorkoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
   const workout = z.uuid().safeParse(sessionId).success
-    ? await getWorkout(await createSupabaseServerClient(), sessionId)
+    ? await getWorkout(await createSupabaseServerClient(), sessionId, await getRequestClock())
     : null;
   if (!workout) notFound(); // also someone else's session: RLS never returns it
-  // A saved session is reopened from Today (D32); its own view ships in P1-17b2.
+  if (workout.status === 'completed' || workout.status === 'partial') {
+    // BR-25: a saved workout is shown as it was logged. A partial one is reopened from Today (D32).
+    return <WorkoutRecord workout={{ ...workout, status: workout.status }} backHref={HOME_PATH} />;
+  }
   if (workout.status !== 'in_progress') redirect(HOME_PATH);
 
   const locale = (await getLocale()) as Locale;
@@ -56,6 +61,10 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
       initialSets={initialSets}
       initialIndex={openIndex}
       logSet={logSetAction}
+      finish={finishSessionAction}
+      activeSecondsAtLoad={workout.activeSecondsNow}
+      savedRpe={workout.rpe}
+      savedNotes={workout.notes}
       exitHref={HOME_PATH}
     />
   );
