@@ -32,8 +32,9 @@ test('reset the password by email; other devices are signed out', async ({ page,
   const otherPage = await otherDevice.newPage();
   await otherPage.goto('/login');
   await logIn(otherPage, email, oldPassword);
-  await expect(otherPage).toHaveURL('/profile');
+  await expect(otherPage).toHaveURL('/start');
 
+  await page.goto('/profile');
   await page.getByRole('button', { name: en.Profile.signOut }).click();
   await requestReset(page, email);
   await openEmailLink(page, email, 'recovery');
@@ -50,11 +51,13 @@ test('reset the password by email; other devices are signed out', async ({ page,
   await otherDevice.close();
 
   await page.getByRole('link', { name: en.Auth.updatePassword.continue }).click();
+  await expect(page).toHaveURL('/start');
+  await page.goto('/profile');
   await page.getByRole('button', { name: en.Profile.signOut }).click();
   await logIn(page, email, oldPassword);
   await expect(formAlert(page, en.Auth.errors.invalidCredentials)).toBeVisible();
   await logIn(page, email, newOne);
-  await expect(page).toHaveURL('/profile');
+  await expect(page).toHaveURL('/start');
 });
 
 test('a reset request for an unknown email looks the same', async ({ page }) => {

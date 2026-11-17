@@ -1,10 +1,11 @@
-import type { LocalDate, SessionStatus } from '@getfit/domain';
+import type { DayStatus, LocalDate } from '@getfit/domain';
 import {
   Circle,
   CircleAlert,
   CircleCheck,
   CircleDashed,
   CircleMinus,
+  Minus,
   Moon,
   Play,
   SkipForward,
@@ -18,11 +19,12 @@ import { cn } from '@/lib/utils/cn';
 
 export interface WeekStripDay {
   date: LocalDate;
-  status: SessionStatus;
+  /** `none`: a day left empty, e.g. after its session moved (PRD §6.4). */
+  status: DayStatus;
   isToday: boolean;
 }
 
-const STATUS_STYLE: Record<SessionStatus, { icon: LucideIcon; tone: string }> = {
+const STATUS_STYLE: Record<DayStatus, { icon: LucideIcon; tone: string }> = {
   completed: { icon: CircleCheck, tone: 'text-success' },
   partial: { icon: CircleDashed, tone: 'text-success' },
   in_progress: { icon: Play, tone: 'text-accent' },
@@ -31,6 +33,7 @@ const STATUS_STYLE: Record<SessionStatus, { icon: LucideIcon; tone: string }> = 
   skipped: { icon: SkipForward, tone: 'text-muted' },
   rest: { icon: Moon, tone: 'text-muted' },
   not_scheduled: { icon: CircleMinus, tone: 'text-muted' },
+  none: { icon: Minus, tone: 'text-muted' },
 };
 
 /** Noon UTC, formatted in UTC, so the calendar date never shifts with the viewer's time zone. */

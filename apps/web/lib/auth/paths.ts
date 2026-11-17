@@ -1,5 +1,8 @@
-/** Where signed-in users land. P1-16 changes this to `/today`. */
-export const HOME_PATH = '/profile';
+/** Where signed-in users land (PRD §6.3). Without an enrolment, Today sends them to the Start step. */
+export const HOME_PATH = '/today';
+/** D20: the Phase 1 "Start programme" step. */
+export const START_PATH = '/start';
+export const PROFILE_PATH = '/profile';
 export const LOGIN_PATH = '/login';
 export const SIGN_UP_PATH = '/sign-up';
 export const CONFIRM_PATH = '/auth/confirm';

@@ -30,11 +30,11 @@ export async function openEmailLink(page: Page, email: string, type: 'email' | '
   await page.goto(link!);
 }
 
-/** Signs up and confirms by email; the confirmation link leaves the user signed in. */
+/** Signs up and confirms by email; the confirmation link signs the user in and, with no enrolment yet, lands on Start. */
 export async function signUpAndConfirm(page: Page, email: string, password: string) {
   await signUp(page, email, password);
   await openEmailLink(page, email, 'email');
-  await expect(page).toHaveURL('/profile');
+  await expect(page).toHaveURL('/start');
 }
 
 export async function logIn(page: Page, email: string, password: string) {
