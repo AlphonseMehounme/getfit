@@ -227,6 +227,7 @@ P1-05 depends on P1-01 only. P1-06 to P1-09 can run in parallel after P1-05.
 - **Rules:** D8, D20, D21, BR-5, BR-6, BR-25, PRD §14 first milestone.
 - **Tests:** on mobile and desktop, sign up → confirm → log in → start the programme → (clock = week-1 Monday) Today shows Strength A → log every set → finish as completed → the week strip shows Monday completed → log out → log in → the session and all sets are intact; a second browser context (a "second device") sees the same data; the media for Strength A's exercises loads with the correct alt text (QA rule 6 subset).
 - **Exit:** CI green; on the preview deployment, AL completes the flow on a real phone (logging today's strength session) and the data survives logout/login. Screenshots are attached to the PR.
+- **Status (17 Nov 2026):** code, E2E and runbook delivered in #51. The phase exit is AL's real-phone run on a preview, following `docs/runbooks/preview-deployment.md`; screenshots go on the PR.
 
 ---
 
