@@ -220,6 +220,7 @@ describe('getToday', () => {
       status: 'scheduled',
       start: { allowed: true, mode: 'start' },
       movedFrom: null,
+      workoutSessionId: null,
     });
     expect(session!.exercises.map((e) => e.slug)).toEqual([
       'pull-up',

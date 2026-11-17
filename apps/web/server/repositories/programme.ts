@@ -20,6 +20,8 @@ export interface ExerciseInfo {
   slug: string;
   category: ExerciseCategory;
   name: string;
+  /** PRD §6.5: the first three instruction steps, shown as cue lines during a workout. */
+  cues: string[];
 }
 
 export interface TemplateContent {
@@ -60,9 +62,9 @@ const SELECT = `id, version, duration_weeks,
     session_template_translations (locale, title, purpose, guidance),
     template_exercises (id, exercise_id, sequence, target_sets, target_reps, target_duration_s,
       target_distance_m, per_side, rest_s,
-      exercises (slug, category, exercise_translations (locale, name))))` as const;
+      exercises (slug, category, exercise_translations (locale, name, instructions))))` as const;
 
-const guidanceSchema = z.array(z.string());
+const linesSchema = z.array(z.string());
 
 /** Content guarantees a translation per locale (seed tests); a missing one is a data error. */
 function inLocale<T extends { locale: Locale }>(
@@ -104,10 +106,12 @@ export async function findProgramme(
     const exercises = t.template_exercises.map((te): TemplateExercise => {
       const exercise = te.exercises;
       if (!exercise) throw new Error(`content: template exercise ${te.id} has no exercise`);
+      const text = inLocale(exercise.exercise_translations, locale, `exercise ${exercise.slug}`);
       exerciseInfo.set(te.exercise_id, {
         slug: exercise.slug,
         category: exercise.category,
-        name: inLocale(exercise.exercise_translations, locale, `exercise ${exercise.slug}`).name,
+        name: text.name,
+        cues: linesSchema.parse(text.instructions).slice(0, 3),
       });
       return {
         id: te.id,
@@ -133,7 +137,7 @@ export async function findProgramme(
       },
       title: text.title,
       purpose: text.purpose,
-      guidance: guidanceSchema.parse(text.guidance),
+      guidance: linesSchema.parse(text.guidance),
       estimatedDurationMin: t.estimated_duration_min,
       exercises,
       exerciseInfo,

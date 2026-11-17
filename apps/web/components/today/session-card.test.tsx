@@ -29,12 +29,14 @@ const STRENGTH: TodaySession = {
   status: 'scheduled',
   start: { allowed: true, mode: 'start' },
   movedFrom: null,
+  workoutSessionId: null,
   exercises: [
-    { slug: 'pull-up', category: 'upper', name: 'Pull-up', prescription: rx({}) },
+    { slug: 'pull-up', category: 'upper', name: 'Pull-up', cues: [], prescription: rx({}) },
     {
       slug: 'side-plank',
       category: 'core',
       name: 'Side plank',
+      cues: [],
       prescription: rx({
         templateExerciseId: 'te-2',
         sets: 2,
@@ -80,12 +82,14 @@ describe('SessionCard', () => {
           slug: 'easy-walk',
           category: 'recovery',
           name: 'Marche facile',
+          cues: [],
           prescription: rx({ sets: 1, target: { kind: 'duration', seconds: 1800 }, restS: null }),
         },
         {
           slug: 'long-run',
           category: 'running',
           name: 'Sortie longue',
+          cues: [],
           prescription: rx({
             templateExerciseId: 'te-3',
             sets: 1,

@@ -39,6 +39,8 @@ export default defineConfig({
         // P1-16b: Today and Start components, the nav wrapper and target formatting.
         'apps/web/components/today/**/*.tsx',
         'apps/web/components/layout/**/*.tsx',
+        'apps/web/components/workout/**/*.tsx',
+        'apps/web/lib/hooks/**/*.ts',
         'apps/web/lib/format/**/*.ts',
         'apps/web/lib/validation/**/*.ts',
       ],

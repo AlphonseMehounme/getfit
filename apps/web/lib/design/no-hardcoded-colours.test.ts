@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { ESLint } from 'eslint';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 // AGENTS §9: the ESLint guard that keeps colour literals out of UI code.
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
@@ -12,6 +12,9 @@ async function colourErrors(code: string, file = 'apps/web/components/ui/sample.
 }
 
 describe('no hardcoded colours', () => {
+  // Loading the ESLint config takes a few seconds on a busy machine; pay it once, outside the 5 s test limit.
+  beforeAll(() => colourErrors(''), 30_000);
+
   it.each([
     ['export const a = <p className="bg-[#ffffff]" />;', 'an arbitrary hex class'],
     ["export const a = <p style={{ color: '#2F5BEA' }} />;", 'a hex style'],

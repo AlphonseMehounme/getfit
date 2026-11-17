@@ -3,6 +3,8 @@ export const HOME_PATH = '/today';
 /** D20: the Phase 1 "Start programme" step. */
 export const START_PATH = '/start';
 export const PROFILE_PATH = '/profile';
+/** The workout screen: `/train/<session id>` (PRD §6.5). */
+export const TRAIN_PATH = '/train';
 export const LOGIN_PATH = '/login';
 export const SIGN_UP_PATH = '/sign-up';
 export const CONFIRM_PATH = '/auth/confirm';

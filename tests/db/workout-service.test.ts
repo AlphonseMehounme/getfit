@@ -10,7 +10,7 @@ import {
   logSet,
   startSession,
 } from '../../apps/web/server/services/workout';
-import { createTestUser, type TestUser } from './helpers';
+import { anonClient, createTestUser, type TestUser } from './helpers';
 
 // Integration tests for the P1-17a workout service against local Supabase (PRD §6.5, D21, D31, D32).
 // Week 1 starts on Monday 23 Nov 2026 (Paris); time is always injected (ADR 0002).
@@ -63,6 +63,12 @@ async function mondayStatus(user: TestUser, clock: ReturnType<typeof at>) {
   return view.week[0]!.status;
 }
 
+async function mondayWorkoutId(user: TestUser, clock: ReturnType<typeof at>) {
+  const view = await getToday(user.client, clock);
+  if (view?.kind !== 'day') throw new Error('expected a programme day');
+  return view.sessions[0]!.workoutSessionId;
+}
+
 async function slotsOf(user: TestUser, sessionId: string) {
   const workout = await getWorkout(user.client, sessionId);
   return prescribedSlots(workout!.snapshot);
@@ -79,6 +85,20 @@ describe('workout service', () => {
     ).toEqual({ ok: true, sessionId, resumed: false });
     const slots = await slotsOf(user, sessionId);
     expect(slots).toHaveLength(12);
+    // Display content for the workout screen, in the user's language.
+    const opened = (await getWorkout(user.client, sessionId))!;
+    expect(opened.title).toBe('Strength A — Upper body');
+    expect(opened.exercises.map((e) => e.slug)).toEqual([
+      'pull-up',
+      'push-up',
+      'pike-push-up',
+      'glute-bridge',
+      'plank',
+    ]);
+    expect(opened.exercises[0]).toMatchObject({ name: 'Pull-up', category: 'upper' });
+    expect(opened.exercises[0]!.cues).toHaveLength(3);
+    // Today points at the session it is showing.
+    expect(await mondayWorkoutId(user, MONDAY)).toBe(sessionId);
 
     for (const slot of slots.slice(0, 2)) {
       expect(await logSet(user.client, setInput(sessionId, slot), MONDAY)).toEqual({ ok: true });
@@ -139,6 +159,7 @@ describe('workout service', () => {
       ),
     ).toEqual({ ok: true, status: 'completed' });
     expect(await mondayStatus(user, TUESDAY)).toBe('completed');
+    expect(await mondayWorkoutId(user, MONDAY_LATER)).toBe(sessionId);
 
     expect(trackEvent.mock.calls.map(([event]) => event)).toEqual([
       {
@@ -312,6 +333,7 @@ describe('workout service', () => {
     const [slot] = await slotsOf(alice.user, sessionId);
 
     expect(await getWorkout(bob.user.client, sessionId)).toBeNull();
+    expect(await getWorkout(anonClient(), sessionId)).toBeNull();
     expect(await logSet(bob.user.client, setInput(sessionId, slot!), MONDAY)).toEqual({
       ok: false,
       error: 'not_found',
