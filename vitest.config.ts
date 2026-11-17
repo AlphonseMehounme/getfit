@@ -41,6 +41,7 @@ export default defineConfig({
         'apps/web/components/layout/**/*.tsx',
         'apps/web/components/workout/**/*.tsx',
         'apps/web/lib/hooks/**/*.ts',
+        'apps/web/server/config/app-origin.ts',
         'apps/web/lib/format/**/*.ts',
         'apps/web/lib/validation/**/*.ts',
       ],

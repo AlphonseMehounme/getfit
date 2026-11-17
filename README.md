@@ -44,6 +44,11 @@ running one); in CI it tests the production build.
 The Supabase CLI is a pinned dev dependency (`pnpm exec supabase …`). The media command (`media:check`) is added
 by P1-12.
 
+## Deploying a preview
+
+The hosted Supabase project, the Vercel project, their settings and the Phase 1 real-phone check are described
+step by step in [docs/runbooks/preview-deployment.md](docs/runbooks/preview-deployment.md).
+
 ## Layout
 
 ```

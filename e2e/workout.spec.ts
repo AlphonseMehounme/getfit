@@ -1,28 +1,12 @@
-import { expect, type Page, test } from '@playwright/test';
-import programme from '../content/programmes/force-muscle-endurance-8w.json' with { type: 'json' };
+import { expect, test } from '@playwright/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
-import {
-  expectNoAxeViolations,
-  newEmail,
-  newPassword,
-  signUpAndConfirm,
-} from './support/auth-flow';
+import { expectNoAxeViolations } from './support/auth-flow';
+import { setRow, startOnMonday, strengthA } from './support/workout-flow';
 
-// P1-17b1: Today → Start workout → log sets → reload → resume at the same set (BR-6, D21).
-// The clock header (D30) puts the user on Monday 23 Nov 2026, week 1 day 1 (Paris).
-const MONDAY = '2026-11-23T08:00:00+01:00';
-const strengthA = programme.templates.find((t) => t.slug === 'strength-a')!;
+// P1-17b: Today → Start workout → log sets → reload → resume at the same set (BR-6, D21); partial save (D31, D32).
+// The full milestone flow (every set, completed, log out and in, a second device) is e2e/milestone.spec.ts.
 
 test.use({ locale: 'en-US', timezoneId: 'Europe/Paris' });
-
-async function startOnMonday(page: Page) {
-  await page.setExtraHTTPHeaders({ 'x-getfit-test-now': MONDAY });
-  await signUpAndConfirm(page, newEmail(), newPassword());
-  await page.getByRole('button', { name: en.Start.today }).click();
-  await expect(page).toHaveURL('/today');
-}
-
-const setRow = (page: Page, name: string) => page.getByRole('group', { name });
 
 test('start from Today, log two sets, reload and resume at the same set', async ({
   page,
@@ -101,69 +85,6 @@ test('the workout screen passes axe in dark mode', async ({ page }, testInfo) =>
   await expectNoAxeViolations(page);
   await testInfo.attach('workout-dark', {
     body: await page.screenshot(),
-    contentType: 'image/png',
-  });
-});
-
-/** Logs every open set of the current exercise as planned, then moves on; ends on the finish summary. */
-async function logEverySet(page: Page, exerciseCount: number) {
-  const main = page.getByRole('main');
-  for (let i = 0; i < exerciseCount; i++) {
-    const done = main.getByRole('button', { name: en.Workout.doneAsPlanned });
-    while ((await done.count()) > 0) {
-      const before = await done.count();
-      await done.first().click();
-      await expect(done).toHaveCount(before - 1);
-    }
-    const isLast = i === exerciseCount - 1;
-    await page
-      .getByRole('button', { name: isLast ? en.Workout.finish : en.Workout.next, exact: true })
-      .click();
-  }
-}
-
-test('milestone: log every set of Strength A, save as completed, and see it saved', async ({
-  page,
-}, testInfo) => {
-  await startOnMonday(page);
-  await page.getByRole('button', { name: en.Today.action.start }).click();
-  await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
-
-  await logEverySet(page, strengthA.exercises.length);
-  await expect(
-    page.getByRole('heading', { level: 2, name: en.Workout.summary.title }),
-  ).toBeVisible();
-  await expect(page.getByText('12 of 12 sets logged')).toBeVisible();
-  await expect(page.getByText(en.Workout.summary.complete)).toBeVisible();
-  await expect(page.getByText('90 s held')).toBeVisible();
-  await expectNoAxeViolations(page);
-  await testInfo.attach('finish-summary', {
-    body: await page.screenshot(),
-    contentType: 'image/png',
-  });
-
-  // BR-5: completed only on the user's explicit choice, with an optional effort and note.
-  // Users tap the visible number; the radio inside it is visually hidden.
-  await page.locator('label').filter({ hasText: /^7$/ }).click();
-  await expect(page.getByRole('radio', { name: '7' })).toBeChecked();
-  await page.getByLabel(en.Workout.summary.notes).fill('Felt strong');
-  await page.getByRole('button', { name: en.Workout.summary.saveCompleted }).click();
-  await expect(page).toHaveURL('/today');
-  await expect(page.locator('li[aria-current="date"]')).toContainText('Monday, November 23: Done');
-  await expect(page.getByText('Status: Done')).toBeVisible();
-
-  // BR-25: the saved workout, as it was logged.
-  await page.getByRole('link', { name: en.Today.action.view }).click();
-  await expect(page.getByRole('heading', { level: 1, name: strengthA.en.title })).toBeVisible();
-  await expect(page.getByText('Monday, November 23 · Completed')).toBeVisible();
-  await expect(page.getByText('Effort 7/10')).toBeVisible();
-  await expect(page.getByText('Felt strong')).toBeVisible();
-  const pullUp = page.getByRole('region', { name: 'Pull-up' });
-  await expect(pullUp.getByRole('listitem')).toHaveCount(3);
-  await expect(pullUp.getByText('6 reps')).toHaveCount(3);
-  await expectNoAxeViolations(page);
-  await testInfo.attach('workout-record', {
-    body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
 });
