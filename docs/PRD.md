@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.5 (D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.6 (D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -65,6 +65,8 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D41 | Load and reps in reserve | Optional on every set, shown in the user's units; load stored in kg, RIR 0–10. Neither changes whether a set counts (BR-14). | 18 Nov 2026 |
 | D42 | Bodyweight is always available | For substitutes (D40), an exercise qualifies when every item of equipment it needs is available; `bodyweight` always counts as available. No item implies another (`gym` does not imply a pull-up bar). | 18 Nov 2026 |
 | D43 | Rest after both sides | For per-side exercises (BR-16), the rest timer (D39) does not start between the left and right side of a set; it starts after the right side. No rest after the workout's last prescribed set. | 18 Nov 2026 |
+| D44 | A substitute is remembered through its sets | A substitute (D40) is recorded on each set logged with it (`substituted_for_exercise_id`); the active substitute for an exercise is the one on its latest logged set. A substitute chosen and not yet used for a set is not kept across a reload. | 18 Nov 2026 |
+| D45 | No logging while paused | While a workout is paused (D34), no set can be logged; the user resumes first. | 18 Nov 2026 |
 
 ## 1. Vision, principles and users
 

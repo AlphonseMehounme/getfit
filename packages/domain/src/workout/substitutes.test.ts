@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  activeSubstitutes,
   availableEquipment,
   substituteCandidates,
   type ExerciseRef,
@@ -95,5 +96,35 @@ describe('substituteCandidates', () => {
 
   it('an exercise with no substitutes has no candidates', () => {
     expect(candidates('push-up')).toEqual([]);
+  });
+});
+
+describe('activeSubstitutes', () => {
+  const t = (minute: number) => new Date(`2026-11-23T07:${String(minute).padStart(2, '0')}:00Z`);
+
+  it('D44: the substitute on the latest logged set of each original exercise', () => {
+    const active = activeSubstitutes([
+      { exerciseId: 'plank', substitutedForExerciseId: null, loggedAt: t(30) },
+      { exerciseId: 'abdominal-crunch', substitutedForExerciseId: 'plank', loggedAt: t(32) },
+      { exerciseId: 'push-up', loggedAt: t(10) },
+    ]);
+    expect(active).toEqual(
+      new Map([
+        ['plank', 'abdominal-crunch'],
+        ['push-up', null],
+      ]),
+    );
+  });
+
+  it('D44: switching back to the original clears the substitute, whatever the input order', () => {
+    const active = activeSubstitutes([
+      { exerciseId: 'plank', substitutedForExerciseId: null, loggedAt: t(40) },
+      { exerciseId: 'abdominal-crunch', substitutedForExerciseId: 'plank', loggedAt: t(32) },
+    ]);
+    expect(active.get('plank')).toBeNull();
+  });
+
+  it('nothing logged, nothing active', () => {
+    expect(activeSubstitutes([]).size).toBe(0);
   });
 });

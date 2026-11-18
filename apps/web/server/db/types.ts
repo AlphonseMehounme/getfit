@@ -981,6 +981,7 @@ export type Database = {
           duration_s: number | null;
           id: string;
           notes: string | null;
+          paused_at: string | null;
           paused_s: number;
           prescription_snapshot: Json | null;
           programme_day_id: string | null;
@@ -1002,6 +1003,7 @@ export type Database = {
           duration_s?: number | null;
           id: string;
           notes?: string | null;
+          paused_at?: string | null;
           paused_s?: number;
           prescription_snapshot?: Json | null;
           programme_day_id?: string | null;
@@ -1022,6 +1024,7 @@ export type Database = {
           duration_s?: number | null;
           id?: string;
           notes?: string | null;
+          paused_at?: string | null;
           paused_s?: number;
           prescription_snapshot?: Json | null;
           programme_day_id?: string | null;

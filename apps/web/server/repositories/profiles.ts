@@ -17,3 +17,18 @@ export async function findProfileSettings(
   if (error) throw new Error(`profiles: ${error.code}`);
   return data;
 }
+
+type EquipmentType = Database['public']['Enums']['equipment_type'];
+
+/** D40: the equipment the user recorded in onboarding or Settings (empty when none). */
+export async function findUserEquipment(
+  client: DbClient,
+  userId: string,
+): Promise<EquipmentType[]> {
+  const { data, error } = await client
+    .from('user_equipment')
+    .select('equipment')
+    .eq('user_id', userId);
+  if (error) throw new Error(`user_equipment: ${error.code}`);
+  return data.map((row) => row.equipment);
+}

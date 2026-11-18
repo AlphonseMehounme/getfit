@@ -8,11 +8,13 @@ import {
   finishSession,
   getWorkout,
   logSet,
+  pauseSession,
+  resumeSession,
   startSession,
 } from '../../apps/web/server/services/workout';
-import { anonClient, createTestUser, type TestUser } from './helpers';
+import { anonClient, createTestUser, type TestUser, withRollback } from './helpers';
 
-// Integration tests for the P1-17a workout service against local Supabase (PRD §6.5, D21, D31, D32).
+// Integration tests for the P1-17a / P2-03 workout service against local Supabase (PRD §6.5, D21, D31, D32).
 // Week 1 starts on Monday 23 Nov 2026 (Paris); time is always injected (ADR 0002).
 
 const at = (iso: string) => fixedClock(new Date(iso));
@@ -401,5 +403,191 @@ describe('workout service', () => {
       .update({ prescription_snapshot: { version: 1 } })
       .eq('id', sessionId);
     expect(edit.error?.message).toContain('immutable');
+  });
+});
+
+describe('workout service: pause, substitutes, load (P2-03)', () => {
+  const T = (time: string) => at(`2026-11-23T${time}:00+01:00`);
+
+  async function started() {
+    const { user, monday } = await enrolledUser();
+    const sessionId = randomUUID();
+    await startSession(user.client, { sessionId, programmeDayId: monday }, MONDAY, noTrack);
+    return { user, sessionId, slots: await slotsOf(user, sessionId) };
+  }
+
+  const exerciseId = async (user: TestUser, slug: string) =>
+    (await user.client.from('exercises').select('id').eq('slug', slug).single()).data!.id;
+
+  it('D34: a pause survives a reload, freezes active time, and resume adds it to paused_s', async () => {
+    const { user, sessionId } = await started();
+    const pause = { sessionId };
+    expect(await pauseSession(user.client, pause, T('08:10'))).toEqual({ ok: true });
+    // Pausing again (a retry) keeps the first pause start.
+    expect(await pauseSession(user.client, pause, T('08:12'))).toEqual({ ok: true });
+
+    const reloaded = (await getWorkout(user.client, sessionId, T('08:20')))!;
+    expect(reloaded.pausedAt).toEqual(new Date('2026-11-23T07:10:00Z'));
+    expect(reloaded.activeSecondsNow).toBe(600);
+    expect((await getWorkout(user.client, sessionId, T('08:24')))!.activeSecondsNow).toBe(600);
+
+    expect(await resumeSession(user.client, pause, T('08:25'))).toEqual({ ok: true });
+    expect(await resumeSession(user.client, pause, T('08:26'))).toEqual({ ok: true });
+    const row = await user.client
+      .from('workout_sessions')
+      .select('paused_s, paused_at')
+      .eq('id', sessionId)
+      .single();
+    expect(row.data).toEqual({ paused_s: 900, paused_at: null });
+    expect((await getWorkout(user.client, sessionId, T('08:30')))!).toMatchObject({
+      pausedAt: null,
+      activeSecondsNow: 900,
+    });
+    expect(await pauseSession(user.client, { sessionId: 'x' }, T('08:30'))).toEqual({
+      ok: false,
+      error: 'invalid_input',
+    });
+    expect(await resumeSession(user.client, {}, T('08:30'))).toEqual({
+      ok: false,
+      error: 'invalid_input',
+    });
+  });
+
+  it('D45: no set is logged while paused; D34: saving while paused closes the pause', async () => {
+    const { user, sessionId, slots } = await started();
+    await pauseSession(user.client, { sessionId }, T('08:20'));
+    expect(await logSet(user.client, setInput(sessionId, slots[0]!), T('08:25'))).toEqual({
+      ok: false,
+      error: 'paused',
+    });
+
+    expect(
+      await finishSession(
+        user.client,
+        { sessionId, save: 'partial', confirm: true },
+        T('08:30'),
+        noTrack,
+      ),
+    ).toEqual({ ok: true, status: 'partial' });
+    const row = await user.client
+      .from('workout_sessions')
+      .select('paused_s, paused_at, duration_s')
+      .eq('id', sessionId)
+      .single();
+    // 30 min since the start, of which 10 paused.
+    expect(row.data).toEqual({ paused_s: 600, paused_at: null, duration_s: 1200 });
+    // A saved session can't be paused (D32 reopens it first).
+    expect(await pauseSession(user.client, { sessionId }, T('08:35'))).toEqual({
+      ok: false,
+      error: 'not_in_progress',
+    });
+  });
+
+  it('D40 / D44: a crunch logged for the plank fills its slots and is remembered on reload', async () => {
+    const { user, sessionId, slots } = await started();
+    const workout = (await getWorkout(user.client, sessionId, MONDAY))!;
+    const plank = workout.exercises.find((e) => e.slug === 'plank')!;
+    expect(plank.substitutes.map((s) => s.slug)).toEqual(['abdominal-crunch']);
+    expect(plank.substitutes[0]).toMatchObject({ name: 'Abdominal crunch', category: 'core' });
+    expect(workout.exercises.find((e) => e.slug === 'push-up')!.substitutes).toEqual([]);
+    const crunch = plank.substitutes[0]!.id;
+
+    for (const slot of slots) {
+      const input =
+        slot.exerciseId === plank.prescription.exerciseId
+          ? setInput(sessionId, slot, {
+              exerciseId: crunch,
+              substitutedForExerciseId: slot.exerciseId,
+              actualReps: 15,
+            })
+          : setInput(sessionId, slot);
+      expect(await logSet(user.client, input, MONDAY)).toEqual({ ok: true });
+    }
+    const reloaded = (await getWorkout(user.client, sessionId, MONDAY))!;
+    expect(reloaded.exercises.find((e) => e.slug === 'plank')!.activeSubstituteId).toBe(crunch);
+    expect(reloaded.exercises.find((e) => e.slug === 'pull-up')!.activeSubstituteId).toBeNull();
+    expect(reloaded.progress).toMatchObject({ logged: 12, complete: true });
+    expect(reloaded.finishOptions).toEqual(['completed', 'partial']);
+    // BR-25: the snapshot still prescribes the plank.
+    expect(reloaded.snapshot.exercises.map((e) => e.exerciseId)).toContain(
+      plank.prescription.exerciseId,
+    );
+  });
+
+  it('D40: a substitute outside the candidates is refused', async () => {
+    const { user, sessionId, slots } = await started();
+    const [pullUpSlot] = slots;
+    const plankSlot = slots.at(-1)!;
+    const refused = { ok: false, error: 'not_a_substitute' };
+    const as = (slot: SetSlot, slug: string) =>
+      exerciseId(user, slug).then((id) =>
+        setInput(sessionId, slot, { exerciseId: id, substitutedForExerciseId: slot.exerciseId }),
+      );
+
+    expect(await logSet(user.client, await as(pullUpSlot!, 'chin-up'), MONDAY)).toEqual(refused);
+    expect(await logSet(user.client, await as(plankSlot, 'standing-calf-raise'), MONDAY)).toEqual(
+      refused,
+    );
+    // The slot is checked against the replaced exercise.
+    expect(
+      await logSet(
+        user.client,
+        await as({ ...plankSlot, setNumber: 9 }, 'abdominal-crunch'),
+        MONDAY,
+      ),
+    ).toEqual({ ok: false, error: 'not_prescribed' });
+    expect((await getWorkout(user.client, sessionId, MONDAY))!.sets).toHaveLength(0);
+  });
+
+  it('D41: load typed in lb is stored in kg to 0.01, with reps in reserve', async () => {
+    const { user, sessionId, slots } = await started();
+    const input = setInput(sessionId, slots[0]!, { load: 45, loadUnit: 'lb', rir: 2 });
+    expect(await logSet(user.client, input, MONDAY)).toEqual({ ok: true });
+    const [set] = (await getWorkout(user.client, sessionId, MONDAY))!.sets;
+    expect(set).toMatchObject({ loadKg: 20.41, rir: 2 });
+  });
+
+  it('RLS: user B can neither pause nor resume user A’s session', async () => {
+    const alice = await started();
+    const bob = await enrolledUser();
+    const pause = { sessionId: alice.sessionId };
+    expect(await pauseSession(bob.user.client, pause, T('08:10'))).toEqual({
+      ok: false,
+      error: 'not_found',
+    });
+    expect(await resumeSession(bob.user.client, pause, T('08:10'))).toEqual({
+      ok: false,
+      error: 'not_found',
+    });
+    const direct = await bob.user.client
+      .from('workout_sessions')
+      .update({ paused_at: new Date().toISOString() })
+      .eq('id', alice.sessionId)
+      .select('id');
+    expect(direct.data).toEqual([]);
+    expect((await getWorkout(alice.user.client, alice.sessionId, T('08:10')))!.pausedAt).toBeNull();
+  });
+
+  it('D34 constraints: paused only while in progress, never before the start', async () => {
+    const { sessionId } = await started();
+    const attempt = (sql: string) =>
+      withRollback((db) => db.query(sql, [sessionId])).then(
+        () => null,
+        (error: { constraint?: string }) => error.constraint,
+      );
+    expect(
+      await attempt(
+        `update public.workout_sessions
+           set status = 'partial', completed_at = started_at, paused_at = started_at where id = $1`,
+      ),
+    ).toBe('workout_sessions_paused_only_in_progress');
+    expect(
+      await attempt(
+        `update public.workout_sessions set paused_at = started_at - interval '1 minute' where id = $1`,
+      ),
+    ).toBe('workout_sessions_paused_after_start');
+    expect(
+      await attempt(`update public.workout_sessions set paused_at = started_at where id = $1`),
+    ).toBeNull();
   });
 });

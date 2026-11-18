@@ -52,3 +52,29 @@ export function substituteCandidates(
         candidate.equipment.every((item) => available.has(item)),
     );
 }
+
+/** What `activeSubstitutes` reads from each logged set. */
+export interface SubstitutionTrace {
+  exerciseId: string;
+  substitutedForExerciseId?: string | null;
+  loggedAt: Date;
+}
+
+/**
+ * D44: the substitute in use for each original exercise: the one on its latest logged set, or null when that set
+ * used the original exercise. Exercises with no logged set are absent.
+ */
+export function activeSubstitutes(sets: readonly SubstitutionTrace[]): Map<string, string | null> {
+  const latest = new Map<string, SubstitutionTrace>();
+  for (const set of sets) {
+    const original = set.substitutedForExerciseId ?? set.exerciseId;
+    const current = latest.get(original);
+    if (!current || set.loggedAt.getTime() >= current.loggedAt.getTime()) latest.set(original, set);
+  }
+  return new Map(
+    [...latest].map(([original, set]) => [
+      original,
+      set.substitutedForExerciseId ? set.exerciseId : null,
+    ]),
+  );
+}
