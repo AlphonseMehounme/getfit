@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { finishSessionSchema, logSetSchema, startSessionSchema } from './workout';
+import {
+  finishSessionSchema,
+  logSetSchema,
+  pauseSessionSchema,
+  startSessionSchema,
+} from './workout';
 
 const set = (overrides: Record<string, unknown> = {}) => ({
   id: randomUUID(),
@@ -26,13 +31,29 @@ describe('startSessionSchema', () => {
 });
 
 describe('logSetSchema', () => {
-  it('accepts reps, load and reps in reserve, defaulting the rest to null', () => {
-    expect(logSetSchema.parse(set({ actualReps: 6, loadKg: 12.5, rir: 2 }))).toMatchObject({
+  it('D41: accepts reps, load in the user unit and reps in reserve, defaulting the rest', () => {
+    expect(
+      logSetSchema.parse(set({ actualReps: 6, load: 45, loadUnit: 'lb', rir: 2 })),
+    ).toMatchObject({
       actualReps: 6,
       actualDurationS: null,
-      loadKg: 12.5,
+      load: 45,
+      loadUnit: 'lb',
       rir: 2,
+      substitutedForExerciseId: null,
     });
+    expect(logSetSchema.parse(set({ load: 12.5 }))).toMatchObject({ load: 12.5, loadUnit: 'kg' });
+  });
+
+  it('D40: takes the replaced exercise, never the same exercise', () => {
+    const exerciseId = randomUUID();
+    const replaced = randomUUID();
+    expect(
+      logSetSchema.parse(set({ exerciseId, substitutedForExerciseId: replaced })),
+    ).toMatchObject({ exerciseId, substitutedForExerciseId: replaced });
+    expect(
+      logSetSchema.safeParse(set({ exerciseId, substitutedForExerciseId: exerciseId })).success,
+    ).toBe(false);
   });
 
   it('accepts a timed hold, and a set with no measure', () => {
@@ -46,13 +67,24 @@ describe('logSetSchema', () => {
       { setNumber: 0 },
       { side: 'middle' },
       { actualReps: -1 },
-      { loadKg: 1000 },
-      { loadKg: 1.234 },
+      { load: -1 },
+      { load: 2001 },
+      { loadUnit: 'stone' },
+      { loadKg: 12 },
+      { substitutedForExerciseId: 'abc' },
       { rir: 11 },
       { extra: true },
     ]) {
       expect(logSetSchema.safeParse(set(bad)).success).toBe(false);
     }
+  });
+});
+
+describe('pauseSessionSchema', () => {
+  it('D34: takes only the session ID', () => {
+    expect(pauseSessionSchema.safeParse({ sessionId: randomUUID() }).success).toBe(true);
+    expect(pauseSessionSchema.safeParse({ sessionId: 'abc' }).success).toBe(false);
+    expect(pauseSessionSchema.safeParse({ sessionId: randomUUID(), at: 1 }).success).toBe(false);
   });
 });
 

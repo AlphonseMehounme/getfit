@@ -1,12 +1,16 @@
 import {
   activeSeconds,
+  activeSubstitutes,
+  availableEquipment,
   buildSnapshot,
   buildWeek,
   calendarDate,
   type Clock,
+  closePause,
   type FinishStatus,
   finishOptions,
   isPrescribedSlot,
+  loadToKg,
   loggingWindow,
   type Prescription,
   type LocalDate,
@@ -16,16 +20,29 @@ import {
   type PrescriptionSnapshot,
   resolveSession,
   type StartCheck,
+  substituteCandidates,
   type WorkoutProgress,
   workoutProgress,
   type WorkoutTotals,
   workoutTotals,
 } from '@getfit/domain';
+import type { Locale } from '@/lib/i18n/config';
 import { type Track, track } from '@/lib/observability/analytics';
-import { finishSessionSchema, logSetSchema, startSessionSchema } from '@/lib/validation/workout';
+import {
+  finishSessionSchema,
+  logSetSchema,
+  pauseSessionSchema,
+  startSessionSchema,
+} from '@/lib/validation/workout';
 import type { DbClient } from '@/server/db/client';
-import { type ExerciseInfo, findProgramme } from '@/server/repositories/programme';
-import { findProfileSettings } from '@/server/repositories/profiles';
+import {
+  type ExerciseInfo,
+  findProgramme,
+  findRequiredEquipment,
+  findSubstituteOptions,
+  type SubstituteOption,
+} from '@/server/repositories/programme';
+import { findProfileSettings, findUserEquipment } from '@/server/repositories/profiles';
 import {
   findOpenSessionForDay,
   findSession,
@@ -33,6 +50,7 @@ import {
   finishSessionRow,
   insertSession,
   reopenSession,
+  setPause,
   upsertSet,
   type WorkoutSessionRecord,
   type WorkoutSetRecord,
@@ -40,7 +58,7 @@ import {
 import { getCurrentUser } from './auth';
 import { loadSchedule } from './schedule';
 
-// PRD §6.5 write path (Phase 1 subset). Every rule comes from the domain: when a session can start (D14, D23,
+// PRD §6.5 write path. Every rule comes from the domain: when a session can start (D14, D23,
 // D32), what it prescribes (BR-25 snapshot), which sets count and what it can be saved as (BR-14, BR-16, D31).
 
 type StartRefusal = Extract<StartCheck, { allowed: false }>['reason'];
@@ -149,7 +167,13 @@ async function openSession(
   sessionId: string,
   clock: Clock,
 ): Promise<
-  | { ok: true; userId: string; session: WorkoutSessionRecord; snapshot: PrescriptionSnapshot }
+  | {
+      ok: true;
+      userId: string;
+      locale: Locale;
+      session: WorkoutSessionRecord;
+      snapshot: PrescriptionSnapshot;
+    }
   | { ok: false; error: OpenSessionError }
 > {
   const user = await getCurrentUser(client);
@@ -165,7 +189,13 @@ async function openSession(
   ) {
     return { ok: false, error: 'window_closed' };
   }
-  return { ok: true, userId: user.id, session, snapshot: readSnapshot(session) };
+  return {
+    ok: true,
+    userId: user.id,
+    locale: profile.locale,
+    session,
+    snapshot: readSnapshot(session),
+  };
 }
 
 function readSnapshot(session: WorkoutSessionRecord): PrescriptionSnapshot {
@@ -174,11 +204,95 @@ function readSnapshot(session: WorkoutSessionRecord): PrescriptionSnapshot {
   return parsed.snapshot;
 }
 
+/**
+ * D40 / D42: the substitutes each prescribed exercise can take for this user, by original exercise id.
+ * The candidates come from the domain, so the screen and `logSet` agree.
+ */
+async function loadSubstitutes(
+  client: DbClient,
+  userId: string,
+  snapshot: PrescriptionSnapshot,
+  locale: Locale,
+): Promise<Map<string, SubstituteOption[]>> {
+  const ids = snapshot.exercises.map((e) => e.exerciseId);
+  const [userEquipment, required, options] = await Promise.all([
+    findUserEquipment(client, userId),
+    findRequiredEquipment(client, snapshot.programmeId),
+    findSubstituteOptions(client, ids, locale),
+  ]);
+  const available = availableEquipment(userEquipment, required);
+  const refs = [...options.exercises.values()];
+  return new Map(
+    ids.map((id) => {
+      const category = options.categories.get(id);
+      const candidates = category
+        ? substituteCandidates({ id, category }, options.relations, refs, available)
+        : [];
+      return [id, candidates.map((c) => options.exercises.get(c.id)!)];
+    }),
+  );
+}
+
+export type PauseResult = { ok: true } | { ok: false; error: 'invalid_input' | OpenSessionError };
+
+/** D34: opens a pause, persisted so a reload comes back paused. Pausing a paused session changes nothing. */
+export async function pauseSession(
+  client: DbClient,
+  input: unknown,
+  clock: Clock,
+): Promise<PauseResult> {
+  const parsed = pauseSessionSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: 'invalid_input' };
+  const open = await openSession(client, parsed.data.sessionId, clock);
+  if (!open.ok) return open;
+  if (open.session.pausedAt) return { ok: true };
+  const now = clock.now();
+  await setPause(client, open.session.id, {
+    pausedAt: now,
+    pausedS: open.session.pausedS,
+    at: now,
+  });
+  return { ok: true };
+}
+
+/** D34: closes the pause, adding its interval to `paused_s`. Resuming a running session changes nothing. */
+export async function resumeSession(
+  client: DbClient,
+  input: unknown,
+  clock: Clock,
+): Promise<PauseResult> {
+  const parsed = pauseSessionSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: 'invalid_input' };
+  const open = await openSession(client, parsed.data.sessionId, clock);
+  if (!open.ok) return open;
+  const { pausedAt, pausedS } = open.session;
+  if (!pausedAt) return { ok: true };
+  const now = clock.now();
+  await setPause(client, open.session.id, {
+    pausedAt: null,
+    pausedS: closePause(pausedS, pausedAt, now),
+    at: now,
+  });
+  return { ok: true };
+}
+
 export type LogSetResult =
   | { ok: true }
-  | { ok: false; error: 'invalid_input' | OpenSessionError | 'not_prescribed' | 'set_conflict' };
+  | {
+      ok: false;
+      error:
+        | 'invalid_input'
+        | OpenSessionError
+        | 'paused'
+        | 'not_prescribed'
+        | 'not_a_substitute'
+        | 'set_conflict';
+    };
 
-/** BR-6 / D21: each set is saved as it is logged, as an upsert by its client ID. */
+/**
+ * BR-6 / D21: each set is saved as it is logged, as an upsert by its client ID. D45: not while paused.
+ * D40: a substitute set fills the slot of the exercise it replaces, and must be one of its candidates.
+ */
 export async function logSet(
   client: DbClient,
   input: unknown,
@@ -190,14 +304,33 @@ export async function logSet(
 
   const open = await openSession(client, set.sessionId, clock);
   if (!open.ok) return open;
-  if (!isPrescribedSlot(open.snapshot, set)) return { ok: false, error: 'not_prescribed' };
+  if (open.session.pausedAt) return { ok: false, error: 'paused' };
+  const original = set.substitutedForExerciseId ?? set.exerciseId;
+  if (!isPrescribedSlot(open.snapshot, { ...set, exerciseId: original })) {
+    return { ok: false, error: 'not_prescribed' };
+  }
+  if (set.substitutedForExerciseId) {
+    const substitutes = await loadSubstitutes(client, open.userId, open.snapshot, open.locale);
+    if (!substitutes.get(original)?.some((s) => s.id === set.exerciseId)) {
+      return { ok: false, error: 'not_a_substitute' };
+    }
+  }
 
-  const written = await upsertSet(client, { ...set, at: clock.now() });
+  const { load, loadUnit, ...rest } = set;
+  const written = await upsertSet(client, {
+    ...rest,
+    loadKg: load === null ? null : loadToKg(load, loadUnit),
+    at: clock.now(),
+  });
   return written.ok ? { ok: true } : { ok: false, error: 'set_conflict' };
 }
 
 export interface WorkoutExercise extends ExerciseInfo {
   prescription: Prescription;
+  /** D40 / D42: what this exercise can be replaced with. */
+  substitutes: SubstituteOption[];
+  /** D44: the substitute in use, from the latest logged set; null for the prescribed exercise. */
+  activeSubstituteId: string | null;
 }
 
 export interface WorkoutView {
@@ -209,6 +342,8 @@ export interface WorkoutView {
   status: LoggedStatus;
   scheduledDate: LocalDate | null;
   startedAt: Date;
+  /** D34: start of the current pause, null when not paused. */
+  pausedAt: Date | null;
   snapshot: PrescriptionSnapshot;
   sets: WorkoutSetRecord[];
   progress: WorkoutProgress;
@@ -238,8 +373,9 @@ export async function getWorkout(
   const profile = await findProfileSettings(client, user.id);
   if (!profile) throw new Error('profile missing for signed-in user');
   const snapshot = readSnapshot(session);
-  const [sets, programme] = await Promise.all([
+  const [sets, substitutes, programme] = await Promise.all([
     findSets(client, sessionId),
+    loadSubstitutes(client, user.id, snapshot, profile.locale),
     findProgramme(
       client,
       { id: snapshot.programmeId, version: snapshot.programmeVersion },
@@ -249,6 +385,7 @@ export async function getWorkout(
   const template = programme?.templates.get(snapshot.sessionTemplateId);
   if (!template) throw new Error(`content: template for workout ${sessionId} not found`);
   const progress = workoutProgress(snapshot, sets);
+  const active = activeSubstitutes(sets);
   return {
     sessionId,
     title: template.title,
@@ -257,16 +394,24 @@ export async function getWorkout(
       .map((prescription) => ({
         ...template.exerciseInfo.get(prescription.exerciseId)!,
         prescription,
+        substitutes: substitutes.get(prescription.exerciseId) ?? [],
+        activeSubstituteId: active.get(prescription.exerciseId) ?? null,
       })),
     status: session.status,
     scheduledDate: session.scheduledDate,
     startedAt: session.startedAt,
+    pausedAt: session.pausedAt,
     snapshot,
     sets,
     progress,
     finishOptions: finishOptions(progress),
     totals: workoutTotals(sets),
-    activeSecondsNow: activeSeconds(session.startedAt, clock.now(), session.pausedS),
+    activeSecondsNow: activeSeconds(
+      session.startedAt,
+      clock.now(),
+      session.pausedS,
+      session.pausedAt,
+    ),
     durationS: session.durationS,
     completedAt: session.completedAt,
     rpe: session.rpe,
@@ -295,11 +440,15 @@ export async function finishSession(
   if (!finishOptions(progress).includes(save)) return { ok: false, error: 'incomplete' };
 
   const now = clock.now();
-  const durationS = activeSeconds(open.session.startedAt, now, open.session.pausedS);
+  // D34: saving while paused closes the pause first.
+  const { pausedAt } = open.session;
+  const pausedS = pausedAt ? closePause(open.session.pausedS, pausedAt, now) : open.session.pausedS;
+  const durationS = activeSeconds(open.session.startedAt, now, pausedS);
   const saved = await finishSessionRow(client, sessionId, {
     status: save,
     completedAt: now,
     durationS,
+    pausedS,
     rpe,
     notes,
   });

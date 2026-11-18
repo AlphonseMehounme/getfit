@@ -1,4 +1,6 @@
 import {
+  type EquipmentType,
+  type ExerciseRelation,
   type IsoWeekday,
   type ProgrammeShape,
   type ProgrammeWeek,
@@ -177,4 +179,75 @@ export async function findProgramme(
     weeks,
     templates,
   };
+}
+
+/** D40: an exercise that may replace another, with what the domain filters on and what the screen shows. */
+export interface SubstituteOption extends ExerciseInfo {
+  id: string;
+  equipment: EquipmentType[];
+}
+
+export interface SubstituteOptions {
+  relations: ExerciseRelation[];
+  /** By exercise id: the category of each exercise that has substitutes (D40: same category only). */
+  categories: Map<string, ExerciseCategory>;
+  /** By exercise id: every published exercise a relation points to. */
+  exercises: Map<string, SubstituteOption>;
+}
+
+/** D40: the `substitute` relations of `exerciseIds` and the published exercises they point to. */
+export async function findSubstituteOptions(
+  client: DbClient,
+  exerciseIds: readonly string[],
+  locale: Locale,
+): Promise<SubstituteOptions> {
+  const { data, error } = await client
+    .from('exercise_relations')
+    .select(
+      `exercise_id, related_exercise_id, kind,
+      source:exercises!exercise_relations_exercise_id_fkey (category),
+      related:exercises!exercise_relations_related_exercise_id_fkey (id, slug, category, equipment, published,
+        exercise_translations (locale, name, instructions))`,
+    )
+    .in('exercise_id', [...exerciseIds])
+    .eq('kind', 'substitute');
+  if (error) throw new Error(`exercise_relations: ${error.code}`);
+
+  const exercises = new Map<string, SubstituteOption>();
+  const categories = new Map<string, ExerciseCategory>();
+  const relations: ExerciseRelation[] = [];
+  for (const row of data) {
+    if (row.source) categories.set(row.exercise_id, row.source.category);
+    const related = row.related;
+    if (!related?.published) continue;
+    const text = inLocale(related.exercise_translations, locale, `exercise ${related.slug}`);
+    exercises.set(related.id, {
+      id: related.id,
+      slug: related.slug,
+      category: related.category,
+      equipment: related.equipment,
+      name: text.name,
+      cues: linesSchema.parse(text.instructions).slice(0, 3),
+    });
+    relations.push({
+      exerciseId: row.exercise_id,
+      relatedExerciseId: row.related_exercise_id,
+      kind: row.kind,
+    });
+  }
+  return { relations, categories, exercises };
+}
+
+/** D40: the programme's required equipment, used when the user recorded none. */
+export async function findRequiredEquipment(
+  client: DbClient,
+  programmeId: string,
+): Promise<EquipmentType[]> {
+  const { data, error } = await client
+    .from('programmes')
+    .select('required_equipment')
+    .eq('id', programmeId)
+    .maybeSingle();
+  if (error) throw new Error(`programmes: ${error.code}`);
+  return data?.required_equipment ?? [];
 }

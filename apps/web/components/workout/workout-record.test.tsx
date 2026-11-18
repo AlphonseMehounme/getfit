@@ -43,9 +43,18 @@ const WORKOUT: WorkoutView & { status: 'completed' | 'partial' } = {
   status: 'partial',
   scheduledDate: '2026-11-27' as LocalDate,
   startedAt: new Date('2026-11-27T07:00:00Z'),
+  pausedAt: null,
   snapshot: {} as WorkoutView['snapshot'],
   exercises: [
-    { slug: 'pull-up', category: 'upper', name: 'Pull-up', cues: [], prescription: rx('pull-up') },
+    {
+      slug: 'pull-up',
+      category: 'upper',
+      name: 'Pull-up',
+      cues: [],
+      prescription: rx('pull-up'),
+      substitutes: [],
+      activeSubstituteId: null,
+    },
     {
       slug: 'side-plank',
       category: 'core',
@@ -57,6 +66,8 @@ const WORKOUT: WorkoutView & { status: 'completed' | 'partial' } = {
         target: { kind: 'duration', seconds: 30 },
         perSide: true,
       }),
+      substitutes: [],
+      activeSubstituteId: null,
     },
   ],
   sets: [set('pull-up', 1, 'both', { reps: 5 }), set('side-plank', 1, 'left', { s: 30 })],

@@ -7,6 +7,9 @@ import {
   finishSession,
   type LogSetResult,
   logSet,
+  type PauseResult,
+  pauseSession,
+  resumeSession,
   type StartSessionResult,
   startSession,
 } from '@/server/services/workout';
@@ -25,4 +28,12 @@ export async function logSetAction(input: unknown): Promise<LogSetResult> {
 
 export async function finishSessionAction(input: unknown): Promise<FinishSessionResult> {
   return finishSession(await createSupabaseServerClient(), input, await getRequestClock());
+}
+
+export async function pauseSessionAction(input: unknown): Promise<PauseResult> {
+  return pauseSession(await createSupabaseServerClient(), input, await getRequestClock());
+}
+
+export async function resumeSessionAction(input: unknown): Promise<PauseResult> {
+  return resumeSession(await createSupabaseServerClient(), input, await getRequestClock());
 }

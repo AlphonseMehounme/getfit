@@ -13,6 +13,8 @@ export interface WorkoutSessionRecord {
   status: LoggedStatus;
   startedAt: Date;
   pausedS: number;
+  /** D34: start of the current pause, null when not paused. */
+  pausedAt: Date | null;
   completedAt: Date | null;
   durationS: number | null;
   rpe: number | null;
@@ -22,7 +24,7 @@ export interface WorkoutSessionRecord {
 }
 
 const SESSION_COLUMNS =
-  'id, user_programme_id, programme_day_id, scheduled_date, status, started_at, paused_s, completed_at, duration_s, rpe, notes, prescription_snapshot';
+  'id, user_programme_id, programme_day_id, scheduled_date, status, started_at, paused_s, paused_at, completed_at, duration_s, rpe, notes, prescription_snapshot';
 
 type SessionRow = {
   id: string;
@@ -32,6 +34,7 @@ type SessionRow = {
   status: LoggedStatus;
   started_at: string;
   paused_s: number;
+  paused_at: string | null;
   completed_at: string | null;
   duration_s: number | null;
   rpe: number | null;
@@ -47,6 +50,7 @@ const toSession = (row: SessionRow): WorkoutSessionRecord => ({
   status: row.status,
   startedAt: new Date(row.started_at),
   pausedS: row.paused_s,
+  pausedAt: row.paused_at ? new Date(row.paused_at) : null,
   completedAt: row.completed_at ? new Date(row.completed_at) : null,
   durationS: row.duration_s,
   rpe: row.rpe,
@@ -128,10 +132,33 @@ export async function reopenSession(client: DbClient, id: string, at: Date): Pro
   if (error) fail('workout_sessions', error.code);
 }
 
+/**
+ * D34: opens (`pausedAt` set) or closes (null) a pause. Only an in-progress session changes; anything else is a
+ * no-op that the service has already refused.
+ */
+export async function setPause(
+  client: DbClient,
+  id: string,
+  pause: { pausedAt: Date | null; pausedS: number; at: Date },
+): Promise<void> {
+  const { error } = await client
+    .from('workout_sessions')
+    .update({
+      paused_at: pause.pausedAt?.toISOString() ?? null,
+      paused_s: pause.pausedS,
+      client_updated_at: pause.at.toISOString(),
+    })
+    .eq('id', id)
+    .eq('status', 'in_progress');
+  if (error) fail('workout_sessions', error.code);
+}
+
 export interface SessionFinish {
   status: 'completed' | 'partial';
   completedAt: Date;
   durationS: number;
+  /** D34: an open pause is closed on save. */
+  pausedS: number;
   rpe: number | null;
   notes: string | null;
 }
@@ -148,6 +175,8 @@ export async function finishSessionRow(
       status: finish.status,
       completed_at: finish.completedAt.toISOString(),
       duration_s: finish.durationS,
+      paused_s: finish.pausedS,
+      paused_at: null,
       rpe: finish.rpe,
       notes: finish.notes,
       client_updated_at: finish.completedAt.toISOString(),
@@ -195,6 +224,8 @@ export interface SetWrite {
   id: string;
   sessionId: string;
   exerciseId: string;
+  /** D40: the prescribed exercise this set replaces. */
+  substitutedForExerciseId: string | null;
   setNumber: number;
   side: 'left' | 'right' | 'both';
   actualReps: number | null;
@@ -212,6 +243,7 @@ export async function upsertSet(client: DbClient, set: SetWrite): Promise<{ ok: 
       id: set.id,
       workout_session_id: set.sessionId,
       exercise_id: set.exerciseId,
+      substituted_for_exercise_id: set.substitutedForExerciseId,
       set_number: set.setNumber,
       side: set.side,
       actual_reps: set.actualReps,
