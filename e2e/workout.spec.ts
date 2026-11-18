@@ -114,3 +114,35 @@ test('D31 / D32: save as partial from Leave, then resume; completed is not offer
   await page.getByRole('button', { name: en.Workout.summary.savePartial }).click();
   await expect(page).toHaveURL('/today');
 });
+
+test("D39 / D48: logging a set starts the prescription's rest, a reload keeps it, and Skip ends it", async ({
+  page,
+}, testInfo) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+
+  // Strength A's pull-up rests 120 s (D12).
+  const rest = page.getByRole('timer', { name: en.Workout.rest.timerLabel });
+  await expect(rest).toHaveText(/^(2:00|1:5\d)$/);
+  const skip = page.getByRole('button', { name: en.Workout.rest.skip });
+  // PRD §9: the rest controls sit in the lower half of the screen.
+  const viewport = page.viewportSize()!;
+  expect((await skip.boundingBox())!.y).toBeGreaterThan(viewport.height / 2);
+  await expectNoAxeViolations(page);
+  await testInfo.attach('rest-timer', { body: await page.screenshot(), contentType: 'image/png' });
+
+  // D48: the rest is kept on this device across a reload. The page reloads in the dark theme, so the rest
+  // panel is checked there too (switching themes on a loaded page would catch colours mid-transition).
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.reload();
+  await expect(rest).toHaveText(/^(2:00|1:[0-5]\d)$/);
+  await expectNoAxeViolations(page);
+  await testInfo.attach('rest-timer-dark', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  });
+
+  await skip.click();
+  await expect(rest).toHaveCount(0);
+});

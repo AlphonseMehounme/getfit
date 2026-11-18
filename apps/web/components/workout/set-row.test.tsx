@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { mockAlerts, setVisibility } from '@/test/alert-mocks';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
 import { SetRow } from './set-row';
 
@@ -69,5 +70,95 @@ describe('SetRow', () => {
       'fr',
     );
     expect(screen.getByText('Série 1 : faite, 6 rép.')).toBeTruthy();
+  });
+});
+
+describe('SetRow hold countdown (D39 / D46)', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    setVisibility('visible');
+  });
+
+  const seconds = () =>
+    (screen.getByRole('spinbutton', { name: 'Seconds for Set 1' }) as HTMLInputElement).value;
+
+  function renderHold() {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-11-23T07:30:00Z'));
+    const onLog = vi.fn();
+    const onHoldEnd = vi.fn();
+    const view = renderWithIntl(
+      <SetRow
+        label="Set 1"
+        kind="seconds"
+        target={30}
+        logged={null}
+        onLog={onLog}
+        onHoldEnd={onHoldEnd}
+      />,
+    );
+    return { ...view, onLog, onHoldEnd };
+  }
+
+  it('D46: at zero it alerts and pre-fills the target; nothing is logged until the tap', async () => {
+    const alerts = mockAlerts();
+    const { onLog, onHoldEnd } = renderHold();
+    fireEvent.click(screen.getByRole('button', { name: 'Start the hold for Set 1' }));
+    expect(screen.getByRole('timer', { name: 'Hold time left for Set 1' }).textContent).toBe(
+      '0:30',
+    );
+    act(() => vi.advanceTimersByTime(30_000));
+    expect(alerts.vibrate).toHaveBeenCalledTimes(1);
+    expect(onHoldEnd).toHaveBeenCalledWith(30);
+    expect(seconds()).toBe('30');
+    expect(onLog).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Start the hold for Set 1' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(onLog).toHaveBeenCalledWith(30);
+  });
+
+  it('D46: stopping early pre-fills the seconds held', async () => {
+    const { onLog, onHoldEnd } = renderHold();
+    fireEvent.click(screen.getByRole('button', { name: 'Start the hold for Set 1' }));
+    act(() => vi.advanceTimersByTime(12_400));
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
+    expect(onHoldEnd).toHaveBeenCalledWith(12);
+    expect(seconds()).toBe('12');
+    expect(onLog).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Save 12 s' }));
+    expect(onLog).toHaveBeenCalledWith(12);
+  });
+
+  it('D39: a hold that ends while hidden alerts when the page is visible again', async () => {
+    const alerts = mockAlerts();
+    const { onHoldEnd } = renderHold();
+    fireEvent.click(screen.getByRole('button', { name: 'Start the hold for Set 1' }));
+    act(() => setVisibility('hidden'));
+    act(() => vi.advanceTimersByTime(40_000));
+    expect(onHoldEnd).not.toHaveBeenCalled();
+    // Visible again before the end does nothing; after it, the hold ends.
+    act(() => setVisibility('visible'));
+    expect(alerts.vibrate).toHaveBeenCalledTimes(1);
+    expect(onHoldEnd).toHaveBeenCalledWith(30);
+  });
+
+  it('the running hold is axe clean', async () => {
+    const { container } = renderWithIntl(
+      <SetRow label="Set 1" kind="seconds" target={30} logged={null} onLog={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Start the hold for Set 1' }));
+    await expectNoAxeViolations(container);
+  });
+
+  it('a hold row without onHoldEnd still pre-fills', async () => {
+    vi.useFakeTimers();
+    renderWithIntl(
+      <SetRow label="Set 1" kind="seconds" target={30} logged={null} onLog={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Start the hold for Set 1' }));
+    act(() => vi.advanceTimersByTime(5_000));
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
+    expect(seconds()).toBe('5');
   });
 });

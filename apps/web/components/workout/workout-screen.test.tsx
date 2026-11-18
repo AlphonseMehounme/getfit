@@ -3,7 +3,7 @@ import '@/test/dialog-shim';
 import type { Prescription } from '@getfit/domain';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
 import type { FinishAction } from './finish-summary';
 import { type LogSetAction, WorkoutScreen, type WorkoutScreenExercise } from './workout-screen';
@@ -267,5 +267,115 @@ describe('WorkoutScreen', () => {
       rpe: null,
       notes: null,
     });
+  });
+});
+
+describe('WorkoutScreen rest timer (D39, D43, D47, D48)', () => {
+  const KEY = `getfit.rest.${SESSION}`;
+  const timer = () => screen.queryByRole('timer', { name: 'Rest time left' });
+  const storeRest = (inS: number, totalS = 120) =>
+    window.localStorage.setItem(
+      KEY,
+      JSON.stringify({ endsAt: new Date(Date.now() + inS * 1000).toISOString(), totalS }),
+    );
+
+  // Earlier tests leave rests behind for the same session, as a real device would.
+  beforeEach(() => window.localStorage.clear());
+  afterEach(() => vi.restoreAllMocks());
+
+  it("D39: a set's first log starts the prescription's rest; Skip and +15 s act on it", async () => {
+    const logSet = vi.fn<LogSetAction>(async () => ({ ok: true }));
+    const { container } = renderScreen(logSet);
+    expect(timer()).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(timer()!.textContent).toMatch(/^(2:00|1:59)$/);
+    expect(JSON.parse(window.localStorage.getItem(KEY)!)).toMatchObject({ totalS: 120 });
+    await expectNoAxeViolations(container);
+
+    // +15 s moves the end time by exactly 15 s, whatever time the test itself took.
+    const stored = () => JSON.parse(window.localStorage.getItem(KEY)!) as { endsAt: string };
+    const before = Date.parse(stored().endsAt);
+    await userEvent.click(screen.getByRole('button', { name: '+15 s: add 15 seconds of rest' }));
+    expect(Date.parse(stored().endsAt) - before).toBe(15_000);
+    expect(JSON.parse(window.localStorage.getItem(KEY)!)).toMatchObject({ totalS: 135 });
+    await userEvent.click(screen.getByRole('button', { name: 'Skip rest' }));
+    expect(timer()).toBeNull();
+    expect(window.localStorage.getItem(KEY)).toBeNull();
+  });
+
+  it('D47: correcting a logged set never starts a rest', async () => {
+    renderScreen(vi.fn<LogSetAction>(async () => ({ ok: true })));
+    await userEvent.click(screen.getByRole('button', { name: 'Edit Set 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Increase Reps for Set 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save 7 reps' }));
+    await waitFor(() => expect(screen.getByText('Set 1: done, 7 reps')).toBeTruthy());
+    expect(timer()).toBeNull();
+  });
+
+  it('D43: no rest after the left side, nor after the last set of the workout', async () => {
+    renderScreen(
+      vi.fn<LogSetAction>(async () => ({ ok: true })),
+      1,
+      {},
+    );
+    const [left] = screen.getAllByRole('button', { name: 'Done as planned' });
+    await userEvent.click(left!);
+    expect(timer()).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    await waitFor(() => expect(screen.getByText('2 of 4 sets done')).toBeTruthy());
+    expect(timer()).toBeNull();
+  });
+
+  it('D48: a running rest comes back after a reload; an ended or unreadable one does not', () => {
+    storeRest(90);
+    const first = renderScreen(vi.fn());
+    expect(timer()!.textContent).toMatch(/^1:(30|29)$/);
+    first.unmount();
+
+    storeRest(-5);
+    const ended = renderScreen(vi.fn());
+    expect(timer()).toBeNull();
+    ended.unmount();
+
+    window.localStorage.setItem(KEY, '{not json');
+    const broken = renderScreen(vi.fn());
+    expect(timer()).toBeNull();
+    broken.unmount();
+
+    window.localStorage.setItem(KEY, JSON.stringify({ endsAt: 'soon', totalS: 60 }));
+    renderScreen(vi.fn());
+    expect(timer()).toBeNull();
+  });
+
+  it('D39: announces the end of the rest in a live region that stays on screen', async () => {
+    storeRest(1);
+    renderScreen(vi.fn());
+    expect(timer()).toBeTruthy();
+    await waitFor(() => expect(timer()).toBeNull(), { timeout: 3000 });
+    expect(
+      screen
+        .getByText('Rest over. Start the next set when you are ready.')
+        .getAttribute('aria-live'),
+    ).toBe('polite');
+  });
+
+  it('D48: with storage blocked the rest still runs, it just is not kept', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('SecurityError');
+    });
+    renderScreen(vi.fn<LogSetAction>(async () => ({ ok: true })));
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(timer()!.textContent).toMatch(/^(2:00|1:59)$/);
+  });
+
+  it('D46: announces where a hold ended', async () => {
+    renderScreen(vi.fn(), 1, {});
+    const [startLeft] = screen.getAllByRole('button', { name: /^Start the hold/ });
+    await userEvent.click(startLeft!);
+    await userEvent.click(screen.getByRole('button', { name: 'Stop' }));
+    expect(screen.getByText('Hold ended at 0 s. Check the value, then save the set.')).toBeTruthy();
   });
 });
