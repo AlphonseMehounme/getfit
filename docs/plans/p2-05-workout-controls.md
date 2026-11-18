@@ -56,18 +56,25 @@ is done (P2-03): `pauseSession`, `resumeSession`, `getWorkout` with `pausedAt`, 
   - `finish-summary.tsx` lists the skipped exercises.
 - PRD v2.8: D49 and D50. Tests: component tests and E2E (pause → reload → paused → resume; skip → only partial).
 
-## P2-05c · feat(workout): substitute, load and RIR (last PR, outline)
+## P2-05c · feat(workout): substitute, load and RIR (built)
 - **`substitute-sheet.tsx`:**
-  - lists `getWorkout` substitutes;
-  - choosing one applies for the rest of the session (D40, D44);
-  - sets log with `exerciseId = substitute` and `substitutedForExerciseId = original`;
-  - the step shows the substitute's name and cues (media by its slug).
-- **`set-details.tsx`:** optional load in the user's unit and RIR 0–10 on a set row (D41). They're sent as `load` +
-  `loadUnit` + `rir`.
-- **The record** shows the substitute's name and any load and RIR.
-- **E2E:**
-  - substitute plank → crunch, log it, save, and the record shows "Abdominal crunch";
-  - load and RIR on one set.
+  - lists the `getWorkout` substitutes (D40, D42);
+  - choosing one applies for the rest of the session; "Back to {exercise}" undoes it;
+  - the step shows the substitute's name, media (by its own slug) and cues, plus "Instead of {exercise}". The
+    target stays the same;
+  - sets log with `exerciseId` = the substitute and `substitutedForExerciseId` = the original. A reload reopens on
+    the substitute of the last logged set (D44).
+- **`set-details.tsx`:**
+  - optional load in the user's unit (`massUnitFor(profile.preferred_units)`) and RIR 0–10, folded under "Load and
+    reps in reserve";
+  - sent as `load` + `loadUnit` + `rir`; the server converts with `loadToKg` (D41);
+  - a logged set shows "6 reps · 10 kg · RIR 2".
+- **Record, page and service:**
+  - the page and the record key each set by its prescribed slot, so substitute sets are found there (D40);
+  - the record shows the substitute's name and any load and RIR;
+  - `getWorkout` now returns `units`.
+- **E2E:** substitute plank → crunch, reload (still crunch), save as partial; the record shows "Abdominal crunch"
+  and "10 kg · RIR 2".
 - **Gate:** AL checks the workout screen on a real phone in a preview deployment.
 
 ## Verification (P2-05a)

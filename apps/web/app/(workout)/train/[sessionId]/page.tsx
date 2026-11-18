@@ -1,4 +1,4 @@
-import { exerciseSlots, firstOpenSlot, slotKey } from '@getfit/domain';
+import { exerciseSlots, firstOpenSlot, loadForDisplay, massUnitFor, slotKey } from '@getfit/domain';
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -42,14 +42,23 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
     ? workout.exercises.findIndex((e) => e.prescription.exerciseId === open.exerciseId)
     : workout.exercises.length - 1;
 
+  const loadUnit = massUnitFor(workout.units);
   const initialSets: Record<string, LoggedSetValue> = {};
   const prescribed = new Set(
     workout.exercises.flatMap((e) => exerciseSlots(e.prescription)).map(slotKey),
   );
   for (const set of workout.sets) {
     const value = set.actualReps ?? set.actualDurationS;
-    if (set.completed && value !== null && prescribed.has(slotKey(set))) {
-      initialSets[slotKey(set)] = { id: set.id, value };
+    // D40: a substitute's set fills the slot of the exercise it replaced.
+    const key = slotKey({ ...set, exerciseId: set.substitutedForExerciseId ?? set.exerciseId });
+    if (set.completed && value !== null && prescribed.has(key)) {
+      initialSets[key] = {
+        id: set.id,
+        value,
+        load: set.loadKg === null ? null : loadForDisplay(set.loadKg, loadUnit),
+        rir: set.rir,
+        substituteId: set.substitutedForExerciseId ? set.exerciseId : null,
+      };
     }
   }
 
@@ -62,6 +71,13 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
         cues: e.cues,
         prescription: e.prescription,
         media: resolveExerciseMedia(e.slug, e.category, locale),
+        substitutes: e.substitutes.map((sub) => ({
+          id: sub.id,
+          name: sub.name,
+          cues: sub.cues,
+          media: resolveExerciseMedia(sub.slug, sub.category, locale),
+        })),
+        activeSubstituteId: e.activeSubstituteId,
       }))}
       initialSets={initialSets}
       initialIndex={openIndex}
@@ -70,6 +86,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
       pause={pauseSessionAction}
       resume={resumeSessionAction}
       pausedAtLoad={workout.pausedAt !== null}
+      loadUnit={loadUnit}
       activeSecondsAtLoad={workout.activeSecondsNow}
       savedRpe={workout.rpe}
       savedNotes={workout.notes}

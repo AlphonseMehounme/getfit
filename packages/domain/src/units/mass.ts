@@ -1,4 +1,4 @@
-import { assertFinite, roundTo } from './system';
+import { assertFinite, roundTo, type UnitSystem } from './system';
 
 // AGENTS §6: mass is stored in kilograms (`weight_kg`, `load_kg`, two decimals); pounds are display only.
 
@@ -6,6 +6,9 @@ import { assertFinite, roundTo } from './system';
 export const KG_PER_LB = 0.45359237;
 
 export type MassUnit = 'kg' | 'lb';
+
+/** D41: loads are shown in kg (metric) or lb (imperial). */
+export const massUnitFor = (system: UnitSystem): MassUnit => (system === 'imperial' ? 'lb' : 'kg');
 
 export function kgToLb(kg: number): number {
   assertFinite(kg, 'A mass');

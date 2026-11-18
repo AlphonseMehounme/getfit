@@ -3,6 +3,7 @@
 import {
   exerciseSlots,
   finishOptions,
+  type MassUnit,
   type Prescription,
   restAfter,
   type SetSlot,
@@ -31,6 +32,7 @@ import { type FinishAction, FinishSummary } from './finish-summary';
 import { LeaveDialog } from './leave-dialog';
 import { PauseOverlay } from './pause-overlay';
 import { RestTimer } from './rest-timer';
+import { SubstituteSheet } from './substitute-sheet';
 import { SetRow } from './set-row';
 import { WorkoutNav } from './workout-nav';
 
@@ -44,6 +46,9 @@ export interface WorkoutScreenExercise {
   media: ExerciseMedia;
   cues: string[];
   prescription: Prescription;
+  /** D40: what this exercise can be replaced with, and the one in use (D44). */
+  substitutes?: readonly { id: string; name: string; media: ExerciseMedia; cues: string[] }[];
+  activeSubstituteId?: string | null;
 }
 
 export type { LoggedSetValue, LogSetAction };
@@ -63,6 +68,8 @@ export interface WorkoutScreenProps {
   resume: PauseAction;
   /** D34: the workout was paused when the page was rendered. */
   pausedAtLoad?: boolean;
+  /** D41: the unit loads are shown and typed in. */
+  loadUnit?: MassUnit;
   /** Active seconds at the request clock when the page was rendered (domain `activeSeconds`). */
   activeSecondsAtLoad: number;
   /** D32: the effort and notes a reopened partial workout was saved with. */
@@ -83,6 +90,7 @@ export function WorkoutScreen({
   pause,
   resume,
   pausedAtLoad = false,
+  loadUnit = 'kg',
   activeSecondsAtLoad,
   savedRpe = null,
   savedNotes = null,
@@ -92,7 +100,19 @@ export function WorkoutScreen({
   const tTarget = useTranslations('Today.target');
   const router = useRouter();
   const [index, setIndex] = useState(initialIndex);
-  const { sets, pending, failed, log: saveSet } = useSetLogging(sessionId, initialSets, logSet);
+  const {
+    sets,
+    pending,
+    failed,
+    log: saveSet,
+  } = useSetLogging(sessionId, initialSets, logSet, loadUnit);
+  // D40 / D44: the substitute in use for each prescribed exercise, from the last set logged with it.
+  const [substitutes, setSubstitutes] = useState<Record<string, string | null>>(() =>
+    Object.fromEntries(
+      exercises.map((e) => [e.prescription.exerciseId, e.activeSubstituteId ?? null]),
+    ),
+  );
+  const [substituteOpen, setSubstituteOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   /** Seconds spent when the summary opened; null while logging. */
@@ -123,6 +143,8 @@ export function WorkoutScreen({
 
   const exercise = exercises[index]!;
   const { prescription } = exercise;
+  const substituteId = substitutes[prescription.exerciseId] ?? null;
+  const active = exercise.substitutes?.find((s) => s.id === substituteId);
   const { kind, value: targetValue } = setMeasure(prescription.target);
   // Strength workouts have no distance targets, so the unit system never matters here.
   const target = targetMessage(prescription, 'metric');
@@ -152,14 +174,18 @@ export function WorkoutScreen({
     return result.ok;
   };
 
-  const log = (slot: SetSlot, value: number) => {
+  const log = (
+    slot: SetSlot,
+    value: number,
+    details: { load: number | null; rir: number | null },
+  ) => {
     // D47: only a set's first log starts a rest; D43 / D39: none after a left side or the last set.
     const restS = sets[slotKey(slot)] ? null : restAfter(prescribed, slot);
     if (restS !== null) {
       setAnnouncement('');
       restTimer.start(restS, new Date());
     }
-    void saveSet(slot, kind, value);
+    void saveSet(slot, { kind, value, ...details, substituteId });
   };
 
   const setLabel = (slot: SetSlot) =>
@@ -218,10 +244,16 @@ export function WorkoutScreen({
       ) : (
         <ExerciseStep
           key={prescription.exerciseId}
-          name={exercise.name}
-          media={exercise.media}
+          name={active?.name ?? exercise.name}
+          media={active?.media ?? exercise.media}
           target={tTarget(target.key, target.values)}
-          cues={exercise.cues}
+          cues={active?.cues ?? exercise.cues}
+          replaces={active ? exercise.name : undefined}
+          onSubstitute={
+            hydrated && exercise.substitutes?.length && hasOpenSets(prescription)
+              ? () => setSubstituteOpen(true)
+              : undefined
+          }
           index={index}
           total={exercises.length}
           skip={{
@@ -238,7 +270,12 @@ export function WorkoutScreen({
               kind={kind}
               target={targetValue}
               logged={sets[slotKey(slot)]?.value ?? null}
-              onLog={(value) => log(slot, value)}
+              loggedDetails={{
+                load: sets[slotKey(slot)]?.load ?? null,
+                rir: sets[slotKey(slot)]?.rir ?? null,
+              }}
+              unit={loadUnit}
+              onLog={(value, details) => log(slot, value, details)}
               onHoldEnd={(seconds) => setAnnouncement(t('hold.ended', { seconds }))}
               disabled={!hydrated}
             />
@@ -286,6 +323,17 @@ export function WorkoutScreen({
           setListOpen(false);
         }}
         onFinish={openSummary}
+      />
+      <SubstituteSheet
+        open={substituteOpen}
+        onClose={() => setSubstituteOpen(false)}
+        original={exercise.name}
+        options={exercise.substitutes ?? []}
+        activeId={substituteId}
+        onChoose={(id) => {
+          setSubstitutes((current) => ({ ...current, [prescription.exerciseId]: id }));
+          setSubstituteOpen(false);
+        }}
       />
       <PauseOverlay
         open={pauseState.paused}

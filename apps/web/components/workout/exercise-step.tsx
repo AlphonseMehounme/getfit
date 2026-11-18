@@ -1,4 +1,4 @@
-import { SkipForward, Undo2 } from 'lucide-react';
+import { Replace, SkipForward, Undo2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { ExerciseMedia } from '@/components/exercise/exercise-media';
@@ -7,7 +7,8 @@ import type { ExerciseMedia as Media } from '@/lib/media/resolve';
 
 // PRD §6.5: one exercise per screen: its name, media (by slug, AGENTS §8), the target at 32 px or more (§9),
 // its set rows, then three cue lines. An exercise with open sets can be skipped, and the skip undone (D40, D49):
-// a skipped exercise hides its open sets, which stay unlogged.
+// a skipped exercise hides its open sets, which stay unlogged. With substitutes, the exercise can be replaced
+// for the rest of the workout; the step then shows the substitute and what it replaces (D40).
 
 export interface ExerciseStepProps {
   name: string;
@@ -17,6 +18,10 @@ export interface ExerciseStepProps {
   cues: readonly string[];
   index: number;
   total: number;
+  /** D40: the prescribed exercise's name, when a substitute is shown instead. */
+  replaces?: string;
+  /** D40: opens the substitutes, when there are any and sets are still open. */
+  onSubstitute?: () => void;
   /** D40: skipping is offered while the exercise has open sets. */
   skip?: { skipped: boolean; canSkip: boolean; onSkip: () => void; onUndo: () => void };
   children: ReactNode;
@@ -29,6 +34,8 @@ export function ExerciseStep({
   cues,
   index,
   total,
+  replaces,
+  onSubstitute,
   skip,
   children,
 }: ExerciseStepProps) {
@@ -39,6 +46,9 @@ export function ExerciseStep({
       <h2 id="exercise-name" className="text-2xl font-semibold tracking-tight">
         {name}
       </h2>
+      {replaces ? (
+        <p className="text-muted -mt-3 text-sm">{t('substitute.instead', { name: replaces })}</p>
+      ) : null}
       {/* A thumbnail beside the target keeps the set rows in view on a 360 px phone (PRD §9). */}
       <div className="flex items-center gap-4">
         <ExerciseMedia media={media} exerciseName={name} sizes="8rem" className="w-32 shrink-0" />
@@ -63,6 +73,16 @@ export function ExerciseStep({
         ) : (
           <>
             {children}
+            {onSubstitute ? (
+              <Button
+                variant="secondary"
+                aria-label={t('substitute.openLabel', { name: replaces ?? name })}
+                onClick={onSubstitute}
+              >
+                <Replace aria-hidden="true" className="size-5" />
+                {t('substitute.open')}
+              </Button>
+            ) : null}
             {skip?.canSkip ? (
               <Button
                 variant="secondary"

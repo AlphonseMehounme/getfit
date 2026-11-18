@@ -249,7 +249,8 @@
       "notes": "Notes",
       "notLogged": "Not logged",
       "back": "Back to Today",
-      "durationNone": "Duration —"
+      "durationNone": "Duration —",
+      "substitute": "Substitute"
     },
     "rest": {
       "title": "Rest",
@@ -282,6 +283,23 @@
       "skipped": "Skipped. Its sets stay unlogged, so this workout can only be saved as partial.",
       "undo": "Undo skip",
       "undoLabel": "Undo skip: {name}"
+    },
+    "details": {
+      "toggle": "Load and reps in reserve",
+      "forSet": "for {set}",
+      "load": "Load ({unit})",
+      "rir": "Reps in reserve",
+      "rirNone": "—",
+      "loadValue": "{load} {unit}",
+      "rirValue": "RIR {rir}"
+    },
+    "substitute": {
+      "open": "Substitute",
+      "openLabel": "Substitute: {name}",
+      "title": "Substitute {name}",
+      "body": "Same sets and target. Your choice applies for the rest of this workout.",
+      "original": "Back to {name}",
+      "instead": "Instead of {name}"
     }
   }
 }

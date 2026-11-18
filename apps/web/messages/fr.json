@@ -249,7 +249,8 @@
       "notes": "Notes",
       "notLogged": "Non enregistrée",
       "back": "Revenir à Aujourd’hui",
-      "durationNone": "Durée —"
+      "durationNone": "Durée —",
+      "substitute": "Remplacement"
     },
     "rest": {
       "title": "Repos",
@@ -282,6 +283,23 @@
       "skipped": "Exercice passé. Ses séries restent non enregistrées : la séance ne pourra être enregistrée que comme partielle.",
       "undo": "Annuler le passage",
       "undoLabel": "Annuler le passage : {name}"
+    },
+    "details": {
+      "toggle": "Charge et répétitions en réserve",
+      "forSet": "pour {set}",
+      "load": "Charge ({unit})",
+      "rir": "Répétitions en réserve",
+      "rirNone": "—",
+      "loadValue": "{load} {unit}",
+      "rirValue": "RIR {rir}"
+    },
+    "substitute": {
+      "open": "Remplacer",
+      "openLabel": "Remplacer : {name}",
+      "title": "Remplacer {name}",
+      "body": "Mêmes séries et même objectif. Ton choix s’applique pour le reste de la séance.",
+      "original": "Revenir à {name}",
+      "instead": "À la place de {name}"
     }
   }
 }

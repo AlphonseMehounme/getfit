@@ -1,11 +1,19 @@
-import { exerciseSlots, formatDuration, type LocalDate, slotKey } from '@getfit/domain';
+import {
+  exerciseSlots,
+  formatDuration,
+  loadForDisplay,
+  type LocalDate,
+  massUnitFor,
+  slotKey,
+} from '@getfit/domain';
 import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 import { setMeasure } from '@/lib/format/target';
 import type { WorkoutView } from '@/server/services/workout';
 
 // PRD §6.5 / BR-25: a saved workout, read only, against the prescription it was logged with. Sets that were not
-// logged say so; nothing is shown as 0 (BR-24).
+// logged say so; nothing is shown as 0 (BR-24). A set logged with a substitute is shown in its slot with the
+// substitute's name (D40), and any load and reps in reserve (D41).
 
 /** Noon UTC, formatted in UTC, so the calendar date never shifts with the viewer's time zone. */
 const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
@@ -20,7 +28,24 @@ export function WorkoutRecord({
   const t = useTranslations('Workout');
   const tRecord = useTranslations('Workout.record');
   const format = useFormatter();
-  const logged = new Map(workout.sets.filter((s) => s.completed).map((s) => [slotKey(s), s]));
+  const unit = massUnitFor(workout.units);
+  // D40: keyed by the prescribed slot, so a substitute's set is found where it belongs.
+  const logged = new Map(
+    workout.sets
+      .filter((s) => s.completed)
+      .map((s) => [slotKey({ ...s, exerciseId: s.substitutedForExerciseId ?? s.exerciseId }), s]),
+  );
+  const detailsOf = (set: (typeof workout.sets)[number], names: Map<string, string>) =>
+    [
+      set.substitutedForExerciseId ? (names.get(set.exerciseId) ?? tRecord('substitute')) : null,
+      set.loadKg === null
+        ? null
+        : t('details.loadValue', {
+            load: format.number(loadForDisplay(set.loadKg, unit)),
+            unit,
+          }),
+      set.rir === null ? null : t('details.rirValue', { rir: set.rir }),
+    ].filter(Boolean);
 
   const date = workout.scheduledDate
     ? format.dateTime(toDate(workout.scheduledDate), {
@@ -78,6 +103,7 @@ export function WorkoutRecord({
       {workout.exercises.map((exercise) => {
         const kind = setMeasure(exercise.prescription.target).kind;
         const headingId = `record-${exercise.prescription.exerciseId}`;
+        const names = new Map(exercise.substitutes.map((sub) => [sub.id, sub.name]));
         return (
           <section key={exercise.prescription.exerciseId} aria-labelledby={headingId}>
             <h2 id={headingId} className="mb-2 text-lg font-semibold">
@@ -87,6 +113,7 @@ export function WorkoutRecord({
               {exerciseSlots(exercise.prescription).map((slot) => {
                 const set = logged.get(slotKey(slot));
                 const value = set ? (set.actualReps ?? set.actualDurationS) : null;
+                const details = set ? detailsOf(set, names) : [];
                 return (
                   <li key={slotKey(slot)} className="flex justify-between gap-3 px-4 py-3">
                     <span>
@@ -101,10 +128,15 @@ export function WorkoutRecord({
                         },
                       )}
                     </span>
-                    <span className="font-semibold tabular-nums">
+                    <span className="text-right font-semibold tabular-nums">
                       {value === null
                         ? tRecord('notLogged')
                         : t(kind === 'reps' ? 'loggedReps' : 'loggedSeconds', { value })}
+                      {details.length > 0 ? (
+                        <span className="text-muted block text-sm font-normal">
+                          {details.join(' · ')}
+                        </span>
+                      ) : null}
                     </span>
                   </li>
                 );

@@ -20,6 +20,7 @@ import {
   type PrescriptionSnapshot,
   resolveSession,
   type StartCheck,
+  type UnitSystem,
   substituteCandidates,
   type WorkoutProgress,
   workoutProgress,
@@ -344,6 +345,8 @@ export interface WorkoutView {
   startedAt: Date;
   /** D34: start of the current pause, null when not paused. */
   pausedAt: Date | null;
+  /** D41: the user's units, for showing and typing loads. */
+  units: UnitSystem;
   snapshot: PrescriptionSnapshot;
   sets: WorkoutSetRecord[];
   progress: WorkoutProgress;
@@ -401,6 +404,7 @@ export async function getWorkout(
     scheduledDate: session.scheduledDate,
     startedAt: session.startedAt,
     pausedAt: session.pausedAt,
+    units: profile.preferred_units,
     snapshot,
     sets,
     progress,

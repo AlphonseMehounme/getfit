@@ -99,6 +99,8 @@ describe('workout service', () => {
     ]);
     expect(opened.exercises[0]).toMatchObject({ name: 'Pull-up', category: 'upper' });
     expect(opened.exercises[0]!.cues).toHaveLength(3);
+    // D41: loads are shown in the user's units (metric by default).
+    expect(opened.units).toBe('metric');
     // Today points at the session it is showing.
     expect(await mondayWorkoutId(user, MONDAY)).toBe(sessionId);
 
