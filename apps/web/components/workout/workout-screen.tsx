@@ -10,7 +10,7 @@ import {
   workoutProgress,
   workoutTotals,
 } from '@getfit/domain';
-import { Check, ChevronLeft, ChevronRight, List, LogOut } from 'lucide-react';
+import { List, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
@@ -19,6 +19,7 @@ import { FormAlert } from '@/components/ui/form-alert';
 import { setMeasure, targetMessage } from '@/lib/format/target';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
 import { useRestTimer } from '@/lib/hooks/use-rest-timer';
+import { type LoggedSetValue, type LogSetAction, useSetLogging } from '@/lib/hooks/use-set-logging';
 import { useWakeLock } from '@/lib/hooks/use-wake-lock';
 import type { ExerciseMedia } from '@/lib/media/resolve';
 import { toLoggedSets } from '@/lib/workout/logged-sets';
@@ -28,11 +29,11 @@ import { type FinishAction, FinishSummary } from './finish-summary';
 import { LeaveDialog } from './leave-dialog';
 import { RestTimer } from './rest-timer';
 import { SetRow } from './set-row';
+import { WorkoutNav } from './workout-nav';
 
-// PRD §6.5 workout execution: one exercise per screen, every set saved as it is logged (BR-6,
-// D21). Writes are optimistic: a failed save rolls the row back and says so, so nothing shows as saved that
-// isn't. Each slot keeps one client ID, so a retried save is an idempotent upsert. A rest starts on a set's first
-// log (D39, D43, D47), and the screen stays awake while the workout is open (PRD §9).
+// PRD §6.5 workout execution: one exercise per screen, every set saved as it is logged (BR-6, D21; see
+// useSetLogging). A rest starts on a set's first log (D39, D43, D47), and the screen stays awake while the workout
+// is open (PRD §9).
 
 export interface WorkoutScreenExercise {
   name: string;
@@ -41,21 +42,7 @@ export interface WorkoutScreenExercise {
   prescription: Prescription;
 }
 
-export interface LoggedSetValue {
-  id: string;
-  value: number;
-}
-
-export type LogSetAction = (input: {
-  id: string;
-  sessionId: string;
-  exerciseId: string;
-  setNumber: number;
-  side: SetSlot['side'];
-  actualReps: number | null;
-  actualDurationS: number | null;
-  completed: true;
-}) => Promise<{ ok: boolean }>;
+export type { LoggedSetValue, LogSetAction };
 
 export interface WorkoutScreenProps {
   sessionId: string;
@@ -93,9 +80,7 @@ export function WorkoutScreen({
   const tTarget = useTranslations('Today.target');
   const router = useRouter();
   const [index, setIndex] = useState(initialIndex);
-  const [sets, setSets] = useState<Record<string, LoggedSetValue>>(initialSets);
-  const [pending, setPending] = useState(0);
-  const [failed, setFailed] = useState(false);
+  const { sets, pending, failed, log: saveSet } = useSetLogging(sessionId, initialSets, logSet);
   const [listOpen, setListOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   /** Seconds spent when the summary opened; null while logging. */
@@ -105,7 +90,6 @@ export function WorkoutScreen({
   useEffect(() => {
     loadedAt.current = performance.now();
   }, []);
-  const ids = useRef(new Map<string, string>());
   const hydrated = useHydrated();
   const restTimer = useRestTimer(sessionId);
   const [announcement, setAnnouncement] = useState('');
@@ -114,14 +98,6 @@ export function WorkoutScreen({
     restTimer.clear();
     setAnnouncement(t('rest.over'));
   };
-
-  // The browser's "leave page?" prompt only while a set is still being saved (AL, P1-17b).
-  useEffect(() => {
-    if (pending === 0) return;
-    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [pending]);
 
   const exercise = exercises[index]!;
   const { prescription } = exercise;
@@ -133,7 +109,6 @@ export function WorkoutScreen({
   const loggedSets = toLoggedSets(exercises, sets);
   const prescribed = { exercises: exercises.map((e) => e.prescription) };
   const progress = workoutProgress(prescribed, loggedSets);
-  const isLast = index === exercises.length - 1;
   const openSummary = () => {
     setListOpen(false);
     setSummaryDuration(
@@ -152,43 +127,14 @@ export function WorkoutScreen({
     return result.ok;
   };
 
-  const log = async (slot: SetSlot, value: number) => {
-    const key = slotKey(slot);
-    const previous = sets[key];
-    const id = previous?.id ?? ids.current.get(key) ?? crypto.randomUUID();
-    ids.current.set(key, id);
+  const log = (slot: SetSlot, value: number) => {
     // D47: only a set's first log starts a rest; D43 / D39: none after a left side or the last set.
-    const restS = previous ? null : restAfter(prescribed, slot);
+    const restS = sets[slotKey(slot)] ? null : restAfter(prescribed, slot);
     if (restS !== null) {
       setAnnouncement('');
       restTimer.start(restS, new Date());
     }
-    setFailed(false);
-    setSets((current) => ({ ...current, [key]: { id, value } }));
-    setPending((n) => n + 1);
-    try {
-      const result = await logSet({
-        id,
-        sessionId,
-        exerciseId: slot.exerciseId,
-        setNumber: slot.setNumber,
-        side: slot.side,
-        actualReps: kind === 'reps' ? value : null,
-        actualDurationS: kind === 'seconds' ? value : null,
-        completed: true,
-      });
-      if (!result.ok) throw new Error('log set refused');
-    } catch {
-      setFailed(true);
-      setSets((current) => {
-        const next = { ...current };
-        if (previous) next[key] = previous;
-        else delete next[key];
-        return next;
-      });
-    } finally {
-      setPending((n) => n - 1);
-    }
+    void saveSet(slot, kind, value);
   };
 
   const setLabel = (slot: SetSlot) =>
@@ -249,7 +195,7 @@ export function WorkoutScreen({
               kind={kind}
               target={targetValue}
               logged={sets[slotKey(slot)]?.value ?? null}
-              onLog={(value) => void log(slot, value)}
+              onLog={(value) => log(slot, value)}
               onHoldEnd={(seconds) => setAnnouncement(t('hold.ended', { seconds }))}
               disabled={!hydrated}
             />
@@ -274,33 +220,13 @@ export function WorkoutScreen({
         </>
       ) : null}
       {summaryDuration === null ? (
-        <nav
-          aria-label={t('exercises')}
-          className="bg-background border-border fixed inset-x-0 bottom-0 z-30 border-t pb-[env(safe-area-inset-bottom)]"
-        >
-          <div className="mx-auto flex w-full max-w-2xl gap-3 px-4 py-3">
-            <Button
-              variant="secondary"
-              width="full"
-              disabled={!hydrated || index === 0}
-              onClick={() => setIndex(index - 1)}
-            >
-              <ChevronLeft aria-hidden="true" className="size-5" />
-              {t('previous')}
-            </Button>
-            {isLast ? (
-              <Button width="full" disabled={!hydrated} onClick={openSummary}>
-                <Check aria-hidden="true" className="size-5" />
-                {t('finish')}
-              </Button>
-            ) : (
-              <Button width="full" disabled={!hydrated} onClick={() => setIndex(index + 1)}>
-                {t('next')}
-                <ChevronRight aria-hidden="true" className="size-5" />
-              </Button>
-            )}
-          </div>
-        </nav>
+        <WorkoutNav
+          index={index}
+          total={exercises.length}
+          disabled={!hydrated}
+          onMove={setIndex}
+          onFinish={openSummary}
+        />
       ) : null}
       <ExerciseListSheet
         open={listOpen}
