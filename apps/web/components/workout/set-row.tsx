@@ -5,9 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { NumberStepper } from '@/components/ui/number-stepper';
+import { HoldCountdown } from './hold-countdown';
 
 // PRD §6.5 / §9: one set, pre-filled with its target. "Done as planned" logs the target in one tap (BR-14: a set
 // counts whatever was achieved); the stepper adjusts reps or seconds first. Every control is at least 48 px.
+// A timed set has a hold countdown that pre-fills the stepper; the user still taps to log it (D46).
 
 export interface SetRowProps {
   /** Already translated, e.g. "Set 2 · left". */
@@ -17,13 +19,23 @@ export interface SetRowProps {
   /** The value logged for this set, or null while it is open. */
   logged: number | null;
   onLog: (value: number) => void;
+  /** D46: a hold ended (at zero or stopped) with this many seconds, so the screen can announce it. */
+  onHoldEnd?: (seconds: number) => void;
   /** Until the screen is interactive. */
   disabled?: boolean;
 }
 
 const MAX = { reps: 200, seconds: 3600 } as const;
 
-export function SetRow({ label, kind, target, logged, onLog, disabled = false }: SetRowProps) {
+export function SetRow({
+  label,
+  kind,
+  target,
+  logged,
+  onLog,
+  onHoldEnd,
+  disabled = false,
+}: SetRowProps) {
   const t = useTranslations('Workout');
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(logged ?? target);
@@ -68,6 +80,17 @@ export function SetRow({ label, kind, target, logged, onLog, disabled = false }:
       className="border-border rounded-control flex flex-col gap-3 border p-4"
     >
       <legend className="px-1 font-medium">{label}</legend>
+      {kind === 'seconds' ? (
+        <HoldCountdown
+          targetS={target}
+          set={label}
+          disabled={disabled}
+          onHeld={(seconds) => {
+            setValue(seconds);
+            onHoldEnd?.(seconds);
+          }}
+        />
+      ) : null}
       <NumberStepper
         label={t(kind === 'reps' ? 'stepperReps' : 'stepperSeconds', { set: label })}
         value={value}

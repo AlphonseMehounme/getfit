@@ -249,6 +249,22 @@
       "notLogged": "Non enregistrée",
       "back": "Revenir à Aujourd’hui",
       "durationNone": "Durée —"
+    },
+    "rest": {
+      "title": "Repos",
+      "timerLabel": "Temps de repos restant",
+      "skip": "Passer le repos",
+      "extend": "+15 s",
+      "extendLabel": "+15 s : ajouter 15 secondes de repos",
+      "mute": "Couper le son",
+      "over": "Repos terminé. Lance la série suivante quand tu es prêt."
+    },
+    "hold": {
+      "start": "Lancer le gainage",
+      "startLabel": "Lancer le gainage pour {set}",
+      "timerLabel": "Temps de gainage restant pour {set}",
+      "stop": "Arrêter",
+      "ended": "Gainage arrêté à {seconds} s. Vérifie la valeur, puis enregistre la série."
     }
   }
 }

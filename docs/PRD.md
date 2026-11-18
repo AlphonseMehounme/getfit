@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.6 (D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.7 (D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -67,6 +67,9 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D43 | Rest after both sides | For per-side exercises (BR-16), the rest timer (D39) does not start between the left and right side of a set; it starts after the right side. No rest after the workout's last prescribed set. | 18 Nov 2026 |
 | D44 | A substitute is remembered through its sets | A substitute (D40) is recorded on each set logged with it (`substituted_for_exercise_id`); the active substitute for an exercise is the one on its latest logged set. A substitute chosen and not yet used for a set is not kept across a reload. | 18 Nov 2026 |
 | D45 | No logging while paused | While a workout is paused (D34), no set can be logged; the user resumes first. | 18 Nov 2026 |
+| D46 | A hold pre-fills; the user confirms | A timed hold's countdown (D39) never logs a set by itself. At zero it alerts and pre-fills the set with the target seconds; stopping early pre-fills the seconds held. The user taps to log. | 18 Nov 2026 |
+| D47 | Rest starts on a set's first log | The rest timer (D39) starts only when a set is logged for the first time; correcting a logged set never starts or restarts it. | 18 Nov 2026 |
+| D48 | A running rest survives a reload on the same device | The rest end time is kept in the browser's storage for that session, so a reload shows the remaining time. If storage is unavailable the rest is not restored. Nothing is sent to the server (D39). | 18 Nov 2026 |
 
 ## 1. Vision, principles and users
 

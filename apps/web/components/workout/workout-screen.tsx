@@ -3,9 +3,8 @@
 import {
   exerciseSlots,
   finishOptions,
-  type LoggedMeasure,
-  type LoggedSet,
   type Prescription,
+  restAfter,
   type SetSlot,
   slotKey,
   workoutProgress,
@@ -19,16 +18,21 @@ import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
 import { setMeasure, targetMessage } from '@/lib/format/target';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
+import { useRestTimer } from '@/lib/hooks/use-rest-timer';
+import { useWakeLock } from '@/lib/hooks/use-wake-lock';
 import type { ExerciseMedia } from '@/lib/media/resolve';
+import { toLoggedSets } from '@/lib/workout/logged-sets';
 import { ExerciseListSheet } from './exercise-list-sheet';
 import { ExerciseStep } from './exercise-step';
 import { type FinishAction, FinishSummary } from './finish-summary';
 import { LeaveDialog } from './leave-dialog';
+import { RestTimer } from './rest-timer';
 import { SetRow } from './set-row';
 
-// PRD §6.5 workout execution (Phase 1 subset): one exercise per screen, every set saved as it is logged (BR-6,
+// PRD §6.5 workout execution: one exercise per screen, every set saved as it is logged (BR-6,
 // D21). Writes are optimistic: a failed save rolls the row back and says so, so nothing shows as saved that
-// isn't. Each slot keeps one client ID, so a retried save is an idempotent upsert.
+// isn't. Each slot keeps one client ID, so a retried save is an idempotent upsert. A rest starts on a set's first
+// log (D39, D43, D47), and the screen stays awake while the workout is open (PRD §9).
 
 export interface WorkoutScreenExercise {
   name: string;
@@ -103,6 +107,13 @@ export function WorkoutScreen({
   }, []);
   const ids = useRef(new Map<string, string>());
   const hydrated = useHydrated();
+  const restTimer = useRestTimer(sessionId);
+  const [announcement, setAnnouncement] = useState('');
+  useWakeLock(true);
+  const endRest = () => {
+    restTimer.clear();
+    setAnnouncement(t('rest.over'));
+  };
 
   // The browser's "leave page?" prompt only while a set is still being saved (AL, P1-17b).
   useEffect(() => {
@@ -119,22 +130,9 @@ export function WorkoutScreen({
   const target = targetMessage(prescription, 'metric');
   const loggedCount = (p: Prescription) => exerciseSlots(p).filter((s) => sets[slotKey(s)]).length;
   // AGENTS §5.3: the same domain functions the server uses decide progress, totals and what can be saved (D31).
-  const loggedSets: (LoggedSet & LoggedMeasure)[] = exercises.flatMap(({ prescription: p }) => {
-    const measure = setMeasure(p.target).kind;
-    return exerciseSlots(p).flatMap((slot) => {
-      const logged = sets[slotKey(slot)];
-      if (!logged) return [];
-      return [
-        {
-          ...slot,
-          completed: true,
-          actualReps: measure === 'reps' ? logged.value : null,
-          actualDurationS: measure === 'seconds' ? logged.value : null,
-        },
-      ];
-    });
-  });
-  const progress = workoutProgress({ exercises: exercises.map((e) => e.prescription) }, loggedSets);
+  const loggedSets = toLoggedSets(exercises, sets);
+  const prescribed = { exercises: exercises.map((e) => e.prescription) };
+  const progress = workoutProgress(prescribed, loggedSets);
   const isLast = index === exercises.length - 1;
   const openSummary = () => {
     setListOpen(false);
@@ -159,6 +157,12 @@ export function WorkoutScreen({
     const previous = sets[key];
     const id = previous?.id ?? ids.current.get(key) ?? crypto.randomUUID();
     ids.current.set(key, id);
+    // D47: only a set's first log starts a rest; D43 / D39: none after a left side or the last set.
+    const restS = previous ? null : restAfter(prescribed, slot);
+    if (restS !== null) {
+      setAnnouncement('');
+      restTimer.start(restS, new Date());
+    }
     setFailed(false);
     setSets((current) => ({ ...current, [key]: { id, value } }));
     setPending((n) => n + 1);
@@ -246,11 +250,29 @@ export function WorkoutScreen({
               target={targetValue}
               logged={sets[slotKey(slot)]?.value ?? null}
               onLog={(value) => void log(slot, value)}
+              onHoldEnd={(seconds) => setAnnouncement(t('hold.ended', { seconds }))}
               disabled={!hydrated}
             />
           ))}
         </ExerciseStep>
       )}
+      {/* D39: announces the end of a rest or a hold; it stays mounted so the message is never lost. */}
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
+      {restTimer.rest && summaryDuration === null ? (
+        <>
+          {/* Room to scroll the set rows above the rest panel. */}
+          <div aria-hidden="true" className="h-48" />
+          <RestTimer
+            endsAt={restTimer.rest.endsAt}
+            totalS={restTimer.rest.totalS}
+            onExtend={restTimer.extend}
+            onSkip={restTimer.clear}
+            onDone={endRest}
+          />
+        </>
+      ) : null}
       {summaryDuration === null ? (
         <nav
           aria-label={t('exercises')}

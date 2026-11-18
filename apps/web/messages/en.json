@@ -249,6 +249,22 @@
       "notLogged": "Not logged",
       "back": "Back to Today",
       "durationNone": "Duration —"
+    },
+    "rest": {
+      "title": "Rest",
+      "timerLabel": "Rest time left",
+      "skip": "Skip rest",
+      "extend": "+15 s",
+      "extendLabel": "+15 s: add 15 seconds of rest",
+      "mute": "Mute sound",
+      "over": "Rest over. Start the next set when you are ready."
+    },
+    "hold": {
+      "start": "Start hold",
+      "startLabel": "Start the hold for {set}",
+      "timerLabel": "Hold time left for {set}",
+      "stop": "Stop",
+      "ended": "Hold ended at {seconds} s. Check the value, then save the set."
     }
   }
 }
