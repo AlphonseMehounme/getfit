@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.3 (D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.4 (D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -54,6 +54,15 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D30 | Per-test clock in E2E | In addition to `GETFIT_TEST_NOW` (D20), an `x-getfit-test-now` request header overrides the server clock for that request, only when `NODE_ENV=test`, so each end-to-end test can pick its own day against one server. It is never honoured in development, preview or production. | 17 Nov 2026 |
 | D31 | Finishing a workout | A workout can be saved as completed only when every prescribed set (both sides for per-side exercises, BR-16) has been logged as done, whatever the reps achieved (BR-14). With any set missing, it can only be saved as partial. Completion is still always the user's confirmed choice (BR-5). | 17 Nov 2026 |
 | D32 | Reopening a partial workout | A workout saved as partial can be reopened, logged further and saved again as completed or partial, until its late-logging window closes (D14, D23). A completed workout is final. | 17 Nov 2026 |
+| D33 | Linking a run to the long run | A run dated on the long run's current date (after overrides) is offered the link, and may be logged later within D14. A run on another date in the same Monday–Sunday week is offered "move the long run to this day and link", only if BR-9 to BR-12 allow that date; accepting writes a `moved` override. Otherwise the run is saved unlinked. A run never fulfils a strength day (D26), and one run fulfils one programme day. | 18 Nov 2026 |
+| D34 | Pause is persisted | `workout_sessions.paused_at` holds the start of the current pause (null when not paused). Resuming adds the interval to `paused_s`; a reload mid-pause comes back paused, and elapsed time excludes the pause. Saving while paused closes the pause first. | 18 Nov 2026 |
+| D35 | Settings in Phase 2 | Profile lets the user edit every onboarding answer (profile, goals, experience, equipment, availability, baselines) and set units, language, time zone (BR-4) and theme. Data export and account deletion stay in Phase 4. | 18 Nov 2026 |
+| D36 | Availability is stored, not applied | Onboarding step 5 is pre-filled from the programme's days. Answers never move sessions. When they differ from the programme, the recommendation step and Settings say that the programme keeps its own days and that sessions can be moved within the week (BR-9 to BR-12). | 18 Nov 2026 |
+| D37 | Phase 2 Today | Header (greeting, "Week n of 8 · label", programme progress ring), today card, week strip, "This week" (sessions done of scheduled, running distance, adherence) and the last 5 workouts and runs. In Phase 2 the attention card only reports a missed session with its options; "weekly review is ready" and the performance overview come in Phase 3. Programme progress = (completed + 0.5 × partial) ÷ training sessions scheduled in the whole programme. | 18 Nov 2026 |
+| D38 | Changing a move or skip | A moved session can be moved again: its single override is updated and every candidate is checked again. A move or skip can be undone while nothing is logged for that day and its original date is today or later; undoing deletes the override. | 18 Nov 2026 |
+| D39 | Rest timer and timed holds | Both are computed from an end time, so they stay correct across a screen lock. The rest timer starts after each set except the workout's last, from the prescription's rest, with Skip and +15 s. At zero it vibrates and plays a sound when the page is visible, or when the user returns to it; no push notifications in the MVP. Sound can be muted per device. Timer state stays on the device. The screen wake lock is held while a workout is open and not paused, where supported. | 18 Nov 2026 |
+| D40 | Skip and substitute | Substitutes are the exercise's `substitute` relations in the same category, filtered to the user's equipment (the programme's required equipment if none is recorded). A substitute applies for the rest of the session, keeps the original prescription's target and slots, and is recorded with `substituted_for_exercise_id`. A skipped exercise leaves its sets unlogged, so the workout can only be saved as partial (D31). Skipping can be undone. | 18 Nov 2026 |
+| D41 | Load and reps in reserve | Optional on every set, shown in the user's units; load stored in kg, RIR 0–10. Neither changes whether a set counts (BR-14). | 18 Nov 2026 |
 
 ## 1. Vision, principles and users
 
@@ -769,6 +778,7 @@ All open questions were resolved on 16 Nov 2026 and recorded as D9–D19 in the 
 | Tooling | next-intl, Serwist, Dexie, Sentry, PostHog EU (D17) |
 | Prototype images | Development placeholders only; commissioned set for production (D18, D19) |
 | Phase 1 planning gaps (enrolment before onboarding, set persistence before the outbox, rescheduling scope, status timing, rest templates, long-run ceiling, fulfilment, media, categories, scope) | Resolved in `docs/plans/phase-1.md` (D20–D29) |
+| Phase 2 planning gaps (run linking, pause, settings scope, availability, Today scope, changing a move or skip, timers, skip and substitute, load and RIR) | Resolved in `docs/plans/phase-2.md` (D33–D41) |
 
 ### Risks
 
