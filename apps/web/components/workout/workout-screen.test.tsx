@@ -4,6 +4,7 @@ import type { Prescription } from '@getfit/domain';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { PauseAction } from '@/lib/hooks/use-workout-pause';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
 import type { FinishAction } from './finish-summary';
 import { type LogSetAction, WorkoutScreen, type WorkoutScreenExercise } from './workout-screen';
@@ -52,6 +53,7 @@ function renderScreen(
     'pull-up|1|both': { id: 'set-1', value: 6 },
   },
   finish: FinishAction = vi.fn<FinishAction>(async () => ({ ok: true })),
+  pauseProps: { pause?: PauseAction; resume?: PauseAction; pausedAtLoad?: boolean } = {},
 ) {
   return renderWithIntl(
     <WorkoutScreen
@@ -62,6 +64,9 @@ function renderScreen(
       initialIndex={initialIndex}
       logSet={logSet}
       finish={finish}
+      pause={pauseProps.pause ?? vi.fn<PauseAction>(async () => ({ ok: true }))}
+      resume={pauseProps.resume ?? vi.fn<PauseAction>(async () => ({ ok: true }))}
+      pausedAtLoad={pauseProps.pausedAtLoad}
       activeSecondsAtLoad={600}
       exitHref="/today"
     />,
@@ -377,5 +382,121 @@ describe('WorkoutScreen rest timer (D39, D43, D47, D48)', () => {
     await userEvent.click(startLeft!);
     await userEvent.click(screen.getByRole('button', { name: 'Stop' }));
     expect(screen.getByText('Hold ended at 0 s. Check the value, then save the set.')).toBeTruthy();
+  });
+});
+
+describe('WorkoutScreen pause (D34, D45, D50)', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  const dialog = () => screen.queryByRole('dialog', { name: 'Workout paused' });
+
+  it('D34: Pause persists, covers the controls with the time stopped, and Resume goes back', async () => {
+    const pause = vi.fn<PauseAction>(async () => ({ ok: true }));
+    const resume = vi.fn<PauseAction>(async () => ({ ok: true }));
+    const { container } = renderScreen(vi.fn(), 0, undefined, undefined, { pause, resume });
+    await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    expect(pause).toHaveBeenCalledWith({ sessionId: SESSION });
+    expect(dialog()).toBeTruthy();
+    expect(screen.getByText(/^10:0\d so far$/)).toBeTruthy();
+    await expectNoAxeViolations(container);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Resume' }));
+    await waitFor(() => expect(dialog()).toBeNull());
+    expect(resume).toHaveBeenCalledTimes(1);
+  });
+
+  it('D34: a workout paused when the page loaded opens paused', () => {
+    renderScreen(vi.fn(), 0, undefined, undefined, { pausedAtLoad: true });
+    expect(dialog()).toBeTruthy();
+    expect(screen.getByText('10:00 so far')).toBeTruthy();
+  });
+
+  it('D50: pausing ends a running rest, with no announcement', async () => {
+    renderScreen(vi.fn<LogSetAction>(async () => ({ ok: true })));
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(screen.getByRole('timer', { name: 'Rest time left' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    expect(screen.queryByRole('timer', { name: 'Rest time left' })).toBeNull();
+    expect(screen.queryByText(/Rest over/)).toBeNull();
+  });
+
+  it('a refused pause goes back and says so; a refused resume stays paused and says so', async () => {
+    const pause = vi.fn<PauseAction>().mockResolvedValueOnce({ ok: false });
+    const resume = vi.fn<PauseAction>().mockRejectedValueOnce(new Error('offline'));
+    renderScreen(vi.fn(), 0, undefined, undefined, { pause, resume });
+    await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    await waitFor(() =>
+      expect(
+        screen.getByText('The workout could not be paused. Check your connection and try again.'),
+      ).toBeTruthy(),
+    );
+    expect(dialog()).toBeNull();
+
+    pause.mockResolvedValueOnce({ ok: true });
+    await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Resume' }));
+    await waitFor(() =>
+      expect(
+        screen.getByText('The workout could not be resumed. Check your connection and try again.'),
+      ).toBeTruthy(),
+    );
+    expect(dialog()).toBeTruthy();
+  });
+
+  it('PRD §9: the wake lock is released while paused', async () => {
+    const release = vi.fn(async () => undefined);
+    const request = vi.fn(async () => ({ released: false, release }));
+    Object.defineProperty(navigator, 'wakeLock', { value: { request }, configurable: true });
+    renderScreen(vi.fn());
+    await waitFor(() => expect(request).toHaveBeenCalled());
+    await userEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    await waitFor(() => expect(release).toHaveBeenCalled());
+    // @ts-expect-error removing the test double
+    delete navigator.wakeLock;
+  });
+});
+
+describe('WorkoutScreen skip (D40, D49, D31)', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it('D40: Skip hides the open sets, Undo brings them back', async () => {
+    const { container } = renderScreen(vi.fn());
+    await userEvent.click(screen.getByRole('button', { name: 'Skip exercise: Pull-up' }));
+    expect(screen.queryByRole('group', { name: 'Set 2' })).toBeNull();
+    expect(
+      screen.getByText(
+        'Skipped. Its sets stay unlogged, so this workout can only be saved as partial.',
+      ),
+    ).toBeTruthy();
+    // The set already logged stays logged.
+    expect(screen.getByText('1 of 4 sets done')).toBeTruthy();
+    await expectNoAxeViolations(container);
+    await userEvent.click(screen.getByRole('button', { name: 'Undo skip: Pull-up' }));
+    expect(screen.getByRole('group', { name: 'Set 2' })).toBeTruthy();
+    expect(window.localStorage.getItem(`getfit.skipped.${SESSION}`)).toBeNull();
+  });
+
+  it('D49 / D31: a skip survives a reload and the summary lists it, with only partial offered', async () => {
+    const first = renderScreen(vi.fn());
+    await userEvent.click(screen.getByRole('button', { name: 'Skip exercise: Pull-up' }));
+    first.unmount();
+
+    renderScreen(vi.fn(), 1, {
+      'pull-up|1|both': { id: 'set-1', value: 6 },
+      'side-plank|1|left': { id: 'c', value: 30 },
+      'side-plank|1|right': { id: 'd', value: 30 },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    expect(screen.getByText('Skipped: Pull-up')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Save as completed' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Save as partial' })).toBeTruthy();
+  });
+
+  it('an exercise with every set logged offers no skip', () => {
+    renderScreen(vi.fn(), 0, {
+      'pull-up|1|both': { id: 'a', value: 6 },
+      'pull-up|2|both': { id: 'b', value: 6 },
+    });
+    expect(screen.queryByRole('button', { name: 'Skip exercise: Pull-up' })).toBeNull();
   });
 });

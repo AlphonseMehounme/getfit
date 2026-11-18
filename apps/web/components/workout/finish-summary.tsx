@@ -6,7 +6,7 @@ import {
   type WorkoutProgress,
   type WorkoutTotals,
 } from '@getfit/domain';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { useId, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
@@ -28,6 +28,8 @@ export interface FinishSummaryProps {
   progress: WorkoutProgress;
   options: readonly FinishStatus[];
   totals: WorkoutTotals;
+  /** D49: names of the exercises skipped in this workout, in programme order. */
+  skipped?: readonly string[];
   /** Seconds spent so far, excluding pauses. */
   durationS: number;
   /** D32: a reopened partial workout starts from what it was saved with. */
@@ -45,6 +47,7 @@ export function FinishSummary({
   progress,
   options,
   totals,
+  skipped = [],
   durationS,
   initialRpe = null,
   initialNotes = null,
@@ -53,6 +56,7 @@ export function FinishSummary({
   onSaved,
 }: FinishSummaryProps) {
   const t = useTranslations('Workout.summary');
+  const format = useFormatter();
   const notesId = useId();
   const [rpe, setRpe] = useState<number | null>(initialRpe);
   const [notes, setNotes] = useState(initialNotes ?? '');
@@ -96,6 +100,11 @@ export function FinishSummary({
         {totals.holdSeconds > 0 ? (
           <li className="bg-surface rounded-control col-span-2 p-4 font-semibold tabular-nums">
             {t('hold', { seconds: totals.holdSeconds })}
+          </li>
+        ) : null}
+        {skipped.length > 0 ? (
+          <li className="bg-surface rounded-control col-span-2 p-4 font-semibold">
+            {t('skipped', { names: format.list(skipped, { type: 'conjunction' }) })}
           </li>
         ) : null}
       </ul>

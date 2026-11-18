@@ -114,4 +114,14 @@ describe('FinishSummary', () => {
       expect.objectContaining({ rpe: 6, notes: 'Short on time' }),
     );
   });
+
+  it('D49: lists the skipped exercises, joined for the language', () => {
+    renderSummary({ skipped: ['Pull-up', 'Plank'] });
+    expect(screen.getByText('Skipped: Pull-up and Plank')).toBeTruthy();
+  });
+
+  it('D49: in French too', () => {
+    renderSummary({ skipped: ['Traction stricte', 'Planche'] }, 'fr');
+    expect(screen.getByText('Exercices passés : Traction stricte et Planche')).toBeTruthy();
+  });
 });

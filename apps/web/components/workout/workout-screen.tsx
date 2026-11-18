@@ -10,30 +10,34 @@ import {
   workoutProgress,
   workoutTotals,
 } from '@getfit/domain';
-import { List, LogOut } from 'lucide-react';
+import { List, LogOut, Pause } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
 import { setMeasure, targetMessage } from '@/lib/format/target';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
 import { useRestTimer } from '@/lib/hooks/use-rest-timer';
 import { type LoggedSetValue, type LogSetAction, useSetLogging } from '@/lib/hooks/use-set-logging';
+import { useSkippedExercises } from '@/lib/hooks/use-skipped-exercises';
 import { useWakeLock } from '@/lib/hooks/use-wake-lock';
+import { type PauseAction, useWorkoutPause } from '@/lib/hooks/use-workout-pause';
 import type { ExerciseMedia } from '@/lib/media/resolve';
 import { toLoggedSets } from '@/lib/workout/logged-sets';
 import { ExerciseListSheet } from './exercise-list-sheet';
 import { ExerciseStep } from './exercise-step';
 import { type FinishAction, FinishSummary } from './finish-summary';
 import { LeaveDialog } from './leave-dialog';
+import { PauseOverlay } from './pause-overlay';
 import { RestTimer } from './rest-timer';
 import { SetRow } from './set-row';
 import { WorkoutNav } from './workout-nav';
 
 // PRD §6.5 workout execution: one exercise per screen, every set saved as it is logged (BR-6, D21; see
 // useSetLogging). A rest starts on a set's first log (D39, D43, D47), and the screen stays awake while the workout
-// is open (PRD §9).
+// is open and not paused (PRD §9). Pause is persisted (D34) and ends a running rest (D50); skipped exercises are
+// kept on this device (D49).
 
 export interface WorkoutScreenExercise {
   name: string;
@@ -54,6 +58,11 @@ export interface WorkoutScreenProps {
   initialIndex: number;
   logSet: LogSetAction;
   finish: FinishAction;
+  /** D34: pause and resume, persisted on the server. */
+  pause: PauseAction;
+  resume: PauseAction;
+  /** D34: the workout was paused when the page was rendered. */
+  pausedAtLoad?: boolean;
   /** Active seconds at the request clock when the page was rendered (domain `activeSeconds`). */
   activeSecondsAtLoad: number;
   /** D32: the effort and notes a reopened partial workout was saved with. */
@@ -71,6 +80,9 @@ export function WorkoutScreen({
   initialIndex,
   logSet,
   finish,
+  pause,
+  resume,
+  pausedAtLoad = false,
   activeSecondsAtLoad,
   savedRpe = null,
   savedNotes = null,
@@ -85,15 +97,25 @@ export function WorkoutScreen({
   const [leaveOpen, setLeaveOpen] = useState(false);
   /** Seconds spent when the summary opened; null while logging. */
   const [summaryDuration, setSummaryDuration] = useState<number | null>(null);
-  // When the page became interactive, to add the time spent here to the server's figure.
-  const loadedAt = useRef(0);
-  useEffect(() => {
-    loadedAt.current = performance.now();
-  }, []);
   const hydrated = useHydrated();
   const restTimer = useRestTimer(sessionId);
   const [announcement, setAnnouncement] = useState('');
-  useWakeLock(true);
+  const pauseState = useWorkoutPause({
+    sessionId,
+    pausedAtLoad,
+    activeSecondsAtLoad,
+    pause,
+    resume,
+  });
+  const [frozenS, setFrozenS] = useState(activeSecondsAtLoad);
+  const { skipped, skip, undo } = useSkippedExercises(sessionId);
+  useWakeLock(!pauseState.paused);
+  const startPause = () => {
+    setFrozenS(pauseState.activeSeconds());
+    // D50: pausing ends a running rest, with no alert.
+    restTimer.clear();
+    void pauseState.pause();
+  };
   const endRest = () => {
     restTimer.clear();
     setAnnouncement(t('rest.over'));
@@ -111,10 +133,13 @@ export function WorkoutScreen({
   const progress = workoutProgress(prescribed, loggedSets);
   const openSummary = () => {
     setListOpen(false);
-    setSummaryDuration(
-      activeSecondsAtLoad + Math.floor((performance.now() - loadedAt.current) / 1000),
-    );
+    setSummaryDuration(pauseState.activeSeconds());
   };
+  const hasOpenSets = (p: Prescription) => loggedCount(p) < exerciseSlots(p).length;
+  // D49: the summary lists the skipped exercises that still have sets to log, in programme order.
+  const skippedNames = exercises
+    .filter((e) => skipped.has(e.prescription.exerciseId) && hasOpenSets(e.prescription))
+    .map((e) => e.name);
   const savePartialAndLeave = async () => {
     const result = await finish({
       sessionId,
@@ -149,6 +174,16 @@ export function WorkoutScreen({
           <LogOut aria-hidden="true" className="size-4" />
           {t('leave')}
         </Button>
+        {/* PRD §9: icon-only on a 360 px phone so the header never scrolls sideways; the name stays. */}
+        <Button
+          variant="secondary"
+          disabled={!hydrated}
+          onClick={startPause}
+          className="max-sm:min-w-12 max-sm:px-3"
+        >
+          <Pause aria-hidden="true" className="size-4" />
+          <span className="max-sm:sr-only">{t('pause.pause')}</span>
+        </Button>
         <Button variant="secondary" disabled={!hydrated} onClick={() => setListOpen(true)}>
           <List aria-hidden="true" className="size-4" />
           {t('exercises')}
@@ -165,12 +200,14 @@ export function WorkoutScreen({
         </p>
       </div>
       {failed ? <FormAlert>{t('saveError')}</FormAlert> : null}
+      {pauseState.failed === 'pause' ? <FormAlert>{t('pause.error')}</FormAlert> : null}
       {summaryDuration !== null ? (
         <FinishSummary
           sessionId={sessionId}
           progress={progress}
           options={finishOptions(progress)}
           totals={workoutTotals(loggedSets)}
+          skipped={skippedNames}
           durationS={summaryDuration}
           initialRpe={savedRpe}
           initialNotes={savedNotes}
@@ -187,6 +224,12 @@ export function WorkoutScreen({
           cues={exercise.cues}
           index={index}
           total={exercises.length}
+          skip={{
+            skipped: skipped.has(prescription.exerciseId) && hasOpenSets(prescription),
+            canSkip: hydrated && hasOpenSets(prescription),
+            onSkip: () => skip(prescription.exerciseId),
+            onUndo: () => undo(prescription.exerciseId),
+          }}
         >
           {exerciseSlots(prescription).map((slot) => (
             <SetRow
@@ -243,6 +286,12 @@ export function WorkoutScreen({
           setListOpen(false);
         }}
         onFinish={openSummary}
+      />
+      <PauseOverlay
+        open={pauseState.paused}
+        elapsedS={frozenS}
+        resumeFailed={pauseState.failed === 'resume'}
+        onResume={() => void pauseState.resume()}
       />
       <LeaveDialog
         open={leaveOpen}
