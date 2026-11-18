@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kgToLb, lbToKg } from './mass';
+import { kgToLb, lbToKg, loadForDisplay, loadToKg } from './mass';
 import { roundTo } from './system';
 
 describe('mass units', () => {
@@ -25,5 +25,24 @@ describe('mass units', () => {
   it.each([Number.NaN, Infinity])('rejects %d', (value) => {
     expect(() => kgToLb(value)).toThrow(RangeError);
     expect(() => lbToKg(value)).toThrow(RangeError);
+  });
+});
+
+describe('load (D41)', () => {
+  it('shows a stored load in the user unit, to 0.1', () => {
+    expect(loadForDisplay(20, 'lb')).toBe(44.1);
+    expect(loadForDisplay(20, 'kg')).toBe(20);
+    expect(loadForDisplay(12.25, 'kg')).toBe(12.3);
+  });
+
+  it('stores a typed load as kg to 0.01', () => {
+    expect(loadToKg(45, 'lb')).toBe(20.41);
+    expect(loadToKg(12.345, 'kg')).toBe(12.35);
+    expect(loadToKg(0, 'lb')).toBe(0);
+  });
+
+  it.each([-1, Number.NaN, Infinity])('rejects %d', (value) => {
+    expect(() => loadForDisplay(value, 'kg')).toThrow(RangeError);
+    expect(() => loadToKg(value, 'lb')).toThrow(RangeError);
   });
 });

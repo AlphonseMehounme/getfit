@@ -30,8 +30,24 @@ export function workoutTotals(sets: readonly LoggedMeasure[]): WorkoutTotals {
     );
 }
 
-/** PRD §6.5: the workout's duration excludes paused time, and is never negative. Whole seconds. */
-export function activeSeconds(startedAt: Instant, now: Instant, pausedS: number): number {
-  const elapsedS = Math.floor((now.getTime() - startedAt.getTime()) / 1000);
-  return Math.max(0, elapsedS - pausedS);
+const wholeSecondsBetween = (from: Instant, to: Instant) =>
+  Math.floor((to.getTime() - from.getTime()) / 1000);
+
+/**
+ * PRD §6.5 / D34: the workout's duration excludes paused time, including a pause still open at `now`
+ * (`paused_at`), and is never negative. Whole seconds. Instants are UTC, so DST changes don't affect it.
+ */
+export function activeSeconds(
+  startedAt: Instant,
+  now: Instant,
+  pausedS: number,
+  pausedAt: Instant | null = null,
+): number {
+  const openPauseS = pausedAt ? Math.max(0, wholeSecondsBetween(pausedAt, now)) : 0;
+  return Math.max(0, wholeSecondsBetween(startedAt, now) - pausedS - openPauseS);
+}
+
+/** D34: closing a pause (resume, or saving while paused) adds its interval to `paused_s`. */
+export function closePause(pausedS: number, pausedAt: Instant, now: Instant): number {
+  return pausedS + Math.max(0, wholeSecondsBetween(pausedAt, now));
 }

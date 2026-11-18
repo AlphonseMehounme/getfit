@@ -24,6 +24,8 @@ export * from './prescription/volume';
 export * from './prescription/snapshot';
 export * from './workout/progress';
 export * from './workout/summary';
+export * from './workout/timer';
+export * from './workout/substitutes';
 export { roundTo, type UnitSystem } from './units/system';
 export * from './units/distance';
 export * from './units/mass';
