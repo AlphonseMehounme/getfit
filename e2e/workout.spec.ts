@@ -189,3 +189,50 @@ test('D40 / D49 / D31: skip an exercise, reload, and only partial is offered', a
   await expect(page.getByRole('button', { name: en.Workout.summary.saveCompleted })).toHaveCount(0);
   await expect(page.getByRole('button', { name: en.Workout.summary.savePartial })).toBeVisible();
 });
+
+test('D40 / D44 / D41: substitute the plank with the crunch, log load and RIR, and the record shows both', async ({
+  page,
+}) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page).toHaveURL(/\/train\/[0-9a-f-]{36}$/);
+  const workoutUrl = page.url();
+
+  // D41: optional load and reps in reserve on a set, in the user's unit.
+  const set1 = setRow(page, 'Set 1');
+  await set1.getByRole('button', { name: 'Load and reps in reserve for Set 1' }).click();
+  await set1.getByLabel('Load (kg)').fill('10');
+  await set1.getByLabel('Reps in reserve').selectOption('2');
+  await set1.getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByText('Set 1: done, 6 reps · 10 kg · RIR 2')).toBeAttached();
+  await page.getByRole('button', { name: en.Workout.rest.skip }).click();
+
+  // D40: the plank's substitute is the abdominal crunch (same category, bodyweight).
+  await page.getByRole('button', { name: en.Workout.exercises }).click();
+  await page.getByRole('button', { name: /^Plank/ }).click();
+  await page.getByRole('button', { name: 'Substitute: Plank' }).click();
+  await expect(page.getByRole('dialog', { name: 'Substitute Plank' })).toBeVisible();
+  await expectNoAxeViolations(page);
+  await page.getByRole('button', { name: 'Abdominal crunch' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abdominal crunch' })).toBeVisible();
+  await expect(page.getByText('Instead of Plank')).toBeVisible();
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByText('Set 1: done, 45 s')).toBeAttached();
+  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+
+  // D44: after a reload the substitute comes back from the logged set.
+  await page.reload();
+  await page.getByRole('button', { name: en.Workout.exercises }).click();
+  await page.getByRole('button', { name: /^Plank/ }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abdominal crunch' })).toBeVisible();
+
+  await page.getByRole('button', { name: en.Workout.leave }).click();
+  await page.getByRole('button', { name: en.Workout.savePartialLeave }).click();
+  await expect(page).toHaveURL('/today');
+
+  // BR-25: the saved record shows the substitute in the plank's slot, and the load and RIR.
+  await page.goto(workoutUrl);
+  await expect(page.getByRole('region', { name: 'Plank' })).toContainText('Abdominal crunch');
+  await expect(page.getByRole('region', { name: 'Pull-up' })).toContainText('10 kg · RIR 2');
+  await expectNoAxeViolations(page);
+});

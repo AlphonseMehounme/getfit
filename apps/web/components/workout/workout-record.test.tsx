@@ -44,6 +44,7 @@ const WORKOUT: WorkoutView & { status: 'completed' | 'partial' } = {
   scheduledDate: '2026-11-27' as LocalDate,
   startedAt: new Date('2026-11-27T07:00:00Z'),
   pausedAt: null,
+  units: 'metric',
   snapshot: {} as WorkoutView['snapshot'],
   exercises: [
     {
@@ -119,5 +120,52 @@ describe('WorkoutRecord', () => {
     expect(screen.getByText('Effort 7/10')).toBeTruthy();
     expect(screen.getByText('Felt strong')).toBeTruthy();
     expect(screen.getByText('Duration —')).toBeTruthy();
+  });
+
+  it('D40 / D41: a substitute set shows in its slot with its name, load and RIR, in the user unit', () => {
+    const plank = WORKOUT.exercises[1]!;
+    renderWithIntl(
+      <WorkoutRecord
+        workout={{
+          ...WORKOUT,
+          units: 'imperial',
+          exercises: [
+            WORKOUT.exercises[0]!,
+            {
+              ...plank,
+              substitutes: [
+                {
+                  id: 'crunch',
+                  slug: 'abdominal-crunch',
+                  category: 'core',
+                  equipment: ['bodyweight'],
+                  name: 'Abdominal crunch',
+                  cues: [],
+                },
+              ],
+            },
+          ],
+          sets: [
+            { ...set('pull-up', 1, 'both', { reps: 5 }), loadKg: 20, rir: 2 },
+            {
+              ...set('crunch', 1, 'left', { s: 30 }),
+              substitutedForExerciseId: 'side-plank',
+            },
+            {
+              ...set('gone', 1, 'right', { s: 25 }),
+              substitutedForExerciseId: 'side-plank',
+            },
+          ],
+        }}
+        backHref="/today"
+      />,
+    );
+    expect(screen.getByRole('region', { name: 'Pull-up' }).textContent).toContain(
+      'Set 15 reps44.1 lb · RIR 2',
+    );
+    const sidePlank = screen.getByRole('region', { name: 'Side plank' });
+    expect(sidePlank.textContent).toContain('Set 1 · left30 sAbdominal crunch');
+    // A substitute no longer offered (equipment changed) is still shown as one.
+    expect(sidePlank.textContent).toContain('Set 1 · right25 sSubstitute');
   });
 });

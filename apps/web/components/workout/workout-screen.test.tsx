@@ -500,3 +500,108 @@ describe('WorkoutScreen skip (D40, D49, D31)', () => {
     expect(screen.queryByRole('button', { name: 'Skip exercise: Pull-up' })).toBeNull();
   });
 });
+
+describe('WorkoutScreen substitutes (D40, D44) and load (D41)', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  const crunch = {
+    id: 'abdominal-crunch',
+    name: 'Abdominal crunch',
+    cues: ['Curl your shoulders off the floor.'],
+    media: { kind: 'fallback', category: 'core' } as const,
+  };
+  const withSubstitutes = (activeSubstituteId: string | null = null): WorkoutScreenExercise[] => [
+    EXERCISES[0]!,
+    { ...EXERCISES[1]!, substitutes: [crunch], activeSubstituteId },
+  ];
+
+  function renderWith(exercises: WorkoutScreenExercise[], logSet: LogSetAction) {
+    return renderWithIntl(
+      <WorkoutScreen
+        sessionId={SESSION}
+        title="Strength C"
+        exercises={exercises}
+        initialSets={{}}
+        initialIndex={1}
+        logSet={logSet}
+        finish={vi.fn<FinishAction>(async () => ({ ok: true }))}
+        pause={vi.fn<PauseAction>(async () => ({ ok: true }))}
+        resume={vi.fn<PauseAction>(async () => ({ ok: true }))}
+        loadUnit="lb"
+        activeSecondsAtLoad={0}
+        exitHref="/today"
+      />,
+    );
+  }
+
+  it('D40: a substitute replaces the exercise for the rest of the workout and fills its slots', async () => {
+    const logSet = vi.fn<LogSetAction>(async () => ({ ok: true }));
+    const { container } = renderWith(withSubstitutes(), logSet);
+    await userEvent.click(screen.getByRole('button', { name: 'Substitute: Side plank' }));
+    expect(screen.getByRole('dialog', { name: 'Substitute Side plank' })).toBeTruthy();
+    await expectNoAxeViolations(container);
+    await userEvent.click(screen.getByRole('button', { name: 'Abdominal crunch' }));
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Abdominal crunch' })).toBeTruthy();
+    expect(screen.getByText('Instead of Side plank')).toBeTruthy();
+    expect(screen.getByText('Curl your shoulders off the floor.')).toBeTruthy();
+    // The prescription's target stays (D40).
+    expect(screen.getByText('30 s per side')).toBeTruthy();
+    const [left] = screen.getAllByRole('button', { name: 'Done as planned' });
+    await userEvent.click(left!);
+    await waitFor(() => expect(logSet).toHaveBeenCalled());
+    expect(logSet.mock.calls[0]![0]).toMatchObject({
+      exerciseId: 'abdominal-crunch',
+      substitutedForExerciseId: 'side-plank',
+      side: 'left',
+      actualDurationS: 30,
+      loadUnit: 'lb',
+    });
+
+    // Back to the prescribed exercise.
+    await userEvent.click(screen.getByRole('button', { name: 'Substitute: Side plank' }));
+    expect(
+      screen.getByRole('button', { name: 'Abdominal crunch' }).getAttribute('aria-pressed'),
+    ).toBe('true');
+    await userEvent.click(screen.getByRole('button', { name: 'Back to Side plank' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Side plank' })).toBeTruthy();
+    expect(screen.queryByText('Instead of Side plank')).toBeNull();
+  });
+
+  it('D44: opens with the substitute of the last logged set; the sheet can be closed', async () => {
+    renderWith(withSubstitutes('abdominal-crunch'), vi.fn());
+    expect(screen.getByRole('heading', { level: 2, name: 'Abdominal crunch' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: 'Substitute: Side plank' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog', { name: 'Substitute Side plank' })).toBeNull();
+  });
+
+  it('no Substitute without substitutes', () => {
+    renderWith([EXERCISES[0]!, { ...EXERCISES[1]!, substitutes: [] }], vi.fn());
+    expect(screen.queryByRole('button', { name: /^Substitute/ })).toBeNull();
+  });
+
+  it('D41: load and RIR go with the set, in the user unit', async () => {
+    const logSet = vi.fn<LogSetAction>(async () => ({ ok: true }));
+    renderWith(withSubstitutes(), logSet);
+    await userEvent.click(screen.getByRole('button', { name: 'Previous' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Load and reps in reserve for Set 1' }),
+    );
+    await userEvent.type(screen.getByLabelText('Load (lb)'), '10');
+    await userEvent.selectOptions(screen.getByLabelText('Reps in reserve'), '2');
+    const [done] = screen.getAllByRole('button', { name: 'Done as planned' });
+    await userEvent.click(done!);
+    await waitFor(() => expect(logSet).toHaveBeenCalled());
+    expect(logSet.mock.calls[0]![0]).toMatchObject({
+      exerciseId: 'pull-up',
+      substitutedForExerciseId: null,
+      load: 10,
+      loadUnit: 'lb',
+      rir: 2,
+    });
+    await waitFor(() =>
+      expect(screen.getByText('Set 1: done, 6 reps · 10 lb · RIR 2')).toBeTruthy(),
+    );
+  });
+});

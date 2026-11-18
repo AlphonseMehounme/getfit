@@ -6,6 +6,8 @@ import { mockAlerts, setVisibility } from '@/test/alert-mocks';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
 import { SetRow } from './set-row';
 
+const NO_DETAILS = { load: null, rir: null };
+
 describe('SetRow', () => {
   it('BR-14: is pre-filled with the target and logs it in one tap', async () => {
     const onLog = vi.fn();
@@ -17,7 +19,7 @@ describe('SetRow', () => {
       (screen.getByRole('spinbutton', { name: 'Reps for Set 1' }) as HTMLInputElement).value,
     ).toBe('6');
     await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
-    expect(onLog).toHaveBeenCalledWith(6);
+    expect(onLog).toHaveBeenCalledWith(6, NO_DETAILS);
     await expectNoAxeViolations(container);
   });
 
@@ -26,7 +28,7 @@ describe('SetRow', () => {
     renderWithIntl(<SetRow label="Set 2" kind="reps" target={6} logged={null} onLog={onLog} />);
     await userEvent.click(screen.getByRole('button', { name: 'Decrease Reps for Set 2' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save 5 reps' }));
-    expect(onLog).toHaveBeenCalledWith(5);
+    expect(onLog).toHaveBeenCalledWith(5, NO_DETAILS);
   });
 
   it('BR-16: a per-side hold is labelled with its side and logs seconds', async () => {
@@ -38,7 +40,7 @@ describe('SetRow', () => {
       screen.getByRole('button', { name: 'Increase Seconds for Set 1 · left' }),
     );
     await userEvent.click(screen.getByRole('button', { name: 'Save 31 s' }));
-    expect(onLog).toHaveBeenCalledWith(31);
+    expect(onLog).toHaveBeenCalledWith(31, NO_DETAILS);
   });
 
   it('a logged set shows its value and can be edited and logged again', async () => {
@@ -52,7 +54,7 @@ describe('SetRow', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Edit Set 1' }));
     expect((screen.getByRole('spinbutton') as HTMLInputElement).value).toBe('40');
     await userEvent.click(screen.getByRole('button', { name: 'Save 40 s' }));
-    expect(onLog).toHaveBeenCalledWith(40);
+    expect(onLog).toHaveBeenCalledWith(40, NO_DETAILS);
   });
 
   it('stays disabled until the screen is interactive', () => {
@@ -115,7 +117,7 @@ describe('SetRow hold countdown (D39 / D46)', () => {
     expect(onLog).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Start the hold for Set 1' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
-    expect(onLog).toHaveBeenCalledWith(30);
+    expect(onLog).toHaveBeenCalledWith(30, NO_DETAILS);
   });
 
   it('D46: stopping early pre-fills the seconds held', async () => {
@@ -127,7 +129,7 @@ describe('SetRow hold countdown (D39 / D46)', () => {
     expect(seconds()).toBe('12');
     expect(onLog).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Save 12 s' }));
-    expect(onLog).toHaveBeenCalledWith(12);
+    expect(onLog).toHaveBeenCalledWith(12, NO_DETAILS);
   });
 
   it('D39: a hold that ends while hidden alerts when the page is visible again', async () => {
@@ -160,5 +162,56 @@ describe('SetRow hold countdown (D39 / D46)', () => {
     act(() => vi.advanceTimersByTime(5_000));
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
     expect(seconds()).toBe('5');
+  });
+});
+
+describe('SetRow load and reps in reserve (D41)', () => {
+  it('are folded away, optional, and logged with the set in the user unit', async () => {
+    const onLog = vi.fn();
+    const { container } = renderWithIntl(
+      <SetRow label="Set 1" kind="reps" target={6} logged={null} onLog={onLog} unit="lb" />,
+    );
+    expect(screen.queryByLabelText('Load (lb)')).toBeNull();
+    const toggle = screen.getByRole('button', { name: 'Load and reps in reserve for Set 1' });
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    await userEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    await userEvent.type(screen.getByLabelText('Load (lb)'), '45');
+    await userEvent.selectOptions(screen.getByLabelText('Reps in reserve'), '2');
+    await expectNoAxeViolations(container);
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(onLog).toHaveBeenCalledWith(6, { load: 45, rir: 2 });
+  });
+
+  it('an empty or invalid load, and "—" for RIR, mean not recorded', async () => {
+    const onLog = vi.fn();
+    renderWithIntl(<SetRow label="Set 1" kind="reps" target={6} logged={null} onLog={onLog} />);
+    await userEvent.click(screen.getByRole('button', { name: /^Load and reps in reserve/ }));
+    const load = screen.getByLabelText('Load (kg)');
+    await userEvent.type(load, '20');
+    await userEvent.clear(load);
+    await userEvent.selectOptions(screen.getByLabelText('Reps in reserve'), '3');
+    await userEvent.selectOptions(screen.getByLabelText('Reps in reserve'), '—');
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(onLog).toHaveBeenCalledWith(6, NO_DETAILS);
+  });
+
+  it('a logged set shows its load and RIR, and an edit starts from them, unfolded', async () => {
+    const onLog = vi.fn();
+    renderWithIntl(
+      <SetRow
+        label="Set 1"
+        kind="reps"
+        target={6}
+        logged={6}
+        loggedDetails={{ load: 20.5, rir: 2 }}
+        onLog={onLog}
+      />,
+    );
+    expect(screen.getByText('Set 1: done, 6 reps · 20.5 kg · RIR 2')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: 'Edit Set 1' }));
+    expect((screen.getByLabelText('Load (kg)') as HTMLInputElement).value).toBe('20.5');
+    await userEvent.click(screen.getByRole('button', { name: 'Done as planned' }));
+    expect(onLog).toHaveBeenCalledWith(6, { load: 20.5, rir: 2 });
   });
 });

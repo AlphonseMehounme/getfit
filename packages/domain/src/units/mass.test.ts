@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kgToLb, lbToKg, loadForDisplay, loadToKg } from './mass';
+import { kgToLb, lbToKg, loadForDisplay, loadToKg, massUnitFor } from './mass';
 import { roundTo } from './system';
 
 describe('mass units', () => {
@@ -29,6 +29,11 @@ describe('mass units', () => {
 });
 
 describe('load (D41)', () => {
+  it("is shown in the unit of the user's system", () => {
+    expect(massUnitFor('metric')).toBe('kg');
+    expect(massUnitFor('imperial')).toBe('lb');
+  });
+
   it('shows a stored load in the user unit, to 0.1', () => {
     expect(loadForDisplay(20, 'lb')).toBe(44.1);
     expect(loadForDisplay(20, 'kg')).toBe(20);
