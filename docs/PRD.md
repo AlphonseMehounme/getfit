@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.4 (D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.5 (D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -63,6 +63,8 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D39 | Rest timer and timed holds | Both are computed from an end time, so they stay correct across a screen lock. The rest timer starts after each set except the workout's last, from the prescription's rest, with Skip and +15 s. At zero it vibrates and plays a sound when the page is visible, or when the user returns to it; no push notifications in the MVP. Sound can be muted per device. Timer state stays on the device. The screen wake lock is held while a workout is open and not paused, where supported. | 18 Nov 2026 |
 | D40 | Skip and substitute | Substitutes are the exercise's `substitute` relations in the same category, filtered to the user's equipment (the programme's required equipment if none is recorded). A substitute applies for the rest of the session, keeps the original prescription's target and slots, and is recorded with `substituted_for_exercise_id`. A skipped exercise leaves its sets unlogged, so the workout can only be saved as partial (D31). Skipping can be undone. | 18 Nov 2026 |
 | D41 | Load and reps in reserve | Optional on every set, shown in the user's units; load stored in kg, RIR 0–10. Neither changes whether a set counts (BR-14). | 18 Nov 2026 |
+| D42 | Bodyweight is always available | For substitutes (D40), an exercise qualifies when every item of equipment it needs is available; `bodyweight` always counts as available. No item implies another (`gym` does not imply a pull-up bar). | 18 Nov 2026 |
+| D43 | Rest after both sides | For per-side exercises (BR-16), the rest timer (D39) does not start between the left and right side of a set; it starts after the right side. No rest after the workout's last prescribed set. | 18 Nov 2026 |
 
 ## 1. Vision, principles and users
 
