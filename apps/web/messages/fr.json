@@ -233,7 +233,8 @@
       "savePartial": "Enregistrer comme partielle",
       "back": "Revenir à la séance",
       "saving": "Enregistrement…",
-      "error": "Impossible d’enregistrer la séance. Réessaie."
+      "error": "Impossible d’enregistrer la séance. Réessaie.",
+      "skipped": "Exercices passés : {names}"
     },
     "record": {
       "status": {
@@ -265,6 +266,22 @@
       "timerLabel": "Temps de gainage restant pour {set}",
       "stop": "Arrêter",
       "ended": "Gainage arrêté à {seconds} s. Vérifie la valeur, puis enregistre la série."
+    },
+    "pause": {
+      "pause": "Pause",
+      "title": "Séance en pause",
+      "body": "Le temps de séance est arrêté. Chaque série enregistrée est sauvegardée.",
+      "elapsed": "{duration} écoulées",
+      "resume": "Reprendre",
+      "error": "Impossible de mettre la séance en pause. Vérifie ta connexion et réessaie.",
+      "resumeError": "Impossible de reprendre la séance. Vérifie ta connexion et réessaie."
+    },
+    "skip": {
+      "skip": "Passer l’exercice",
+      "skipLabel": "Passer l’exercice : {name}",
+      "skipped": "Exercice passé. Ses séries restent non enregistrées : la séance ne pourra être enregistrée que comme partielle.",
+      "undo": "Annuler le passage",
+      "undoLabel": "Annuler le passage : {name}"
     }
   }
 }

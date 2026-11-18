@@ -11,7 +11,12 @@ import { resolveExerciseMedia } from '@/lib/media/resolve';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getWorkout } from '@/server/services/workout';
 import { getRequestClock } from '@/server/request-clock';
-import { finishSessionAction, logSetAction } from '../../../(app)/train/actions';
+import {
+  finishSessionAction,
+  logSetAction,
+  pauseSessionAction,
+  resumeSessionAction,
+} from '../../../(app)/train/actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Workout');
@@ -62,6 +67,9 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
       initialIndex={openIndex}
       logSet={logSetAction}
       finish={finishSessionAction}
+      pause={pauseSessionAction}
+      resume={resumeSessionAction}
+      pausedAtLoad={workout.pausedAt !== null}
       activeSecondsAtLoad={workout.activeSecondsNow}
       savedRpe={workout.rpe}
       savedNotes={workout.notes}

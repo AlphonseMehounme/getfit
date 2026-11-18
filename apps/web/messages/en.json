@@ -233,7 +233,8 @@
       "savePartial": "Save as partial",
       "back": "Back to the workout",
       "saving": "Saving…",
-      "error": "The workout could not be saved. Please try again."
+      "error": "The workout could not be saved. Please try again.",
+      "skipped": "Skipped: {names}"
     },
     "record": {
       "status": {
@@ -265,6 +266,22 @@
       "timerLabel": "Hold time left for {set}",
       "stop": "Stop",
       "ended": "Hold ended at {seconds} s. Check the value, then save the set."
+    },
+    "pause": {
+      "pause": "Pause",
+      "title": "Workout paused",
+      "body": "Your workout time is stopped. Every logged set is saved.",
+      "elapsed": "{duration} so far",
+      "resume": "Resume",
+      "error": "The workout could not be paused. Check your connection and try again.",
+      "resumeError": "The workout could not be resumed. Check your connection and try again."
+    },
+    "skip": {
+      "skip": "Skip exercise",
+      "skipLabel": "Skip exercise: {name}",
+      "skipped": "Skipped. Its sets stay unlogged, so this workout can only be saved as partial.",
+      "undo": "Undo skip",
+      "undoLabel": "Undo skip: {name}"
     }
   }
 }

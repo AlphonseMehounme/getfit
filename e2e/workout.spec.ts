@@ -146,3 +146,46 @@ test("D39 / D48: logging a set starts the prescription's rest, a reload keeps it
   await skip.click();
   await expect(rest).toHaveCount(0);
 });
+
+test('D34 / D45: pause, reload and still paused, then resume and log', async ({ page }) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
+
+  // PRD §9: the header fits a 360 px phone with no sideways scroll.
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth),
+  ).toBeLessThanOrEqual(0);
+  await page.getByRole('button', { name: en.Workout.pause.pause }).click();
+  const paused = page.getByRole('dialog', { name: en.Workout.pause.title });
+  await expect(paused).toBeVisible();
+  await expectNoAxeViolations(page);
+
+  // D34: the pause is on the server, so a reload comes back paused.
+  await page.reload();
+  await expect(paused).toBeVisible();
+
+  await paused.getByRole('button', { name: en.Workout.pause.resume }).click();
+  await expect(paused).toHaveCount(0);
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+});
+
+test('D40 / D49 / D31: skip an exercise, reload, and only partial is offered', async ({ page }) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await page.getByRole('button', { name: 'Skip exercise: Pull-up' }).click();
+  await expect(page.getByText(en.Workout.skip.skipped)).toBeVisible();
+  await expectNoAxeViolations(page);
+
+  // D49: the skip is kept on this device.
+  await page.reload();
+  await expect(page.getByText(en.Workout.skip.skipped)).toBeVisible();
+
+  await page.getByRole('button', { name: en.Workout.exercises }).click();
+  await page.getByRole('button', { name: en.Workout.finishWorkout }).click();
+  await expect(page.getByText('Skipped: Pull-up')).toBeVisible();
+  await expect(page.getByRole('button', { name: en.Workout.summary.saveCompleted })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: en.Workout.summary.savePartial })).toBeVisible();
+});

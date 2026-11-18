@@ -1,10 +1,13 @@
+import { SkipForward, Undo2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { ExerciseMedia } from '@/components/exercise/exercise-media';
+import { Button } from '@/components/ui/button';
 import type { ExerciseMedia as Media } from '@/lib/media/resolve';
 
 // PRD §6.5: one exercise per screen: its name, media (by slug, AGENTS §8), the target at 32 px or more (§9),
-// its set rows, then three cue lines.
+// its set rows, then three cue lines. An exercise with open sets can be skipped, and the skip undone (D40, D49):
+// a skipped exercise hides its open sets, which stay unlogged.
 
 export interface ExerciseStepProps {
   name: string;
@@ -14,6 +17,8 @@ export interface ExerciseStepProps {
   cues: readonly string[];
   index: number;
   total: number;
+  /** D40: skipping is offered while the exercise has open sets. */
+  skip?: { skipped: boolean; canSkip: boolean; onSkip: () => void; onUndo: () => void };
   children: ReactNode;
 }
 
@@ -24,6 +29,7 @@ export function ExerciseStep({
   cues,
   index,
   total,
+  skip,
   children,
 }: ExerciseStepProps) {
   const t = useTranslations('Workout');
@@ -42,7 +48,33 @@ export function ExerciseStep({
         <h3 id="exercise-sets" className="sr-only">
           {t('sets')}
         </h3>
-        {children}
+        {skip?.skipped ? (
+          <div className="border-border rounded-control flex flex-col gap-3 border p-4">
+            <p>{t('skip.skipped')}</p>
+            <Button
+              variant="secondary"
+              aria-label={t('skip.undoLabel', { name })}
+              onClick={skip.onUndo}
+            >
+              <Undo2 aria-hidden="true" className="size-5" />
+              {t('skip.undo')}
+            </Button>
+          </div>
+        ) : (
+          <>
+            {children}
+            {skip?.canSkip ? (
+              <Button
+                variant="secondary"
+                aria-label={t('skip.skipLabel', { name })}
+                onClick={skip.onSkip}
+              >
+                <SkipForward aria-hidden="true" className="size-5" />
+                {t('skip.skip')}
+              </Button>
+            ) : null}
+          </>
+        )}
       </section>
       {cues.length > 0 ? (
         <section aria-labelledby="exercise-cues" className="flex flex-col gap-1">

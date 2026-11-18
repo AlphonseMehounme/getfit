@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.7 (D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.8 (D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -70,6 +70,8 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D46 | A hold pre-fills; the user confirms | A timed hold's countdown (D39) never logs a set by itself. At zero it alerts and pre-fills the set with the target seconds; stopping early pre-fills the seconds held. The user taps to log. | 18 Nov 2026 |
 | D47 | Rest starts on a set's first log | The rest timer (D39) starts only when a set is logged for the first time; correcting a logged set never starts or restarts it. | 18 Nov 2026 |
 | D48 | A running rest survives a reload on the same device | The rest end time is kept in the browser's storage for that session, so a reload shows the remaining time. If storage is unavailable the rest is not restored. Nothing is sent to the server (D39). | 18 Nov 2026 |
+| D49 | A skip is kept on the device | Skipped exercises (D40) are kept in the browser's storage for that workout, so a reload still shows them as skipped and the finish summary lists them. Nothing is sent to the server; on another device they show as not logged. Undoing a skip removes it. | 18 Nov 2026 |
+| D50 | Pausing ends the rest | Pausing a workout (D34) clears a running rest timer (D39) with no alert, and releases the screen wake lock. Nothing runs while paused. | 18 Nov 2026 |
 
 ## 1. Vision, principles and users
 
