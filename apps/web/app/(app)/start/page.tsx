@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { type StartChoice, StartForm } from '@/components/today/start-form';
-import { HOME_PATH } from '@/lib/auth/paths';
+import { HOME_PATH, ONBOARDING_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getStartOptions } from '@/server/services/enrolment';
@@ -25,6 +25,7 @@ export default async function StartPage() {
   );
   if (!options) return redirectToLogin();
   if (options.kind === 'enrolled') redirect(HOME_PATH);
+  if (options.kind === 'onboarding') redirect(ONBOARDING_PATH);
 
   const t = await getTranslations('Start');
   const format = await getFormatter();

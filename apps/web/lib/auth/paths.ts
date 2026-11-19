@@ -2,6 +2,8 @@
 export const HOME_PATH = '/today';
 /** D20: the Phase 1 "Start programme" step. */
 export const START_PATH = '/start';
+/** PRD §6.2: the onboarding steps, `/onboarding/<step>`; `/onboarding` alone resumes (D55). */
+export const ONBOARDING_PATH = '/onboarding';
 export const PROFILE_PATH = '/profile';
 /** The workout screen: `/train/<session id>` (PRD §6.5). */
 export const TRAIN_PATH = '/train';

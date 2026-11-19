@@ -30,11 +30,37 @@ export async function openEmailLink(page: Page, email: string, type: 'email' | '
   await page.goto(link!);
 }
 
-/** Signs up and confirms by email; the confirmation link signs the user in and, with no enrolment yet, lands on Start. */
-export async function signUpAndConfirm(page: Page, email: string, password: string) {
+/**
+ * Each onboarding step is a save, a server redirect and a new page; the dev server may compile it on first use, so
+ * these navigations get the same allowance as the email link.
+ */
+const STEP_NAVIGATION = { timeout: 15_000 };
+
+/** Signs up and confirms by email; the confirmation link signs the user in on onboarding's step 1 (PRD §6.2). */
+export async function confirmNewAccount(page: Page, email: string, password: string) {
   await signUp(page, email, password);
   await openEmailLink(page, email, 'email');
-  await expect(page).toHaveURL('/start');
+  await expect(page).toHaveURL('/onboarding/profile', STEP_NAVIGATION);
+}
+
+/** PRD §6.2 AC: the first name only, every later step skipped; onboarding ends on the Start step (D54). */
+export async function finishOnboarding(page: Page, firstName = 'Alex') {
+  await page.getByLabel(en.Onboarding.profile.firstName).fill(firstName);
+  await page.getByRole('button', { name: en.Onboarding.next, exact: true }).click();
+  await expect(page).toHaveURL('/onboarding/goals', STEP_NAVIGATION);
+  for (const next of ['/onboarding/experience', '/onboarding/equipment', '/start']) {
+    await page
+      .getByRole('link', { name: en.Onboarding.skip, exact: true })
+      .or(page.getByRole('button', { name: en.Onboarding.skip, exact: true }))
+      .click();
+    await expect(page).toHaveURL(next, STEP_NAVIGATION);
+  }
+}
+
+/** Signs up, confirms by email and goes through onboarding with only the first name; lands on Start. */
+export async function signUpAndConfirm(page: Page, email: string, password: string) {
+  await confirmNewAccount(page, email, password);
+  await finishOnboarding(page);
 }
 
 export async function logIn(page: Page, email: string, password: string) {

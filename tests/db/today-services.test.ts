@@ -6,6 +6,7 @@ import { findActiveEnrolment } from '../../apps/web/server/repositories/enrolmen
 import { getStartOptions, startProgramme } from '../../apps/web/server/services/enrolment';
 import { getToday, type TodayView } from '../../apps/web/server/services/schedule';
 import { insertProgrammeSkeleton } from './content-fixtures';
+import { completeOnboarding, saveOnboardingStep } from '../../apps/web/server/services/onboarding';
 import { anonClient, connectDb, createTestUser, type TestUser } from './helpers';
 
 // Integration tests for the P1-16a services against local Supabase and the seeded launch programme.
@@ -330,8 +331,16 @@ describe('time zones (BR-1, BR-4)', () => {
 });
 
 describe('getStartOptions (BR-2)', () => {
-  it('offers next Monday or this week, and nothing once enrolled', async () => {
+  it('D20 / D54: onboarding comes first, then next Monday or this week, and nothing once enrolled', async () => {
     const user = await newUser();
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toEqual({ kind: 'onboarding' });
+    await saveOnboardingStep(
+      user.client,
+      'profile',
+      { firstName: 'Alex', units: 'metric', timezone: 'Europe/Paris' },
+      WEDNESDAY_PARIS,
+    );
+    await completeOnboarding(user.client, WEDNESDAY_PARIS, noTrack);
     expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toMatchObject({
       kind: 'options',
       programmeTitle: expect.any(String),
@@ -347,5 +356,11 @@ describe('getStartOptions (BR-2)', () => {
     await startProgramme(user.client, { mode: 'next_monday' }, WEDNESDAY_PARIS, noTrack);
     expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toEqual({ kind: 'enrolled' });
     expect(await getStartOptions(anonClient(), WEDNESDAY_PARIS)).toBeNull();
+  });
+
+  it('an account enrolled before onboarding existed is never sent back to it', async () => {
+    const user = await newUser();
+    await startProgramme(user.client, { mode: 'this_week' }, WEDNESDAY_PARIS, noTrack);
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toEqual({ kind: 'enrolled' });
   });
 });
