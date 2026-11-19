@@ -30,6 +30,51 @@ export async function findOverrides(
   });
 }
 
+export type OverrideWrite = {
+  userProgrammeId: string;
+  programmeDayId: string;
+  /** The date the programme planned (BR-3). */
+  originalDate: string;
+} & ({ action: 'moved'; newDate: string } | { action: 'skipped'; reason: string | null });
+
+/**
+ * PRD §6.4 / D38: one override per programme day, so moving again or skipping a moved session updates it (an upsert
+ * on the table's unique key). A value the table's checks refuse (e.g. another week, BR-12) returns false.
+ */
+export async function upsertOverride(
+  client: DbClient,
+  write: OverrideWrite,
+): Promise<{ ok: boolean }> {
+  const { error } = await client.from('schedule_overrides').upsert(
+    {
+      user_programme_id: write.userProgrammeId,
+      programme_day_id: write.programmeDayId,
+      original_date: write.originalDate,
+      action: write.action,
+      new_date: write.action === 'moved' ? write.newDate : null,
+      reason: write.action === 'skipped' ? write.reason : null,
+    },
+    { onConflict: 'user_programme_id,programme_day_id' },
+  );
+  if (error?.code === '23514') return { ok: false };
+  if (error) throw new Error(`schedule_overrides: ${error.code}`);
+  return { ok: true };
+}
+
+/** D38: undoing deletes the override, so the session is back on its planned date. */
+export async function deleteOverride(
+  client: DbClient,
+  userProgrammeId: string,
+  programmeDayId: string,
+): Promise<void> {
+  const { error } = await client
+    .from('schedule_overrides')
+    .delete()
+    .eq('user_programme_id', userProgrammeId)
+    .eq('programme_day_id', programmeDayId);
+  if (error) throw new Error(`schedule_overrides: ${error.code}`);
+}
+
 /** A logged session plus the workout row behind it (null for a run), so Today can open or resume it. */
 export interface LoggedRecord extends LoggedSession {
   workoutSessionId: string | null;
