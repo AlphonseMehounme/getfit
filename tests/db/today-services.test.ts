@@ -347,6 +347,9 @@ describe('getStartOptions (BR-2)', () => {
       today: '2026-11-18',
       nextMonday: '2026-11-23',
       thisWeekMonday: '2026-11-16',
+      // Nothing recorded: nothing reported (D42, D36).
+      missingEquipment: [],
+      availabilityMismatches: [],
     });
     // On a Monday both choices start today.
     expect(await getStartOptions(user.client, MONDAY_W1)).toMatchObject({
@@ -362,5 +365,25 @@ describe('getStartOptions (BR-2)', () => {
     const user = await newUser();
     await startProgramme(user.client, { mode: 'this_week' }, WEDNESDAY_PARIS, noTrack);
     expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toEqual({ kind: 'enrolled' });
+  });
+
+  it('PRD §6.2 AC / D36: warns about a missing pull-up bar and reports the days that differ', async () => {
+    const user = await newUser();
+    const save = (step: Parameters<typeof saveOnboardingStep>[1], input: unknown) =>
+      saveOnboardingStep(user.client, step, input, WEDNESDAY_PARIS);
+    await save('profile', { firstName: 'Alex', units: 'metric', timezone: 'Europe/Paris' });
+    await save('equipment', { equipment: ['bodyweight'] });
+    // Saturday as a run day, Sunday as rest: both differ from the programme.
+    await save('availability', { days: { 1: 'training', 6: 'running', 7: 'rest' } });
+    await completeOnboarding(user.client, WEDNESDAY_PARIS, noTrack);
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toMatchObject({
+      kind: 'options',
+      missingEquipment: ['pull_up_bar'],
+      availabilityMismatches: [6, 7],
+    });
+    await save('equipment', { equipment: ['bodyweight', 'pull_up_bar'] });
+    expect(await getStartOptions(user.client, WEDNESDAY_PARIS)).toMatchObject({
+      missingEquipment: [],
+    });
   });
 });

@@ -23,6 +23,8 @@ interface StepShellProps {
   backHref: string | null;
   /** A link to the next step, or a function that finishes onboarding; absent on step 1. */
   skip?: string | (() => void) | undefined;
+  /** Replaces Next / Finish, e.g. "Save anyway" after a confirmation is asked (BR-21). */
+  submitLabel?: string | undefined;
   children: ReactNode;
 }
 
@@ -40,6 +42,7 @@ export function StepShell({
   isLast,
   backHref,
   skip,
+  submitLabel,
   children,
 }: StepShellProps) {
   const t = useTranslations('Onboarding');
@@ -68,7 +71,7 @@ export function StepShell({
       </fieldset>
       <div className="flex flex-col gap-3 sm:flex-row-reverse">
         <Button type="submit" disabled={busy} className="sm:flex-1">
-          {pending ? t('pending') : isLast ? t('finish') : t('next')}
+          {pending ? t('pending') : (submitLabel ?? (isLast ? t('finish') : t('next')))}
         </Button>
         {typeof skip === 'string' ? (
           <Link href={skip} className={linkClass}>

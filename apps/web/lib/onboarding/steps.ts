@@ -1,13 +1,20 @@
 import { ONBOARDING_PATH } from '@/lib/auth/paths';
 
 // PRD §6.2: the order of the onboarding steps, for routing only; what each step saves is in the onboarding service.
-// P2-07b adds `availability` and `baselines` before the finish (D54).
+// Leaving the last one (baselines) finishes onboarding (D54).
 
-export const ONBOARDING_STEPS = ['profile', 'goals', 'experience', 'equipment'] as const;
+export const ONBOARDING_STEPS = [
+  'profile',
+  'goals',
+  'experience',
+  'equipment',
+  'availability',
+  'baselines',
+] as const;
 export type OnboardingStepSlug = (typeof ONBOARDING_STEPS)[number];
 
-/** PRD §6.2: six steps in all; the progress counts them even while some ship later. */
-export const ONBOARDING_STEP_TOTAL = 6;
+/** PRD §6.2: six steps. */
+export const ONBOARDING_STEP_TOTAL = ONBOARDING_STEPS.length;
 
 export const isOnboardingStep = (value: string): value is OnboardingStepSlug =>
   (ONBOARDING_STEPS as readonly string[]).includes(value);

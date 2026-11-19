@@ -136,7 +136,15 @@
     "today": "Commencer aujourd’hui",
     "todayHint": "La semaine 1 commence aujourd’hui.",
     "pending": "Démarrage…",
-    "error": "Impossible de démarrer le programme. Réessaie."
+    "error": "Impossible de démarrer le programme. Réessaie.",
+    "equipmentWarning": {
+      "title": "Matériel à vérifier",
+      "body": "Ce programme utilise : {items}. Tu ne l’as pas sélectionné. Tu peux quand même commencer ; vérifie que tu l’as avant les séances qui en ont besoin."
+    },
+    "availabilityNote": {
+      "title": "Tes jours diffèrent de ceux du programme",
+      "body": "Tes réponses pour {days} diffèrent du programme. Le programme garde ses propres jours ; tu peux déplacer une séance dans sa semaine si besoin."
+    }
   },
   "Onboarding": {
     "progress": "Étape {current} sur {total}",
@@ -205,12 +213,61 @@
         "other": "Autre"
       }
     },
+    "availability": {
+      "title": "Ta semaine",
+      "intro": "Prérempli avec les jours du programme. Tes réponses ne déplacent aucune séance.",
+      "legend": "Tes jours",
+      "kinds": {
+        "training": "Entraînement",
+        "running": "Course",
+        "rest": "Repos"
+      },
+      "duration": "Durée de séance préférée",
+      "durationOption": "{minutes} min",
+      "durationNone": "Pas de préférence",
+      "unset": "Non renseigné"
+    },
+    "baselines": {
+      "title": "Ton point de départ",
+      "intro": "Tout est facultatif. Ce sont tes valeurs de référence : ta progression est comparée à elles. Elles n’apparaissent jamais comme des séances.",
+      "weight": "Poids ({unit})",
+      "tests": "Répétitions maximales",
+      "testsHint": "Strictes, en bonne forme, en une série.",
+      "maxPullUps": "Tractions",
+      "maxPushUps": "Pompes",
+      "maxSquats": "Squats",
+      "run": "Une course récente",
+      "runHint": "Laisse vide si tu n’en as pas.",
+      "distance": "Distance ({unit})",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes",
+      "duration": "Temps",
+      "effort": "Effort (1–10)",
+      "pace": "Allure",
+      "speed": "Vitesse",
+      "paceValue": "{pace} /{unit}",
+      "speedValue": "{speed, number} {unit}",
+      "metricsUnavailable": "Saisis une distance et un temps pour voir ton allure.",
+      "confirm": {
+        "paceTooFast": "Une allure de {pace} /{unit} est inhabituellement rapide. Vérifie la distance et le temps, ou enregistre quand même.",
+        "paceTooSlow": "Une allure de {pace} /{unit} est inhabituellement lente. Vérifie la distance et le temps, ou enregistre quand même.",
+        "saveAnyway": "Enregistrer quand même"
+      }
+    },
     "errors": {
       "firstNameRequired": "Saisis ton prénom.",
       "firstNameTooLong": "50 caractères maximum.",
       "birthYear": "Saisis une année entre 1900 et {year}.",
       "height": "Saisis une taille valide.",
-      "timezone": "Choisis un fuseau horaire dans la liste."
+      "timezone": "Choisis un fuseau horaire dans la liste.",
+      "oneRunningDay": "Choisis un seul jour de course au maximum.",
+      "weight": "Saisis un poids valide.",
+      "count": "Saisis un nombre entier entre 0 et 500.",
+      "runIncomplete": "Saisis une distance et un temps, ou laisse les deux vides.",
+      "distance": "Saisis une distance supérieure à 0.",
+      "duration": "Saisis un temps supérieur à 0.",
+      "effort": "Choisis un effort entre 1 et 10."
     }
   },
   "Today": {

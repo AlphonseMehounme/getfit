@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { type StartChoice, StartForm } from '@/components/today/start-form';
+import { StartNotices } from '@/components/today/start-notices';
 import { HOME_PATH, ONBOARDING_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -60,6 +61,10 @@ export default async function StartPage() {
         </h2>
         <p className="text-muted">{options.programmeDescription}</p>
       </section>
+      <StartNotices
+        missingEquipment={options.missingEquipment}
+        availabilityMismatches={options.availabilityMismatches}
+      />
       <StartForm choices={choices} action={startProgrammeAction} />
     </div>
   );

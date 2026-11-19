@@ -136,7 +136,15 @@
     "today": "Start today",
     "todayHint": "Week 1 begins today.",
     "pending": "Starting…",
-    "error": "The programme could not be started. Please try again."
+    "error": "The programme could not be started. Please try again.",
+    "equipmentWarning": {
+      "title": "Equipment to check",
+      "body": "This programme uses: {items}. You didn't select it. You can still start; check that you have it before the sessions that need it."
+    },
+    "availabilityNote": {
+      "title": "Your days differ from the programme's",
+      "body": "Your answers for {days} differ from the programme. The programme keeps its own days; you can move a session within its week when needed."
+    }
   },
   "Onboarding": {
     "progress": "Step {current} of {total}",
@@ -205,12 +213,61 @@
         "other": "Other"
       }
     },
+    "availability": {
+      "title": "Your week",
+      "intro": "Pre-filled with the programme's days. Your answers don't move any session.",
+      "legend": "Your days",
+      "kinds": {
+        "training": "Training",
+        "running": "Run",
+        "rest": "Rest"
+      },
+      "duration": "Preferred session length",
+      "durationOption": "{minutes} min",
+      "durationNone": "No preference",
+      "unset": "Not set"
+    },
+    "baselines": {
+      "title": "Your starting point",
+      "intro": "All optional. These are your baselines: the reference your progress is compared with. They are never shown as workouts.",
+      "weight": "Weight ({unit})",
+      "tests": "Maximum reps",
+      "testsHint": "Strict, with good form, in one set.",
+      "maxPullUps": "Pull-ups",
+      "maxPushUps": "Push-ups",
+      "maxSquats": "Squats",
+      "run": "A recent run",
+      "runHint": "Leave empty if you don't have one.",
+      "distance": "Distance ({unit})",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "duration": "Time",
+      "effort": "Effort (1–10)",
+      "pace": "Pace",
+      "speed": "Speed",
+      "paceValue": "{pace} /{unit}",
+      "speedValue": "{speed, number} {unit}",
+      "metricsUnavailable": "Enter a distance and a time to see your pace.",
+      "confirm": {
+        "paceTooFast": "A pace of {pace} /{unit} is unusually fast. Check the distance and the time, or save anyway.",
+        "paceTooSlow": "A pace of {pace} /{unit} is unusually slow. Check the distance and the time, or save anyway.",
+        "saveAnyway": "Save anyway"
+      }
+    },
     "errors": {
       "firstNameRequired": "Enter your first name.",
       "firstNameTooLong": "Use 50 characters or fewer.",
       "birthYear": "Enter a year between 1900 and {year}.",
       "height": "Enter a valid height.",
-      "timezone": "Choose a time zone from the list."
+      "timezone": "Choose a time zone from the list.",
+      "oneRunningDay": "Choose one run day at most.",
+      "weight": "Enter a valid weight.",
+      "count": "Enter a whole number between 0 and 500.",
+      "runIncomplete": "Enter both a distance and a time, or leave both empty.",
+      "distance": "Enter a distance greater than 0.",
+      "duration": "Enter a time greater than 0.",
+      "effort": "Choose an effort between 1 and 10."
     }
   },
   "Today": {

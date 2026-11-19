@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   isOnboardingStep,
   nextStep,
+  ONBOARDING_STEP_TOTAL,
   ONBOARDING_STEPS,
   previousStep,
   resumeStep,
@@ -10,16 +11,25 @@ import {
 } from './steps';
 
 describe('onboarding steps (PRD §6.2)', () => {
-  it('runs profile → goals → experience → equipment', () => {
-    expect(ONBOARDING_STEPS).toEqual(['profile', 'goals', 'experience', 'equipment']);
+  it('runs the six steps of PRD §6.2 in order', () => {
+    expect(ONBOARDING_STEPS).toEqual([
+      'profile',
+      'goals',
+      'experience',
+      'equipment',
+      'availability',
+      'baselines',
+    ]);
+    expect(ONBOARDING_STEP_TOTAL).toBe(6);
     expect(stepNumber('profile')).toBe(1);
-    expect(stepNumber('equipment')).toBe(4);
+    expect(stepNumber('baselines')).toBe(6);
     expect(stepPath('goals')).toBe('/onboarding/goals');
   });
 
   it('knows the next and previous step, with none past the ends', () => {
     expect(nextStep('profile')).toBe('goals');
-    expect(nextStep('equipment')).toBeNull();
+    expect(nextStep('equipment')).toBe('availability');
+    expect(nextStep('baselines')).toBeNull();
     expect(previousStep('goals')).toBe('profile');
     expect(previousStep('profile')).toBeNull();
   });

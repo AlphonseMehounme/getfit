@@ -48,7 +48,13 @@ export async function finishOnboarding(page: Page, firstName = 'Alex') {
   await page.getByLabel(en.Onboarding.profile.firstName).fill(firstName);
   await page.getByRole('button', { name: en.Onboarding.next, exact: true }).click();
   await expect(page).toHaveURL('/onboarding/goals', STEP_NAVIGATION);
-  for (const next of ['/onboarding/experience', '/onboarding/equipment', '/start']) {
+  for (const next of [
+    '/onboarding/experience',
+    '/onboarding/equipment',
+    '/onboarding/availability',
+    '/onboarding/baselines',
+    '/start',
+  ]) {
     await page
       .getByRole('link', { name: en.Onboarding.skip, exact: true })
       .or(page.getByRole('button', { name: en.Onboarding.skip, exact: true }))

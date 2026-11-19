@@ -127,3 +127,127 @@ PRD §6.2 and its AC (07a: skipping steps 2–4 reaches the dashboard), BR-2, D2
 - `pnpm lint && pnpm typecheck && pnpm test` (100% coverage) and `pnpm test:db`.
 - `pnpm test:e2e --workers=1`, plus the default parallel run (report both).
 - Commit when green. Push and open the PR only when AL asks.
+
+---
+
+## P2-07b · feat(onboarding): steps 5 and 6, and the programme recommendation
+
+> Issue #62, second PR (branch `claude/62-onboarding-steps-5-6`). P2-07a (#80, merged) shipped steps 1–4, the gate,
+> the selector and the shell. This PR closes #62. On approval, the plan is appended to
+> `docs/plans/p2-07-onboarding-flow.md` as its "P2-07b" section.
+
+### Context
+
+Onboarding currently finishes on step 4 (equipment). PRD §6.2 has six steps: step 5 availability, step 6 optional
+baselines. The flow ends with a programme recommendation: a warning when the programme needs equipment the user
+lacks (AC), and the D36 note when the availability answers differ from the programme's days. The service side
+already exists from P2-06:
+- `saveOnboardingStep('availability' | 'baselines')`;
+- `getOnboarding` → `missingEquipment`, `programmeAvailability`, `availabilityMismatches`;
+- `baselinesStepSchema` with D51/D52 behaviour.
+
+So this PR is UI, routing and the Start page. No new rules, so no new D-number.
+
+### Changes
+
+**Routing** (`lib/onboarding/steps.ts`):
+- `ONBOARDING_STEPS` gains `availability` and `baselines`, so step 6 becomes the last (D54);
+- remove the "ships later" comment.
+
+`[step]/page.tsx` renders the two new steps. `use-step-submit` and the actions need no change: Next and Skip on step 6
+finish onboarding.
+
+**Step 5: `components/onboarding/availability-step.tsx`**
+- Seven rows, Monday to Sunday (D5). Each row has a native `<select>` (Training / Run / Rest) labelled with the day
+  name. Weekday names come from `format.dateTime(…, { weekday: 'long', timeZone: 'UTC' })`, like the week strip.
+  - Seven selects stay compact at 360 px, where seven 3-chip radio groups would not.
+- **Pre-fill:** the saved answers. When nothing is saved, `view.programmeAvailability` is used (D36).
+- **Preferred duration:** a Selector radio with 30 / 45 / 60 / 90 min, or none. It fits the schema's 10–180.
+- **Validation:** `availabilityStepSchema` through `schemaResolver`. The `oneRunningDay` error is translated and shown
+  once, under the list.
+- **Hint copy (D36):** "Pre-filled with the programme's days. Your answers don't move any session."
+
+**Step 6: `components/onboarding/baselines-step.tsx`**, split into small parts so no file goes over ~200 lines:
+- **Fields:**
+  - weight (kg or lb from the profile's units);
+  - max pull-ups, push-ups and squats;
+  - a run: distance (km or mi), duration as h / min / s, and an optional effort from 1 to 10.
+
+  Every field is optional (PRD §6.2).
+- **Live pace and speed** (`baseline-run-fields.tsx`): `runMetrics` + `formatPace` from `@getfit/domain` (BR-22,
+  BR-23). The distance is formatted with Intl for the locale. Until distance and duration are both valid, it shows
+  "—" with "Enter a distance and a time to see your pace" (BR-24).
+- **BR-21:** on submit, `checkPace` runs. If the pace is outside 2:30–20:00 /km, an amber inline notice explains it
+  and the submit button becomes "Save anyway". A second submit saves. Editing the run resets the confirmation. It
+  never blocks.
+- **Mapping to the schema** (`toInput`):
+  - an empty part is sent as `null`. It clears a saved baseline (D52) and is a no-op otherwise;
+  - a filled part carries the saved record's ID, or `crypto.randomUUID()` (AGENTS §6). The server keeps the first ID
+    and date anyway (D51);
+  - a run with only one of distance or duration gets a field error: "Enter both a distance and a time, or leave both
+    empty".
+  - Duration = h × 3600 + min × 60 + s.
+- **Pre-fill from saved baselines,** converted for display: `loadForDisplay` for the weight, `metresTo` rounded to 2
+  decimals for the distance, and h/min/s split from `durationS`.
+- The page passes `units` from the profile and a serialisable `baselines` view (IDs and values only).
+
+**Recommendation: `app/(app)/start/page.tsx`**
+- `StartOptions.options` gains `missingEquipment: EquipmentType[]` and `availabilityMismatches: IsoWeekday[]`. In
+  `getStartOptions`, these come from the same domain functions as `getOnboarding`, so there is one implementation
+  (AGENTS §5.3).
+  - The required equipment is read with `findRequiredEquipment`, user equipment with `findUserEquipment`, and
+    availability with `findAvailability`.
+- **New `components/today/start-notices.tsx`:**
+  - **Equipment warning:** amber, with an icon and text, not colour alone. "This programme uses a pull-up bar, which
+    you didn't select. You can still start; check that you have one before Monday's session." The items are
+    translated through `Onboarding.equipment.options`.
+  - **D36 note:** neutral. "The programme keeps its own days. You can move a session within its week when needed."
+    It lists the differing days by name.
+  - Nothing renders when neither applies. A user who recorded no equipment gets no warning: the domain says they
+    haven't said what they lack.
+
+**Messages:** `Onboarding.availability.*`, `Onboarding.baselines.*` (labels, units, pace, the BR-21 texts, errors)
+and `Start.equipmentWarning` / `Start.availabilityNote`, in fr (source, "tu") and en.
+
+**Coverage:** `vitest.config.ts` already includes `components/onboarding/**`. Add
+`components/today/start-notices.tsx` if `today/**` isn't covered.
+
+### Rules involved
+PRD §6.2 and its AC (equipment warning; baselines saved as dated measurements), BR-21 to BR-24, BR-26, D5, D36, D42,
+D51, D52, D53, D54; AGENTS §5.3 (one implementation), §9 (48 px, axe, FR/EN).
+
+### Tests
+- **Components (100% coverage):**
+  - **Availability:** pre-fill from the programme vs saved answers; the two-running-days error; the duration chip.
+  - **Baselines:**
+    - empty submit sends nulls;
+    - filled submit converts h/min/s and carries IDs;
+    - lb and mi pre-fill;
+    - live pace for the reference run, 10.84 km in 1:19:30 → 7:20 /km and 8.2 km/h (mandatory case);
+    - "—" until valid;
+    - a half-filled run shows an error;
+    - BR-21: 1 km in 60 s asks to confirm, then saves on the second submit; editing resets the confirmation.
+  - **Start notices:** warning, note, both, and neither.
+- **Unit:** `steps.test.ts` updated: six steps, last = baselines.
+- **`test:db`** (`today-services.test.ts`): `getStartOptions` returns `missingEquipment: ['pull_up_bar']` for a user
+  who chose only bodyweight, `[]` for one who chose nothing, and the mismatched days.
+- **E2E (`e2e/onboarding.spec.ts`):**
+  - **All six steps filled:**
+    1. `/start` shows no warning and the D36 note for a changed day.
+    2. Start this week, then Today.
+    3. The baseline run doesn't appear in recent activity (BR-26: only as baselines).
+  - **Bodyweight only:** `/start` shows the pull-up-bar warning.
+  - **Step 6's BR-21 confirmation** on an implausible pace.
+  - **Axe** at 360 px, light and dark, now including steps 5, 6 and `/start` with both notices.
+  - The existing "skip" test now skips through six steps. `finishOnboarding` already skips until `/start`.
+
+### Size and risks
+- About 500 lines of app code: steps ~330, notices ~60, service and page ~40, routing ~10.
+- **Recent activity and baselines:** if Today's recent list doesn't filter `is_baseline`, the E2E catches it and I fix
+  the repository filter in this PR (BR-26).
+- **Floating-point in unit display:** use the existing rounding helpers (`roundTo`), never ad-hoc maths.
+
+### Verification
+- `pnpm lint && pnpm typecheck && pnpm test` (100% coverage) and `pnpm test:db`.
+- `pnpm test:e2e --workers=1`, plus the default parallel run (report both).
+- Commit when green. Push and open the PR only when AL asks.

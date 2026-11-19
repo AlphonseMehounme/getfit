@@ -1,4 +1,14 @@
-import { type Clock, type LocalDate, localDateAt, week1Monday } from '@getfit/domain';
+import {
+  availabilityMismatches,
+  type Clock,
+  type EquipmentType,
+  type IsoWeekday,
+  type LocalDate,
+  localDateAt,
+  missingEquipment,
+  programmeAvailability,
+  week1Monday,
+} from '@getfit/domain';
 import { z } from 'zod';
 import { type Track, track } from '@/lib/observability/analytics';
 import { LAUNCH_PROGRAMME_SLUG } from '@/server/config/programme';
@@ -8,8 +18,13 @@ import {
   findActiveEnrolment,
   insertEnrolment,
 } from '@/server/repositories/enrolment';
-import { findProgramme } from '@/server/repositories/programme';
-import { findOnboardingProfile, findProfileSettings } from '@/server/repositories/profiles';
+import { findAvailability } from '@/server/repositories/preferences';
+import { findProgramme, findRequiredEquipment } from '@/server/repositories/programme';
+import {
+  findOnboardingProfile,
+  findProfileSettings,
+  findUserEquipment,
+} from '@/server/repositories/profiles';
 import { getCurrentUser } from './auth';
 
 // D20: the Phase 1 "Start programme" step (Start Monday / Start this week, BR-2), wrapped by onboarding in Phase 2.
@@ -96,6 +111,10 @@ export type StartOptions =
       nextMonday: LocalDate;
       /** …or on this week's Monday, with the days already past not scheduled. Equal to nextMonday on a Monday. */
       thisWeekMonday: LocalDate;
+      /** PRD §6.2 AC: the programme's equipment the user said they lack (D42). */
+      missingEquipment: EquipmentType[];
+      /** D36: the answered days that differ from the programme's. */
+      availabilityMismatches: IsoWeekday[];
     };
 
 /** What the Start step offers. Null when nobody is signed in. */
@@ -115,6 +134,11 @@ export async function getStartOptions(
   const programme = await findProgramme(client, { slug: LAUNCH_PROGRAMME_SLUG }, profile.locale);
   if (!programme) throw new Error('content: launch programme not published');
   const today = localDateAt(clock.now(), profile.timezone);
+  const [equipment, required, availability] = await Promise.all([
+    findUserEquipment(client, user.id),
+    findRequiredEquipment(client, programme.id),
+    findAvailability(client, user.id),
+  ]);
   return {
     kind: 'options',
     programmeTitle: programme.title,
@@ -122,5 +146,11 @@ export async function getStartOptions(
     today,
     nextMonday: week1Monday(today, 'next_monday'),
     thisWeekMonday: week1Monday(today, 'this_week'),
+    // The same domain functions as the onboarding view (AGENTS §5.3).
+    missingEquipment: missingEquipment(equipment, required),
+    availabilityMismatches: availabilityMismatches(
+      availability,
+      programmeAvailability(programme.shape),
+    ),
   };
 }
