@@ -52,6 +52,10 @@ export default defineConfig({
         'apps/web/lib/onboarding/**/*.ts',
         'apps/web/components/onboarding/**/*.tsx',
         'apps/web/components/ui/{selector,select,notice}.tsx',
+        // P2-08: Profile and settings (D35, D56).
+        'apps/web/components/profile/**/*.tsx',
+        'apps/web/lib/profile/**/*.ts',
+        'apps/web/lib/theme.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

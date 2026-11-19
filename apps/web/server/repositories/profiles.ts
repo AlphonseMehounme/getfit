@@ -71,6 +71,7 @@ type ProfileUpdate = Pick<
   | 'timezone'
   | 'experience_level'
   | 'preferred_duration_min'
+  | 'locale'
 >;
 
 /** Returns false when the database refused a value (a check constraint, e.g. an unknown time zone). */

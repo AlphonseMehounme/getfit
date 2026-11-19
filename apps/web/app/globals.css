@@ -3,7 +3,8 @@
 /*
  * GetFit design tokens (PRD §9, D16, AGENTS §9). Components use these through Tailwind utilities only;
  * ESLint bans colour literals in app/ and components/. Contrast is tested in lib/design/tokens.test.ts.
- * The theme follows the system (prefers-color-scheme); the Settings theme control comes later (P1-13 plan).
+ * The theme follows the system (prefers-color-scheme) unless the device chose one in Profile (D56): `data-theme` on
+ * <html> is then `light` or `dark`. The two dark blocks below are identical (tested in lib/design/tokens.test.ts).
  */
 :root {
   /* Surfaces */
@@ -41,7 +42,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --background: #111215;
     --surface: #1c1e23;
     --border: #2c2f36;
@@ -61,6 +62,28 @@
 
     color-scheme: dark;
   }
+}
+
+/* D56: dark chosen on the device, whatever the system says. */
+:root[data-theme='dark'] {
+  --background: #111215;
+  --surface: #1c1e23;
+  --border: #2c2f36;
+  --border-control: #7a808c;
+
+  --foreground: #f4f5f7;
+  --muted: #a3a9b5;
+
+  --accent: #7b93ff;
+  --accent-hover: #9aadff;
+  --accent-foreground: #0b0d12;
+  --focus: #7b93ff;
+
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #ff8a80;
+
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {

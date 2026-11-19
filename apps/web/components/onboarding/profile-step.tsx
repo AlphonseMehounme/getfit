@@ -183,7 +183,10 @@ export function ProfileStep({
           ))}
         </Select>
         <p id="onboarding-timezone-hint" className="text-muted text-sm">
-          {t('profile.timezoneHint')}
+          {/* BR-4: in Settings, a new zone recomputes the schedule and never moves a logged session. */}
+          {actions.mode === 'settings'
+            ? t('profile.timezoneSettingsHint')
+            : t('profile.timezoneHint')}
         </p>
         {errors.timezone ? (
           <p id="onboarding-timezone-error" className="text-danger text-sm">

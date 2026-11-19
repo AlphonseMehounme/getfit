@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { AvailabilityStep } from '@/components/onboarding/availability-step';
-import { BaselinesStep } from '@/components/onboarding/baselines-step';
-import { ChoiceStep } from '@/components/onboarding/choice-step';
-import { ProfileStep } from '@/components/onboarding/profile-step';
+import { StepForm } from '@/components/onboarding/step-form';
 import { START_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { isOnboardingStep } from '@/lib/onboarding/steps';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
-import { getOnboarding, type OnboardingView } from '@/server/services/onboarding';
+import { getOnboarding } from '@/server/services/onboarding';
 import { finishOnboardingAction, saveStepAction } from '../actions';
 
 export async function generateMetadata({
@@ -24,38 +21,7 @@ export async function generateMetadata({
   return { title: t('title') };
 }
 
-/** Every IANA zone the runtime knows, with the saved one kept even if the list lacks it (e.g. UTC). */
-function timeZoneList(saved: string): string[] {
-  const zones = new Set(Intl.supportedValuesOf('timeZone'));
-  zones.add(saved);
-  return [...zones].sort();
-}
-
 const actions = { save: saveStepAction, finish: finishOnboardingAction };
-
-/** Step 6's saved baselines, as values and IDs only (BR-26, D51). */
-function savedBaselines({ baselines }: OnboardingView) {
-  const test = (type: keyof OnboardingView['baselines']['tests']) => {
-    const record = baselines.tests[type];
-    return record ? { id: record.id, value: record.value } : null;
-  };
-  return {
-    weight: baselines.weight
-      ? { id: baselines.weight.id, weightKg: baselines.weight.weightKg }
-      : null,
-    maxPullUps: test('max_pull_ups'),
-    maxPushUps: test('max_push_ups'),
-    maxSquats: test('max_squats'),
-    run: baselines.run
-      ? {
-          id: baselines.run.id,
-          distanceM: baselines.run.distanceM,
-          durationS: baselines.run.durationS,
-          rpe: baselines.run.rpe,
-        }
-      : null,
-  };
-}
 
 // PRD §6.2: one step per page, pre-filled with what was saved (D55). Once onboarding is finished, the answers are
 // edited in Settings (D35), so the steps lead on to the recommendation (D54).
@@ -70,49 +36,12 @@ export default async function OnboardingStepPage({
   if (!view) return redirectToLogin();
   if (view.profile.onboarding_completed_at) redirect(START_PATH);
 
-  const { profile } = view;
-  switch (step) {
-    case 'profile':
-      return (
-        <ProfileStep
-          answers={{
-            firstName: profile.first_name,
-            birthYear: profile.birth_year,
-            heightCm: profile.height_cm === null ? null : Number(profile.height_cm),
-            units: profile.preferred_units,
-            timezone: profile.timezone,
-          }}
-          currentYear={(await getRequestClock()).now().getUTCFullYear()}
-          timeZones={timeZoneList(profile.timezone)}
-          actions={actions}
-        />
-      );
-    case 'goals':
-      return <ChoiceStep step="goals" answer={view.goals} actions={actions} />;
-    case 'experience':
-      return <ChoiceStep step="experience" answer={profile.experience_level} actions={actions} />;
-    case 'equipment':
-      return <ChoiceStep step="equipment" answer={view.equipment} actions={actions} />;
-    case 'availability':
-      return (
-        <AvailabilityStep
-          // D36: pre-filled with the programme's days until the user saves their own.
-          answer={
-            Object.keys(view.availability).length > 0
-              ? view.availability
-              : view.programmeAvailability
-          }
-          preferredDurationMin={profile.preferred_duration_min}
-          actions={actions}
-        />
-      );
-    case 'baselines':
-      return (
-        <BaselinesStep
-          saved={savedBaselines(view)}
-          units={profile.preferred_units}
-          actions={actions}
-        />
-      );
-  }
+  return (
+    <StepForm
+      step={step}
+      view={view}
+      currentYear={(await getRequestClock()).now().getUTCFullYear()}
+      actions={actions}
+    />
+  );
 }

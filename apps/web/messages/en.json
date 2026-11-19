@@ -83,7 +83,44 @@
       "title": "Your profile could not be loaded",
       "body": "Check your connection, then try again.",
       "retry": "Try again"
-    }
+    },
+    "saved": "Saved",
+    "savedBody": "Your changes to “{section}” are saved.",
+    "edit": "Edit",
+    "editSection": "Edit: {section}",
+    "answer": "Answer now",
+    "answerSection": "Answer now: {section}",
+    "notAnswered": "Not answered",
+    "sections": {
+      "profile": "About you",
+      "goals": "Goals",
+      "experience": "Experience",
+      "equipment": "Equipment",
+      "availability": "Your week",
+      "baselines": "Baselines",
+      "preferences": "Preferences"
+    },
+    "fields": {
+      "firstName": "First name",
+      "birthYear": "Year of birth",
+      "height": "Height",
+      "units": "Units",
+      "sessionLength": "Preferred session length",
+      "theme": "Theme"
+    },
+    "heightCm": "{cm, number} cm",
+    "heightFtIn": "{feet} ft {inches} in",
+    "runValue": "{distance, number} {unit} in {time} · {pace} /{unit}",
+    "themes": {
+      "system": "Same as this device",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "preferences": {
+      "intro": "The language applies to your account on every device. The theme applies to this device only.",
+      "themeHint": "Kept on this device only."
+    },
+    "number": "{value, number}"
   },
   "States": {
     "loading": "Loading…",
@@ -152,6 +189,8 @@
     "skip": "Skip",
     "next": "Next",
     "finish": "Finish",
+    "save": "Save",
+    "cancel": "Cancel",
     "pending": "Saving…",
     "error": "Your answers could not be saved. Please try again.",
     "required": "Required",
@@ -169,7 +208,8 @@
       "heightFeet": "Height (ft)",
       "heightInches": "Height (in)",
       "timezone": "Time zone",
-      "timezoneHint": "Your days start and end in this time zone. It was detected from your browser."
+      "timezoneHint": "Your days start and end in this time zone. It was detected from your browser.",
+      "timezoneSettingsHint": "Your days start and end in this time zone. Changing it never moves a session you have logged."
     },
     "goals": {
       "title": "Your goals",
