@@ -19,8 +19,11 @@ const light = colourTokens(
   css.slice(css.indexOf(':root {'), css.indexOf('@media (prefers-color-scheme: dark)')),
 );
 const darkStart = css.indexOf('@media (prefers-color-scheme: dark)');
-const dark = colourTokens(
-  css.slice(darkStart, css.indexOf('@media (prefers-reduced-motion', darkStart)),
+const chosenDarkStart = css.indexOf(":root[data-theme='dark'] {");
+const dark = colourTokens(css.slice(darkStart, chosenDarkStart));
+// D56: dark chosen on the device.
+const chosenDark = colourTokens(
+  css.slice(chosenDarkStart, css.indexOf('@media (prefers-reduced-motion', chosenDarkStart)),
 );
 const themes = { light, dark } as const;
 
@@ -32,6 +35,12 @@ describe('design tokens', () => {
   it('define the same colour tokens in both themes', () => {
     expect(Object.keys(light).sort()).toEqual(Object.keys(dark).sort());
     expect(Object.keys(light).length).toBeGreaterThanOrEqual(13);
+  });
+
+  it('D56: the dark theme chosen on the device is the system dark theme, and light can override a dark system', () => {
+    expect(chosenDarkStart).toBeGreaterThan(darkStart);
+    expect(chosenDark).toEqual(dark);
+    expect(css).toContain(":root:not([data-theme='light'])");
   });
 
   it('D16: the accent is cobalt, #2F5BEA light and #7B93FF dark', () => {

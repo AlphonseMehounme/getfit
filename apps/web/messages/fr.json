@@ -83,7 +83,44 @@
       "title": "Impossible de charger ton profil",
       "body": "Vérifie ta connexion, puis réessaie.",
       "retry": "Réessayer"
-    }
+    },
+    "saved": "Enregistré",
+    "savedBody": "Tes modifications de « {section} » sont enregistrées.",
+    "edit": "Modifier",
+    "editSection": "Modifier : {section}",
+    "answer": "Répondre",
+    "answerSection": "Répondre : {section}",
+    "notAnswered": "Pas de réponse",
+    "sections": {
+      "profile": "À propos de toi",
+      "goals": "Objectifs",
+      "experience": "Expérience",
+      "equipment": "Matériel",
+      "availability": "Ta semaine",
+      "baselines": "Valeurs de référence",
+      "preferences": "Préférences"
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "birthYear": "Année de naissance",
+      "height": "Taille",
+      "units": "Unités",
+      "sessionLength": "Durée de séance préférée",
+      "theme": "Thème"
+    },
+    "heightCm": "{cm, number} cm",
+    "heightFtIn": "{feet} ft {inches} in",
+    "runValue": "{distance, number} {unit} en {time} · {pace} /{unit}",
+    "themes": {
+      "system": "Comme cet appareil",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "preferences": {
+      "intro": "La langue s’applique à ton compte sur tous tes appareils. Le thème s’applique à cet appareil seulement.",
+      "themeHint": "Gardé sur cet appareil seulement."
+    },
+    "number": "{value, number}"
   },
   "States": {
     "loading": "Chargement…",
@@ -152,6 +189,8 @@
     "skip": "Passer",
     "next": "Suivant",
     "finish": "Terminer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
     "pending": "Enregistrement…",
     "error": "Tes réponses n’ont pas pu être enregistrées. Réessaie.",
     "required": "Obligatoire",
@@ -169,7 +208,8 @@
       "heightFeet": "Taille (ft)",
       "heightInches": "Taille (in)",
       "timezone": "Fuseau horaire",
-      "timezoneHint": "Tes journées commencent et se terminent dans ce fuseau. Il a été détecté depuis ton navigateur."
+      "timezoneHint": "Tes journées commencent et se terminent dans ce fuseau. Il a été détecté depuis ton navigateur.",
+      "timezoneSettingsHint": "Tes journées commencent et finissent dans ce fuseau horaire. Le changer ne déplace jamais une séance déjà enregistrée."
     },
     "goals": {
       "title": "Tes objectifs",

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { PROFILE_PATH } from '@/lib/auth/paths';
 import {
   nextStep,
   ONBOARDING_STEP_TOTAL,
@@ -11,7 +12,8 @@ import {
 } from './steps';
 
 // The save and navigation shared by every onboarding step form. A successful action redirects on the server (to
-// the next step, or to the recommendation after the last one, D54), so only a failure comes back here.
+// the next step, or to the recommendation after the last one, D54; to Profile in Settings, D35), so only a failure
+// comes back here.
 
 export type StepActionResult = { ok: false } | undefined;
 export type SaveStepAction = (
@@ -23,6 +25,8 @@ export type FinishAction = () => Promise<StepActionResult>;
 export interface StepActions {
   save: SaveStepAction;
   finish: FinishAction;
+  /** D35: the same form edits an answer from Profile, with no progress or Skip. Onboarding when absent. */
+  mode?: 'onboarding' | 'settings';
 }
 
 export function useStepSubmit(step: OnboardingStepSlug, actions: StepActions) {
@@ -36,10 +40,27 @@ export function useStepSubmit(step: OnboardingStepSlug, actions: StepActions) {
   };
   const next = nextStep(step);
   const previous = previousStep(step);
+  const submit = (values: unknown) => run(() => actions.save(step, values));
 
+  if (actions.mode === 'settings') {
+    return {
+      submit,
+      shell: {
+        mode: 'settings' as const,
+        current: stepNumber(step),
+        total: ONBOARDING_STEP_TOTAL,
+        isLast: false,
+        backHref: PROFILE_PATH,
+        skip: undefined,
+        pending,
+        failed,
+      },
+    };
+  }
   return {
-    submit: (values: unknown) => run(() => actions.save(step, values)),
+    submit,
     shell: {
+      mode: 'onboarding' as const,
       current: stepNumber(step),
       total: ONBOARDING_STEP_TOTAL,
       isLast: next === null,

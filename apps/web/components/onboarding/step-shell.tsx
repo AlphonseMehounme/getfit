@@ -12,6 +12,8 @@ import { useHydrated } from '@/lib/hooks/use-hydrated';
 // the page is interactive, so a tap before hydration can never submit the form natively (answers in the URL).
 
 interface StepShellProps {
+  /** D35: in Settings, no progress and no Skip; Save, and Cancel back to Profile. */
+  mode?: 'onboarding' | 'settings';
   current: number;
   total: number;
   title: string;
@@ -32,6 +34,7 @@ const linkClass =
   'border-control hover:bg-surface focus-visible:outline-focus rounded-control inline-flex min-h-12 items-center justify-center border px-5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2';
 
 export function StepShell({
+  mode = 'onboarding',
   current,
   total,
   title,
@@ -49,19 +52,25 @@ export function StepShell({
   const hydrated = useHydrated();
   const busy = pending || !hydrated;
   const progress = t('progress', { current, total });
+  const settings = mode === 'settings';
+  const label = submitLabel ?? (settings ? t('save') : isLast ? t('finish') : t('next'));
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
-        <p id="onboarding-progress" className="text-muted text-sm font-medium">
-          {progress}
-        </p>
-        <progress
-          aria-labelledby="onboarding-progress"
-          value={current}
-          max={total}
-          className="accent-accent h-2 w-full"
-        />
+        {settings ? null : (
+          <>
+            <p id="onboarding-progress" className="text-muted text-sm font-medium">
+              {progress}
+            </p>
+            <progress
+              aria-labelledby="onboarding-progress"
+              value={current}
+              max={total}
+              className="accent-accent h-2 w-full"
+            />
+          </>
+        )}
         <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
         <p className="text-muted">{intro}</p>
       </header>
@@ -71,7 +80,7 @@ export function StepShell({
       </fieldset>
       <div className="flex flex-col gap-3 sm:flex-row-reverse">
         <Button type="submit" disabled={busy} className="sm:flex-1">
-          {pending ? t('pending') : (submitLabel ?? (isLast ? t('finish') : t('next')))}
+          {pending ? t('pending') : label}
         </Button>
         {typeof skip === 'string' ? (
           <Link href={skip} className={linkClass}>
@@ -84,7 +93,7 @@ export function StepShell({
         ) : null}
         {backHref ? (
           <Link href={backHref} className={linkClass}>
-            {t('back')}
+            {settings ? t('cancel') : t('back')}
           </Link>
         ) : null}
       </div>

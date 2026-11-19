@@ -213,8 +213,8 @@ Each task lists: **Goal · Files · Rules · Tests · Exit.**
 - **Files:**
   - `app/(app)/profile/{page,edit/[section]/page}.tsx`;
   - `components/profile/*`;
-  - `server/services/settings.ts`: units, language (the next-intl locale updates), time zone (BR-4: the schedule is recomputed, logged rows are untouched), theme;
-  - the library shortcut on mobile.
+  - `server/services/settings.ts`: units, language (the next-intl locale updates), time zone (BR-4: the schedule is recomputed, logged rows are untouched), theme (D56: on the device);
+  - the library shortcut on mobile moves to P2-14, which creates the library route (no dead link).
 - **Rules:** D35, D15, BR-4, PRD §6.1 (subset).
 - **Tests:**
   - `test:db`: a time-zone change keeps every logged timestamp;
@@ -304,7 +304,7 @@ Each task lists: **Goal · Files · Rules · Tests · Exit.**
   - `server/services/library.ts`, including personal history: the last sessions where the exercise was logged;
   - `app/(app)/library/{page,[slug]/page}.tsx`;
   - `components/library/*`;
-  - links from every exercise mention.
+  - links from every exercise mention, and the library shortcut on Profile for mobile (moved from P2-08).
 - **Rules:** PRD §6.7 AC, §8 QA rule 6 (full), AGENTS §8.
 - **Tests:**
   - unit: "traction" and "pull-up" find the same exercise;

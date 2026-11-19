@@ -31,7 +31,8 @@ test('sign up, confirm by email, log out, and log back in', async ({ page }) => 
   await expect(page.getByRole('heading', { level: 1, name: en.Profile.title })).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
   await expect(page.getByText(en.Profile.languages.en)).toBeVisible();
-  await expect(page.getByText(TIME_ZONE)).toBeVisible();
+  // Shown as in the time-zone list, with spaces for underscores.
+  await expect(page.getByText(TIME_ZONE.replaceAll('_', ' '))).toBeVisible();
   await expectNoAxeViolations(page);
 
   await page.getByRole('button', { name: en.Profile.signOut }).click();
