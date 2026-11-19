@@ -173,6 +173,7 @@ Each task lists: **Goal · Files · Rules · Tests · Exit.**
   - component tests;
   - E2E: pause → reload → paused → resume; substitute push-up and log, and the record shows the substitute; skip an exercise and only "partial" is offered.
 - **Exit:** E2E green. **Gate:** AL checks the workout screen on a real phone on a preview (PRD §14) before Group 3 starts.
+- **Gate status (19 Nov 2026):** passed. AL checked the workout screen on a real phone on a preview. The one finding (elapsed time 0:00 after a reload) came from the frozen preview test clock, not the app; AL kept the clock frozen, and the runbook now says to check time-based behaviour without it. Group 3 can start.
 
 ### Group 2: Onboarding and settings (can start alongside Group 1)
 
