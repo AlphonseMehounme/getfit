@@ -32,7 +32,11 @@ export const EVENT_SCHEMAS = {
   weekly_review_completed: props({ weekly_review_id: id }),
   programme_completed: props({ user_programme_id: id }),
   progress_viewed: props({ range: z.enum(['4w', '8w', 'programme', 'all']) }),
-  session_rescheduled: props({ programme_day_id: id, action: z.enum(['moved', 'skipped']) }),
+  session_rescheduled: props({
+    programme_day_id: id,
+    // D38: undoing a move or a skip.
+    action: z.enum(['moved', 'skipped', 'undone']),
+  }),
   sync_conflict: props({
     record_type: z.enum(['workout_session', 'workout_set', 'running_session']),
     record_id: id,
