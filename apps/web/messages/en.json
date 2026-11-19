@@ -160,6 +160,7 @@
   "Nav": {
     "label": "Main navigation",
     "today": "Today",
+    "programme": "Programme",
     "profile": "Profile"
   },
   "Start": {
@@ -354,6 +355,37 @@
       "view": "View workout"
     }
   },
+  "Programme": {
+    "title": "Programme",
+    "intro": "Eight weeks, each with its focus. Open a week to see its days and targets.",
+    "thisWeek": "Open this week",
+    "firstWeek": "See week 1",
+    "startsOn": "Your programme starts on {date}.",
+    "finished": "All {weeks} weeks are behind you.",
+    "timeline": "The weeks",
+    "weekItem": "Week {week} · {label}",
+    "current": "This week",
+    "deload": "Deload",
+    "longRunCeiling": "Long run up to {distance, number} {unit}",
+    "safetyNotes": "Safety notes",
+    "weekTitle": "Week {week} of {total} · {label}",
+    "weekNav": "Weeks",
+    "previous": "Previous week",
+    "next": "Next week",
+    "overview": "Programme overview",
+    "days": "Days of the week",
+    "nothingPlanned": "Nothing planned",
+    "why": "Why this session",
+    "backToWeek": "Back to week {week}",
+    "pastDay": "This day is past. Only what you logged is shown.",
+    "loading": "Loading the programme…",
+    "error": {
+      "title": "The programme could not be loaded",
+      "body": "Check your connection, then try again.",
+      "retry": "Try again"
+    },
+    "savedDay": "This session is saved. Open the workout to see what you logged."
+  },
   "Workout": {
     "exerciseOf": "Exercise {current} of {total}",
     "progress": "{logged} of {total} sets done",
@@ -473,5 +505,10 @@
       "original": "Back to {name}",
       "instead": "Instead of {name}"
     }
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "This page doesn’t exist, or is no longer available.",
+    "home": "Back to Today"
   }
 }

@@ -56,6 +56,9 @@ export default defineConfig({
         'apps/web/components/profile/**/*.tsx',
         'apps/web/lib/profile/**/*.ts',
         'apps/web/lib/theme.ts',
+        // P2-10: programme screens (PRD §6.4).
+        'apps/web/components/programme/**/*.tsx',
+        'apps/web/lib/programme/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

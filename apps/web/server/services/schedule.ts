@@ -147,7 +147,7 @@ const PRECEDENCE: Partial<Record<LoggedRecord['status'], number>> = {
 };
 
 /** The workout a day's status comes from: completed first, then partial, then in progress. */
-function workoutFor(logged: readonly LoggedRecord[], programmeDayId: string): string | null {
+export function workoutFor(logged: readonly LoggedRecord[], programmeDayId: string): string | null {
   const candidates = logged.filter(
     (l) =>
       l.programmeDayId === programmeDayId &&

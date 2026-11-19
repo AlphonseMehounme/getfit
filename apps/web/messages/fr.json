@@ -160,6 +160,7 @@
   "Nav": {
     "label": "Navigation principale",
     "today": "Aujourd’hui",
+    "programme": "Programme",
     "profile": "Profil"
   },
   "Start": {
@@ -354,6 +355,37 @@
       "view": "Voir la séance"
     }
   },
+  "Programme": {
+    "title": "Programme",
+    "intro": "Huit semaines, chacune avec son objectif. Ouvre une semaine pour voir ses jours et ses objectifs.",
+    "thisWeek": "Ouvrir cette semaine",
+    "firstWeek": "Voir la semaine 1",
+    "startsOn": "Ton programme commence le {date}.",
+    "finished": "Les {weeks} semaines sont derrière toi.",
+    "timeline": "Les semaines",
+    "weekItem": "Semaine {week} · {label}",
+    "current": "Cette semaine",
+    "deload": "Décharge",
+    "longRunCeiling": "Sortie longue jusqu’à {distance, number} {unit}",
+    "safetyNotes": "Consignes de sécurité",
+    "weekTitle": "Semaine {week} sur {total} · {label}",
+    "weekNav": "Semaines",
+    "previous": "Semaine précédente",
+    "next": "Semaine suivante",
+    "overview": "Vue du programme",
+    "days": "Jours de la semaine",
+    "nothingPlanned": "Rien de prévu",
+    "why": "Pourquoi cette séance",
+    "backToWeek": "Retour à la semaine {week}",
+    "pastDay": "Ce jour est passé. Seul ce que tu as enregistré est affiché.",
+    "loading": "Chargement du programme…",
+    "error": {
+      "title": "Le programme n’a pas pu être chargé",
+      "body": "Vérifie ta connexion, puis réessaie.",
+      "retry": "Réessayer"
+    },
+    "savedDay": "Cette séance est enregistrée. Ouvre l’entraînement pour voir ce que tu as noté."
+  },
   "Workout": {
     "exerciseOf": "Exercice {current} sur {total}",
     "progress": "{logged} séries faites sur {total}",
@@ -473,5 +505,10 @@
       "original": "Revenir à {name}",
       "instead": "À la place de {name}"
     }
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "body": "Cette page n’existe pas, ou n’est plus disponible.",
+    "home": "Retour à Aujourd’hui"
   }
 }
