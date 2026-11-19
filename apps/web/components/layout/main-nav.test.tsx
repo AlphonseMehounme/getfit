@@ -12,6 +12,7 @@ describe('MainNav', () => {
     const links = screen.getAllByRole('link');
     expect(links.map((l) => [l.textContent, l.getAttribute('href')])).toEqual([
       ['Today', '/today'],
+      ['Programme', '/programme'],
       ['Profile', '/profile'],
     ]);
     expect(links[0]!.getAttribute('aria-current')).toBe('page');

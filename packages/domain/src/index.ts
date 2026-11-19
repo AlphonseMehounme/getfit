@@ -13,6 +13,7 @@ export * from './schedule/engine';
 export * from './status/missed';
 export * from './status/late-logging';
 export * from './status/session-status';
+export * from './status/shows-plan';
 export * from './metrics/adherence';
 export * from './recovery/rules';
 export * from './recovery/evaluate-move';

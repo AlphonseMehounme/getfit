@@ -5,6 +5,8 @@ export const START_PATH = '/start';
 /** PRD §6.2: the onboarding steps, `/onboarding/<step>`; `/onboarding` alone resumes (D55). */
 export const ONBOARDING_PATH = '/onboarding';
 export const PROFILE_PATH = '/profile';
+/** PRD §6.4: the programme overview, `/programme/week/<n>` and `/programme/day/<id>`. */
+export const PROGRAMME_PATH = '/programme';
 /** The workout screen: `/train/<session id>` (PRD §6.5). */
 export const TRAIN_PATH = '/train';
 export const LOGIN_PATH = '/login';

@@ -24,7 +24,8 @@ export interface WeekStripDay {
   isToday: boolean;
 }
 
-const STATUS_STYLE: Record<DayStatus, { icon: LucideIcon; tone: string }> = {
+/** The icon and tone of each status, shared with the programme week view (one mapping). */
+export const statusStyle: Record<DayStatus, { icon: LucideIcon; tone: string }> = {
   completed: { icon: CircleCheck, tone: 'text-success' },
   partial: { icon: CircleDashed, tone: 'text-success' },
   in_progress: { icon: Play, tone: 'text-accent' },
@@ -48,7 +49,7 @@ export function WeekStrip({ days }: { days: readonly WeekStripDay[] }) {
   return (
     <ol aria-label={t('label')} className="grid grid-cols-7 gap-1">
       {days.map(({ date, status, isToday }) => {
-        const { icon: Icon, tone } = STATUS_STYLE[status];
+        const { icon: Icon, tone } = statusStyle[status];
         const day = toDate(date);
         const statusName = t(`status.${status}`);
         return (

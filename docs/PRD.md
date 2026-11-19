@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.12 (D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.13 (D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -79,6 +79,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D55 | Resuming onboarding | A user who comes back mid-onboarding resumes at step 1 while the first name is empty, and at step 2 otherwise; every step is pre-filled with what was saved. | 19 Nov 2026 |
 | D56 | The theme is kept on the device | Light, dark or system (the default) is stored in a cookie on that browser. It is not part of the account, and another device keeps its own choice. | 19 Nov 2026 |
 | D57 | Skipping has the same window as moving | A scheduled or missed training session can be skipped until the end of its Monday–Sunday week (BR-12, D10); after that a missed session stays missed. A skip can carry an optional reason. | 19 Nov 2026 |
+| D58 | A past day shows its status, not its plan | In the week view and the session detail, a day before today shows the session's name and status (Done, Partly done, Missed, Skipped, Rest), with "View workout" when a workout was logged; its targets are not listed. Today and later days list their targets (after deload, BR-17). This applies PRD §6.4's "past weeks show only logged data, never prescriptions as results". | 19 Nov 2026 |
 
 ## 1. Vision, principles and users
 

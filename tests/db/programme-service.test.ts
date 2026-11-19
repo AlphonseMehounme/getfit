@@ -9,7 +9,12 @@ import {
   skipSession,
   undoOverride,
 } from '../../apps/web/server/services/programme';
-import { getWeek, type WeekSession } from '../../apps/web/server/services/programme-week';
+import { getProgrammeOverview } from '../../apps/web/server/services/programme-overview';
+import {
+  getProgrammeDay,
+  getWeek,
+  type WeekSession,
+} from '../../apps/web/server/services/programme-week';
 import { getWorkout, logSet, startSession } from '../../apps/web/server/services/workout';
 import { anonClient, createTestUser, type TestUser } from './helpers';
 
@@ -477,5 +482,70 @@ describe('getWeek (PRD §6.4)', () => {
         durationWeeks: 8,
       });
     }
+  });
+});
+
+describe('programme overview, week and day (PRD §6.4, D58)', () => {
+  it('the overview: 8 weeks, week 5 deload at 7 km, safety notes, and the current week', async () => {
+    const { user } = await enrolled();
+    const overview = await getProgrammeOverview(user.client, on('2026-12-02'));
+    if (overview?.kind !== 'overview') throw new Error('expected the overview');
+    expect(overview.title).toBe('Strength, muscle & endurance — 8 weeks');
+    expect(overview.safetyNotes).toContain('Keep 2–3 reps in reserve on every set.');
+    expect(overview.weeks.map((w) => w.weekNumber)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(overview.weeks.filter((w) => w.deload)).toEqual([
+      expect.objectContaining({ weekNumber: 5, longRunCeilingM: 7000 }),
+    ]);
+    expect(overview).toMatchObject({
+      currentWeek: 2,
+      startDate: '2026-11-23',
+      today: '2026-12-02',
+    });
+    expect((await getProgrammeOverview(user.client, WEDNESDAY_BEFORE)) as unknown).toMatchObject({
+      currentWeek: null,
+    });
+    expect((await getProgrammeOverview(user.client, on('2027-01-20'))) as unknown).toMatchObject({
+      currentWeek: null,
+    });
+    expect(await getProgrammeOverview(anonClient(), WEDNESDAY_BEFORE)).toBeNull();
+  });
+
+  it('D58: a past missed day lists no plan; a logged day carries its workout; exercises are named', async () => {
+    const { user, monA, wedB } = await enrolled();
+    const monday = on('2026-11-23');
+    const sessionId = randomUUID();
+    await startSession(user.client, { sessionId, programmeDayId: monA }, monday, noTrack);
+    expect(await sessionOf(user, monA, '2026-11-25')).toMatchObject({
+      status: 'in_progress',
+      showsPlan: false,
+      workoutSessionId: sessionId,
+    });
+    const thursday = await sessionOf(user, wedB, '2026-11-26');
+    expect(thursday).toMatchObject({ status: 'missed', showsPlan: false, workoutSessionId: null });
+    const planned = await sessionOf(user, wedB, '2026-11-25');
+    expect(planned.showsPlan).toBe(true);
+    expect(planned.exercises.map((e) => e.name)[0]).toBe('Chin-up');
+  });
+
+  it('getProgrammeDay: the session with why it exists; another programme day is not found', async () => {
+    const { user, friC } = await enrolled();
+    const day = await getProgrammeDay(user.client, friC, on('2026-11-24'));
+    if (day?.kind !== 'day') throw new Error('expected a day');
+    expect(day).toMatchObject({ weekNumber: 1, units: 'metric', today: '2026-11-24' });
+    expect(day.weekFocus).toBeTruthy();
+    expect(day.purpose).toBeTruthy();
+    expect(day.session).toMatchObject({ programmeDayId: friC, title: STRENGTH_C, showsPlan: true });
+    expect(await getProgrammeDay(user.client, randomUUID(), on('2026-11-24'))).toEqual({
+      kind: 'not_found',
+    });
+    expect(await getProgrammeDay(anonClient(), friC, on('2026-11-24'))).toBeNull();
+    const stranger = await createTestUser({ metadata: { locale: 'en', timezone: 'Europe/Paris' } });
+    users.push(stranger);
+    expect(await getProgrammeDay(stranger.client, friC, on('2026-11-24'))).toEqual({
+      kind: 'not_enrolled',
+    });
+    expect(await getProgrammeOverview(stranger.client, on('2026-11-24'))).toEqual({
+      kind: 'not_enrolled',
+    });
   });
 });
