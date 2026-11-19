@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.8 (D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.9 (D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -72,6 +72,9 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D48 | A running rest survives a reload on the same device | The rest end time is kept in the browser's storage for that session, so a reload shows the remaining time. If storage is unavailable the rest is not restored. Nothing is sent to the server (D39). | 18 Nov 2026 |
 | D49 | A skip is kept on the device | Skipped exercises (D40) are kept in the browser's storage for that workout, so a reload still shows them as skipped and the finish summary lists them. Nothing is sent to the server; on another device they show as not logged. Undoing a skip removes it. | 18 Nov 2026 |
 | D50 | Pausing ends the rest | Pausing a workout (D34) clears a running rest timer (D39) with no alert, and releases the screen wake lock. Nothing runs while paused. | 18 Nov 2026 |
+| D51 | A baseline keeps its first date | Saving onboarding step 6 again, from onboarding or Settings, corrects a baseline's value; the baseline stays dated at its first save, so it remains the starting reference (BR-26). | 19 Nov 2026 |
+| D52 | Clearing a baseline removes it | A baseline left empty when step 6 is saved again is soft-deleted (`deleted_at`); the other baselines are unchanged. | 19 Nov 2026 |
+| D53 | Onboarding completes once | Finishing onboarding again changes nothing: `onboarding_completed_at` keeps its first value and `onboarding_completed` is sent once. Later changes go through Settings (D35). | 19 Nov 2026 |
 
 ## 1. Vision, principles and users
 
