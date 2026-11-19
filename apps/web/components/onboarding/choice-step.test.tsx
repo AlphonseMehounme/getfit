@@ -58,14 +58,14 @@ describe('ChoiceStep (PRD §6.2 steps 2–4)', () => {
     );
   });
 
-  it('D54: equipment is the last step: Finish saves, Skip finishes without saving', async () => {
+  it('equipment: several, saved as a list; Skip leads to step 5', async () => {
     const { actions } = renderStep('equipment', []);
     expect(screen.getByText('Step 4 of 6')).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: 'Skip' }));
-    await waitFor(() => expect(actions.finish).toHaveBeenCalledOnce());
-    expect(actions.save).not.toHaveBeenCalled();
+    expect(screen.getByRole('link', { name: 'Skip' }).getAttribute('href')).toBe(
+      '/onboarding/availability',
+    );
     await userEvent.click(screen.getByText('Pull-up bar'));
-    await userEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     await waitFor(() =>
       expect(actions.save).toHaveBeenCalledWith('equipment', { equipment: ['pull_up_bar'] }),
     );

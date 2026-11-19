@@ -5,7 +5,9 @@ import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormField } from '@/components/ui/form-field';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
 import { Selector } from '@/components/ui/selector';
+import { optionalNumber, shown } from '@/lib/onboarding/optional-number';
 import { schemaResolver } from '@/lib/onboarding/schema-resolver';
 import { type StepActions, useStepSubmit } from '@/lib/onboarding/use-step-submit';
 import { profileStepSchema } from '@/lib/validation/onboarding';
@@ -31,11 +33,6 @@ interface Values {
   heightIn: number | null;
   timezone: string;
 }
-
-/** An empty field is null, not 0; React Hook Form also passes the default (null) of an untouched field. */
-const optionalNumber = {
-  setValueAs: (v: unknown) => (v === '' || v === null || v === undefined ? null : Number(v)),
-};
 
 /** The form's values as the step schema's input. */
 function toInput(v: Values) {
@@ -81,7 +78,6 @@ export function ProfileStep({
   const { submit, shell } = useStepSubmit('profile', actions);
   // Also rendered into the server HTML, so the saved answers show before the page is interactive.
   const initial = defaults(answers);
-  const shown = (value: number | null) => value ?? '';
   const {
     register,
     handleSubmit,
@@ -169,7 +165,7 @@ export function ProfileStep({
       )}
       <div className="flex flex-col gap-2">
         <Label htmlFor="onboarding-timezone">{t('profile.timezone')}</Label>
-        <select
+        <Select
           id="onboarding-timezone"
           aria-describedby={
             errors.timezone
@@ -177,7 +173,6 @@ export function ProfileStep({
               : 'onboarding-timezone-hint'
           }
           aria-invalid={errors.timezone ? true : undefined}
-          className="border-control bg-background text-foreground rounded-control focus-visible:outline-focus min-h-12 w-full border px-4 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
           defaultValue={initial.timezone}
           {...register('timezone')}
         >
@@ -186,7 +181,7 @@ export function ProfileStep({
               {zone.replaceAll('_', ' ')}
             </option>
           ))}
-        </select>
+        </Select>
         <p id="onboarding-timezone-hint" className="text-muted text-sm">
           {t('profile.timezoneHint')}
         </p>
