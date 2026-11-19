@@ -109,6 +109,11 @@ This is the Phase 1 exit (PRD §14).
      day, or use a test clock.
    - **With a test clock:** set `GETFIT_TEST_NOW` on the **Preview** environment to a Monday at 08:00 in your
      time zone, e.g. `2026-11-23T08:00:00+01:00`, and redeploy. Then "Start today" gives Strength A.
+
+   > **The test clock is frozen.** Every request sees exactly that instant, so no time passes on the server: a
+   > workout's elapsed time shows 0:00 after a reload, and its saved duration is 0. Use the test clock only to see
+   > a given day's screens. Check anything that depends on time passing (elapsed time, pause and resume across a
+   > reload, the rest timer after a reload, the finish duration) **without** it, on a real strength day.
 4. **Start workout.** Log every set ("Done as planned", or adjust), lock the phone halfway and come back, then
    **Finish**, pick an effort and **Save as completed**.
 5. Today shows the day as **Done**; **View workout** lists every set.
@@ -132,3 +137,4 @@ This is the Phase 1 exit (PRD §14).
 | The build fails at "media check" | A production build with placeholder images (D18) | Expected until the commissioned set lands; previews are fine |
 | The build fails with "GETFIT_TEST_NOW is set" | The test clock is set on Production | Remove it from Production (D20) |
 | Today shows "Your programme starts on …" | Enrolled with "Start Monday" before week 1 | Wait, use "Start this week", or set the preview test clock |
+| Elapsed time is 0:00 after a reload, or a saved workout lasts 0 min | `GETFIT_TEST_NOW` is set: the test clock is frozen, so no time passes on the server | Expected. Check time-based behaviour without the test clock, on a real strength day (section 3, step 3) |
