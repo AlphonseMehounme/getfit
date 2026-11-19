@@ -138,6 +138,81 @@
     "pending": "Démarrage…",
     "error": "Impossible de démarrer le programme. Réessaie."
   },
+  "Onboarding": {
+    "progress": "Étape {current} sur {total}",
+    "back": "Retour",
+    "skip": "Passer",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "pending": "Enregistrement…",
+    "error": "Tes réponses n’ont pas pu être enregistrées. Réessaie.",
+    "required": "Obligatoire",
+    "profile": {
+      "title": "À propos de toi",
+      "intro": "Seul ton prénom est obligatoire. Tu pourras tout modifier plus tard dans ton profil.",
+      "firstName": "Prénom",
+      "birthYear": "Année de naissance",
+      "units": "Unités",
+      "metric": "Métriques",
+      "metricHint": "kg, km, cm",
+      "imperial": "Impériales",
+      "imperialHint": "lb, mi, ft et in",
+      "heightCm": "Taille (cm)",
+      "heightFeet": "Taille (ft)",
+      "heightInches": "Taille (in)",
+      "timezone": "Fuseau horaire",
+      "timezoneHint": "Tes journées commencent et se terminent dans ce fuseau. Il a été détecté depuis ton navigateur."
+    },
+    "goals": {
+      "title": "Tes objectifs",
+      "intro": "Choisis-en autant que tu veux.",
+      "legend": "Objectifs",
+      "options": {
+        "build_muscle": "Prendre du muscle",
+        "increase_strength": "Gagner en force",
+        "improve_endurance": "Améliorer l’endurance",
+        "improve_running": "Progresser en course",
+        "general_fitness": "Forme générale",
+        "maintain": "Entretenir"
+      }
+    },
+    "experience": {
+      "title": "Ton expérience",
+      "intro": "Cela nous aide à te proposer le bon programme.",
+      "legend": "Expérience d’entraînement",
+      "options": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé"
+      },
+      "hints": {
+        "beginner": "Nouveau dans l’entraînement structuré, ou de retour après une longue pause",
+        "intermediate": "Entraînement régulier depuis plusieurs mois",
+        "advanced": "Entraînement régulier depuis des années"
+      }
+    },
+    "equipment": {
+      "title": "Ton matériel",
+      "intro": "Choisis tout ce avec quoi tu peux t’entraîner.",
+      "legend": "Matériel",
+      "options": {
+        "bodyweight": "Poids du corps",
+        "pull_up_bar": "Barre de traction",
+        "dumbbells": "Haltères",
+        "barbell": "Barre olympique",
+        "bands": "Bandes élastiques",
+        "gym": "Salle de sport",
+        "other": "Autre"
+      }
+    },
+    "errors": {
+      "firstNameRequired": "Saisis ton prénom.",
+      "firstNameTooLong": "50 caractères maximum.",
+      "birthYear": "Saisis une année entre 1900 et {year}.",
+      "height": "Saisis une taille valide.",
+      "timezone": "Choisis un fuseau horaire dans la liste."
+    }
+  },
   "Today": {
     "title": "Aujourd’hui",
     "week": "Semaine {week} sur {total} · {label}",

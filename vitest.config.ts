@@ -48,6 +48,10 @@ export default defineConfig({
         'apps/web/server/config/app-origin.ts',
         'apps/web/lib/format/**/*.ts',
         'apps/web/lib/validation/**/*.ts',
+        // P2-07: onboarding flow.
+        'apps/web/lib/onboarding/**/*.ts',
+        'apps/web/components/onboarding/**/*.tsx',
+        'apps/web/components/ui/selector.tsx',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

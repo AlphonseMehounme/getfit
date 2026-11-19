@@ -138,6 +138,81 @@
     "pending": "Starting…",
     "error": "The programme could not be started. Please try again."
   },
+  "Onboarding": {
+    "progress": "Step {current} of {total}",
+    "back": "Back",
+    "skip": "Skip",
+    "next": "Next",
+    "finish": "Finish",
+    "pending": "Saving…",
+    "error": "Your answers could not be saved. Please try again.",
+    "required": "Required",
+    "profile": {
+      "title": "About you",
+      "intro": "Only your first name is required. You can change everything later in your profile.",
+      "firstName": "First name",
+      "birthYear": "Year of birth",
+      "units": "Units",
+      "metric": "Metric",
+      "metricHint": "kg, km, cm",
+      "imperial": "Imperial",
+      "imperialHint": "lb, mi, ft and in",
+      "heightCm": "Height (cm)",
+      "heightFeet": "Height (ft)",
+      "heightInches": "Height (in)",
+      "timezone": "Time zone",
+      "timezoneHint": "Your days start and end in this time zone. It was detected from your browser."
+    },
+    "goals": {
+      "title": "Your goals",
+      "intro": "Choose as many as you like.",
+      "legend": "Goals",
+      "options": {
+        "build_muscle": "Build muscle",
+        "increase_strength": "Increase strength",
+        "improve_endurance": "Improve endurance",
+        "improve_running": "Improve running",
+        "general_fitness": "General fitness",
+        "maintain": "Maintain"
+      }
+    },
+    "experience": {
+      "title": "Your experience",
+      "intro": "This helps us suggest the right programme.",
+      "legend": "Training experience",
+      "options": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "hints": {
+        "beginner": "New to structured training, or coming back after a long break",
+        "intermediate": "Training regularly for several months",
+        "advanced": "Training consistently for years"
+      }
+    },
+    "equipment": {
+      "title": "Your equipment",
+      "intro": "Choose everything you can train with.",
+      "legend": "Equipment",
+      "options": {
+        "bodyweight": "Bodyweight",
+        "pull_up_bar": "Pull-up bar",
+        "dumbbells": "Dumbbells",
+        "barbell": "Barbell",
+        "bands": "Resistance bands",
+        "gym": "Gym",
+        "other": "Other"
+      }
+    },
+    "errors": {
+      "firstNameRequired": "Enter your first name.",
+      "firstNameTooLong": "Use 50 characters or fewer.",
+      "birthYear": "Enter a year between 1900 and {year}.",
+      "height": "Enter a valid height.",
+      "timezone": "Choose a time zone from the list."
+    }
+  },
   "Today": {
     "title": "Today",
     "week": "Week {week} of {total} · {label}",

@@ -9,7 +9,7 @@ import {
   insertEnrolment,
 } from '@/server/repositories/enrolment';
 import { findProgramme } from '@/server/repositories/programme';
-import { findProfileSettings } from '@/server/repositories/profiles';
+import { findOnboardingProfile, findProfileSettings } from '@/server/repositories/profiles';
 import { getCurrentUser } from './auth';
 
 // D20: the Phase 1 "Start programme" step (Start Monday / Start this week, BR-2), wrapped by onboarding in Phase 2.
@@ -85,6 +85,8 @@ export async function startProgramme(
 
 export type StartOptions =
   | { kind: 'enrolled' }
+  /** D20 / PRD §6.2: not enrolled and onboarding not finished: the steps come first. */
+  | { kind: 'onboarding' }
   | {
       kind: 'options';
       programmeTitle: string;
@@ -105,7 +107,10 @@ export async function getStartOptions(
   if (!user) return null;
   const profile = await findProfileSettings(client, user.id);
   if (!profile) throw new Error('profile missing for signed-in user');
+  // An enrolment wins, so an account enrolled before onboarding existed is never sent back to it.
   if (await findActiveEnrolment(client, user.id)) return { kind: 'enrolled' };
+  const onboarding = await findOnboardingProfile(client, user.id);
+  if (!onboarding?.onboarding_completed_at) return { kind: 'onboarding' };
 
   const programme = await findProgramme(client, { slug: LAUNCH_PROGRAMME_SLUG }, profile.locale);
   if (!programme) throw new Error('content: launch programme not published');

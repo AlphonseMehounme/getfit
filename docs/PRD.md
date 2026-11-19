@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.9 (D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.10 (D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -75,6 +75,8 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D51 | A baseline keeps its first date | Saving onboarding step 6 again, from onboarding or Settings, corrects a baseline's value; the baseline stays dated at its first save, so it remains the starting reference (BR-26). | 19 Nov 2026 |
 | D52 | Clearing a baseline removes it | A baseline left empty when step 6 is saved again is soft-deleted (`deleted_at`); the other baselines are unchanged. | 19 Nov 2026 |
 | D53 | Onboarding completes once | Finishing onboarding again changes nothing: `onboarding_completed_at` keeps its first value and `onboarding_completed` is sent once. Later changes go through Settings (D35). | 19 Nov 2026 |
+| D54 | Onboarding finishes on its last step | Saving or skipping the last onboarding step completes onboarding (D53) and opens the programme recommendation (the Start step). A user who leaves there comes back to the recommendation, not to the steps. | 19 Nov 2026 |
+| D55 | Resuming onboarding | A user who comes back mid-onboarding resumes at step 1 while the first name is empty, and at step 2 otherwise; every step is pre-filled with what was saved. | 19 Nov 2026 |
 
 ## 1. Vision, principles and users
 

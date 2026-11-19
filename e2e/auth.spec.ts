@@ -24,8 +24,8 @@ test('sign up, confirm by email, log out, and log back in', async ({ page }) => 
   await signUp(page, email, password);
   await openEmailLink(page, email, 'email');
 
-  // The confirmation link signs the user in; a new user lands on the Start step (D20).
-  await expect(page).toHaveURL('/start');
+  // The confirmation link signs the user in; a new user lands on onboarding's first step (PRD §6.2, D54).
+  await expect(page).toHaveURL('/onboarding/profile');
   // The profile has the browser language and zone (D29).
   await page.goto('/profile');
   await expect(page.getByRole('heading', { level: 1, name: en.Profile.title })).toBeVisible();
