@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { parseInstant } from './clock';
 import { parseLocalDate } from './local-date';
-import { isValidTimeZone, localDateAt, localDayBounds, startOfLocalDay } from './zone';
+import {
+  instantAtLocalTime,
+  isValidTimeZone,
+  localDateAt,
+  localDayBounds,
+  startOfLocalDay,
+} from './zone';
 
 const HOUR = 3_600_000;
 const hoursIn = (date: string, zone: string) => {
@@ -70,5 +76,36 @@ describe('DST transitions (ADR 0002)', () => {
       '2026-09-06T04:00:00.000Z',
     );
     expect(hoursIn('2026-09-06', 'America/Santiago')).toBe(23);
+  });
+});
+
+describe('instantAtLocalTime (PRD §6.6 run start)', () => {
+  it('a wall-clock time in two zones', () => {
+    expect(
+      instantAtLocalTime(parseLocalDate('2026-11-29'), 9, 30, 'Europe/Paris').toISOString(),
+    ).toBe('2026-11-29T08:30:00.000Z');
+    expect(
+      instantAtLocalTime(parseLocalDate('2026-11-29'), 9, 30, 'America/New_York').toISOString(),
+    ).toBe('2026-11-29T14:30:00.000Z');
+  });
+
+  it('across DST: summer time in Paris, and a time in the spring gap moves forward', () => {
+    expect(
+      instantAtLocalTime(parseLocalDate('2026-06-14'), 7, 0, 'Europe/Paris').toISOString(),
+    ).toBe('2026-06-14T05:00:00.000Z');
+    // 29 Mar 2026: 02:00 → 03:00 in Paris, so 02:30 does not exist.
+    const gap = instantAtLocalTime(parseLocalDate('2026-03-29'), 2, 30, 'Europe/Paris');
+    expect(localDateAt(gap, 'Europe/Paris')).toBe('2026-03-29');
+    expect(gap.toISOString()).toBe('2026-03-29T01:30:00.000Z');
+  });
+
+  it('refuses a time that is not one, or an unknown zone', () => {
+    const date = parseLocalDate('2026-11-29');
+    expect(() => instantAtLocalTime(date, 24, 0, 'Europe/Paris')).toThrow(RangeError);
+    expect(() => instantAtLocalTime(date, 9, 60, 'Europe/Paris')).toThrow(RangeError);
+    expect(() => instantAtLocalTime(date, 9.5, 0, 'Europe/Paris')).toThrow(RangeError);
+    expect(() => instantAtLocalTime(date, -1, 0, 'Europe/Paris')).toThrow(RangeError);
+    expect(() => instantAtLocalTime(date, 9, -1, 'Europe/Paris')).toThrow(RangeError);
+    expect(() => instantAtLocalTime(date, 9, 0, 'Mars/Olympus')).toThrow(RangeError);
   });
 });

@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.13 (D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.14 (D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -80,6 +80,9 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D56 | The theme is kept on the device | Light, dark or system (the default) is stored in a cookie on that browser. It is not part of the account, and another device keeps its own choice. | 19 Nov 2026 |
 | D57 | Skipping has the same window as moving | A scheduled or missed training session can be skipped until the end of its Monday–Sunday week (BR-12, D10); after that a missed session stays missed. A skip can carry an optional reason. | 19 Nov 2026 |
 | D58 | A past day shows its status, not its plan | In the week view and the session detail, a day before today shows the session's name and status (Done, Partly done, Missed, Skipped, Rest), with "View workout" when a workout was logged; its targets are not listed. Today and later days list their targets (after deload, BR-17). This applies PRD §6.4's "past weeks show only logged data, never prescriptions as results". | 19 Nov 2026 |
+| D59 | Move-and-link may use a past day | For D33's "move the long run to this day and link", a day already past in the same week is accepted, because the run happened there. BR-9 to BR-12 and the late-logging window (D14) still apply. Ordinary moves still never go into the past (D22). | 20 Nov 2026 |
+| D60 | Changing a linked run's date unlinks it | Distance, time, effort, route and notes can always be edited. If the date changes to another day, the link is removed and D33's link or move-and-link is offered again for the new date, as for a new run. | 20 Nov 2026 |
+| D61 | A run can fulfil a skipped long run | A run on a skipped long run's day is offered the link (and a run elsewhere in its week, the move-and-link). Accepting removes the skip, which the run replaces. | 20 Nov 2026 |
 
 ## 1. Vision, principles and users
 

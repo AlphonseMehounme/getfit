@@ -78,7 +78,7 @@ async function locate(
   const plannedMonday = mondayOf(plannedDate(schedule.enrolment.startDate, day));
   return {
     schedule,
-    context: moveContextFor(schedule.scheduleInput, plannedMonday, schedule.now),
+    context: moveContextFor(schedule.scheduleInput, plannedMonday, schedule.now, schedule.adHoc),
   };
 }
 

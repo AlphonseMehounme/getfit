@@ -69,7 +69,7 @@ function weekView(schedule: Schedule, number: number): WeekOf {
   const monday = addDays(enrolment.startDate, (number - 1) * 7);
   const content = programme.weeks.get(number)!;
   const week = buildWeek(scheduleInput, monday, now);
-  const context = moveContextFor(scheduleInput, monday, now);
+  const context = moveContextFor(scheduleInput, monday, now, schedule.adHoc);
 
   return {
     kind: 'week',
