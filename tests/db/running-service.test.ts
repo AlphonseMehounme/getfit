@@ -6,6 +6,7 @@ import { startProgramme } from '../../apps/web/server/services/enrolment';
 import { saveOnboardingStep } from '../../apps/web/server/services/onboarding';
 import { moveSession, skipSession } from '../../apps/web/server/services/programme';
 import { getWeek } from '../../apps/web/server/services/programme-week';
+import { getToday } from '../../apps/web/server/services/schedule';
 import {
   deleteRun,
   editRun,
@@ -132,6 +133,7 @@ describe('logging a run (BR-20 to BR-23)', () => {
     ).toEqual({
       kind: 'none',
       reason: 'no_long_run',
+      longRun: null,
     });
     expect(
       await logRun(
@@ -170,12 +172,23 @@ describe('linking to the long run (D33)', () => {
       ok: true,
       linked: true,
     });
-    expect((await sunday(user)).status).toBe('completed');
+    const linked = await sunday(user);
+    expect(linked.status).toBe('completed');
+    expect(linked.runSessionId).toBe((await rows(user))[0]!.id);
+    expect(linked.workoutSessionId).toBeNull();
+    // Today shows the run as the day's log, and no longer offers to log one.
+    const today = await getToday(user.client, on('2026-11-29'));
+    if (today?.kind !== 'day') throw new Error('expected a programme day');
+    expect(today.sessions[0]).toMatchObject({
+      runSessionId: linked.runSessionId,
+      canLogRun: false,
+    });
     expect(
       await getRunLinkOption(user.client, { startedAt: '2026-11-29T18:00' }, on('2026-11-29')),
     ).toEqual({
       kind: 'none',
       reason: 'already_fulfilled',
+      longRun: { title: 'Long run', date: '2026-11-29' },
     });
     expect(
       await logRun(
@@ -199,6 +212,7 @@ describe('linking to the long run (D33)', () => {
       kind: 'move_and_link',
       programmeDayId: (await sunday(user)).programmeDayId,
       date: '2026-11-28',
+      longRun: { title: 'Long run', date: '2026-11-29' },
     });
     expect(
       await logRun(
@@ -232,7 +246,8 @@ describe('linking to the long run (D33)', () => {
     const user = await enrolled();
     const { programmeDayId } = await sunday(user, '2026-11-24');
     await skipSession(user.client, { programmeDayId }, on('2026-11-24'), noTrack);
-    expect((await sunday(user)).status).toBe('skipped');
+    // D61: still loggable as a run once skipped.
+    expect(await sunday(user)).toMatchObject({ status: 'skipped', canLogRun: true });
     expect(
       await logRun(
         user.client,

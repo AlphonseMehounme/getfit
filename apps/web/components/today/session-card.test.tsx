@@ -30,6 +30,8 @@ const STRENGTH: TodaySession = {
   start: { allowed: true, mode: 'start' },
   movedFrom: null,
   workoutSessionId: null,
+  runSessionId: null,
+  canLogRun: false,
   exercises: [
     { slug: 'pull-up', category: 'upper', name: 'Pull-up', cues: [], prescription: rx({}) },
     {

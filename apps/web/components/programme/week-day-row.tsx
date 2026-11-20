@@ -1,6 +1,7 @@
 import type { LocalDate, UnitSystem } from '@getfit/domain';
 import { useFormatter, useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { ViewRunLink } from '@/components/running/run-links';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
 import { targetMessage } from '@/lib/format/target';
@@ -90,6 +91,7 @@ export function WeekDayRow({
             {!session.showsPlan && session.workoutSessionId ? (
               <ViewWorkoutLink href={`${TRAIN_PATH}/${session.workoutSessionId}`} />
             ) : null}
+            {session.runSessionId ? <ViewRunLink runId={session.runSessionId} /> : null}
           </article>
         ))
       )}

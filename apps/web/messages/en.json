@@ -280,16 +280,9 @@
       "run": "A recent run",
       "runHint": "Leave empty if you don't have one.",
       "distance": "Distance ({unit})",
-      "hours": "Hours",
-      "minutes": "Minutes",
-      "seconds": "Seconds",
       "duration": "Time",
       "effort": "Effort (1–10)",
       "pace": "Pace",
-      "speed": "Speed",
-      "paceValue": "{pace} /{unit}",
-      "speedValue": "{speed, number} {unit}",
-      "metricsUnavailable": "Enter a distance and a time to see your pace.",
       "confirm": {
         "paceTooFast": "A pace of {pace} /{unit} is unusually fast. Check the distance and the time, or save anyway.",
         "paceTooSlow": "A pace of {pace} /{unit} is unusually slow. Check the distance and the time, or save anyway.",
@@ -352,7 +345,9 @@
       "resume": "Resume workout",
       "pending": "Opening…",
       "error": "The workout could not be opened. Please try again.",
-      "view": "View workout"
+      "view": "View workout",
+      "logRun": "Log run",
+      "viewRun": "View run"
     }
   },
   "Programme": {
@@ -552,5 +547,88 @@
     "title": "Page not found",
     "body": "This page doesn’t exist, or is no longer available.",
     "home": "Back to Today"
+  },
+  "Run": {
+    "newTitle": "Log a run",
+    "editTitle": "Edit run",
+    "intro": "Pace and speed are worked out from your distance and time.",
+    "date": "Date",
+    "startTime": "Start time",
+    "distance": "Distance ({unit})",
+    "duration": "Time",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "effort": "Effort (1–10)",
+    "effortHint": "5 or lower is a conversational pace.",
+    "routeName": "Route (optional)",
+    "notes": "Notes (optional)",
+    "unset": "Not set",
+    "pace": "Pace",
+    "speed": "Speed",
+    "paceValue": "{pace} /{unit}",
+    "speedValue": "{speed, number} {unit}",
+    "metricsUnavailable": "Enter a distance and a time to see your pace.",
+    "save": "Save run",
+    "saving": "Saving…",
+    "saveAnyway": "Save anyway",
+    "cancel": "Cancel",
+    "confirm": {
+      "title": "Check the pace",
+      "paceTooFast": "A pace of {pace} /{unit} is unusually fast. Check the distance and the time, or save anyway.",
+      "paceTooSlow": "A pace of {pace} /{unit} is unusually slow. Check the distance and the time, or save anyway."
+    },
+    "link": {
+      "legend": "Does this run count for your programme?",
+      "link": "Count this run as {session} on {day}?",
+      "move": "Move {session} to {day} and count this run?",
+      "yes": "Yes, count it",
+      "no": "No, keep it separate",
+      "fulfilled": "{session} is already done this week, so this run is saved on its own.",
+      "blocked": "{session} can’t move to this day because of the recovery rules, so this run is saved on its own.",
+      "checking": "Checking your week…"
+    },
+    "errors": {
+      "distance": "Enter a distance greater than 0.",
+      "duration": "Enter a time greater than 0.",
+      "runIncomplete": "Enter both a distance and a time.",
+      "start": "Enter a date and a start time.",
+      "futureStart": "This start is in the future. Check the date and time.",
+      "answerRequired": "Choose whether this run counts.",
+      "linkUnavailable": "Your week changed. Answer again whether this run counts.",
+      "routeTooLong": "Use 80 characters or fewer.",
+      "notesTooLong": "Use 1,000 characters or fewer.",
+      "generic": "The run could not be saved. Please try again."
+    },
+    "record": {
+      "title": "Run on {date}",
+      "started": "Started at {time}",
+      "distance": "Distance",
+      "duration": "Time",
+      "pace": "Pace",
+      "speed": "Speed",
+      "effort": "Effort",
+      "route": "Route",
+      "notes": "Notes",
+      "effortValue": "{effort}/10",
+      "counts": "Counts as {session} on {day}",
+      "standalone": "Not linked to the programme",
+      "edit": "Edit run",
+      "delete": "Delete run",
+      "pageTitle": "Run"
+    },
+    "delete": {
+      "title": "Delete this run?",
+      "body": "It’s removed from your history. If it counted for the long run, that day is open again.",
+      "confirm": "Delete run",
+      "cancel": "Keep it",
+      "error": "The run could not be deleted. Please try again."
+    },
+    "loading": "Loading the run…",
+    "error": {
+      "title": "The run could not be loaded",
+      "body": "Check your connection, then try again.",
+      "retry": "Try again"
+    }
   }
 }

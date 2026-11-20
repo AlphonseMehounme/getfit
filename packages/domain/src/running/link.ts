@@ -3,8 +3,10 @@
 // without the user's choice; this only says what may be offered.
 import { evaluateMoveOf, type MoveContext } from '../recovery/evaluate-move';
 import type { Activity, Block } from '../recovery/rules';
+import type { SessionView } from '../schedule/engine';
 import { isSameWeek } from '../schedule/week';
 import { loggingWindow } from '../status/late-logging';
+import type { Instant } from '../time/clock';
 import type { LocalDate } from '../time/local-date';
 
 export type RunLinkOption =
@@ -57,4 +59,20 @@ export function runLinkOption(
 /** D22: a logged run that fulfils no programme day, as an activity the recovery rules count (BR-10, BR-11). */
 export function unlinkedRunActivity(run: { id: string; localDate: LocalDate }): Activity {
   return { id: run.id, date: run.localDate, sessionType: 'run', bodyFocus: 'none' };
+}
+
+/**
+ * D33 / D61: whether a run can be logged for this long run now: when it could be started (D14, D23), and also once
+ * skipped, while its late-logging window is open, since a run may replace the skip.
+ */
+export function canLogRun(
+  session: Pick<SessionView, 'template' | 'date' | 'start'>,
+  now: Instant,
+  timeZone: string,
+) {
+  if (session.template.sessionType !== 'run') return false;
+  if (session.start.allowed) return true;
+  return (
+    session.start.reason === 'skipped' && loggingWindow(session.date, now, timeZone) === 'open'
+  );
 }

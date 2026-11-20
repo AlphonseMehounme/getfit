@@ -128,9 +128,9 @@ test('all six steps filled: the recommendation notes the changed day, and baseli
   await page.getByLabel(en.Onboarding.baselines.maxPushUps).fill('20');
   await page.getByLabel(en.Onboarding.baselines.maxSquats).fill('40');
   await page.getByLabel('Distance (km)').fill('10.84');
-  await page.getByLabel(en.Onboarding.baselines.hours).fill('1');
-  await page.getByLabel(en.Onboarding.baselines.minutes).fill('19');
-  await page.getByLabel(en.Onboarding.baselines.seconds).fill('30');
+  await page.getByLabel(en.Run.hours).fill('1');
+  await page.getByLabel(en.Run.minutes).fill('19');
+  await page.getByLabel(en.Run.seconds).fill('30');
   await page.getByLabel(en.Onboarding.baselines.effort).selectOption('7');
   await expect(page.getByText('7:20 /km')).toBeVisible();
   await expect(page.getByText('8.2 km/h')).toBeVisible();
@@ -178,7 +178,7 @@ test('BR-21: an unusual pace asks for a confirmation before the baselines are sa
   await expect(page).toHaveURL('/onboarding/goals');
   await page.goto('/onboarding/baselines');
   await page.getByLabel('Distance (km)').fill('10');
-  await page.getByLabel(en.Onboarding.baselines.minutes).fill('10');
+  await page.getByLabel(en.Run.minutes).fill('10');
   await page.getByRole('button', { name: en.Onboarding.finish, exact: true }).click();
   await expect(page.getByText(/A pace of 1:00 \/km is unusually fast/)).toBeVisible();
   await expect(page).toHaveURL('/onboarding/baselines');

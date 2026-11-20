@@ -2,6 +2,7 @@ import type { LocalDate } from '@getfit/domain';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { LogRunLink, ViewRunLink } from '@/components/running/run-links';
 import { PrimaryAction } from '@/components/today/primary-action';
 import { SessionCard } from '@/components/today/session-card';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
@@ -24,9 +25,14 @@ const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
 
 /**
  * PRD §6.3: one primary action. Start or Resume while the domain allows it (D14, D23, D32); otherwise View for a
- * saved workout (BR-25); nothing on rest days or when the day can no longer be logged.
+ * saved workout (BR-25); nothing on rest days or when the day can no longer be logged. A long run is logged as a
+ * run (PRD §6.6, D33).
  */
-function primaryAction(session: TodaySession) {
+function primaryAction(session: TodaySession, today: LocalDate) {
+  if (session.sessionType === 'run') {
+    if (session.runSessionId) return <ViewRunLink runId={session.runSessionId} />;
+    return session.canLogRun ? <LogRunLink date={today} /> : undefined;
+  }
   if (session.sessionType !== 'strength') return undefined;
   if (session.start.allowed) {
     return (
@@ -99,7 +105,7 @@ export default async function TodayPage() {
           key={session.programmeDayId}
           session={session}
           units={view.units}
-          action={primaryAction(session)}
+          action={primaryAction(session, view.today)}
         />
       ))}
       <WeekStrip days={view.week} />

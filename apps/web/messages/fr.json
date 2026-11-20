@@ -280,16 +280,9 @@
       "run": "Une course récente",
       "runHint": "Laisse vide si tu n’en as pas.",
       "distance": "Distance ({unit})",
-      "hours": "Heures",
-      "minutes": "Minutes",
-      "seconds": "Secondes",
       "duration": "Temps",
       "effort": "Effort (1–10)",
       "pace": "Allure",
-      "speed": "Vitesse",
-      "paceValue": "{pace} /{unit}",
-      "speedValue": "{speed, number} {unit}",
-      "metricsUnavailable": "Saisis une distance et un temps pour voir ton allure.",
       "confirm": {
         "paceTooFast": "Une allure de {pace} /{unit} est inhabituellement rapide. Vérifie la distance et le temps, ou enregistre quand même.",
         "paceTooSlow": "Une allure de {pace} /{unit} est inhabituellement lente. Vérifie la distance et le temps, ou enregistre quand même.",
@@ -352,7 +345,9 @@
       "resume": "Reprendre la séance",
       "pending": "Ouverture…",
       "error": "Impossible d’ouvrir la séance. Réessaie.",
-      "view": "Voir la séance"
+      "view": "Voir la séance",
+      "logRun": "Enregistrer la course",
+      "viewRun": "Voir la course"
     }
   },
   "Programme": {
@@ -552,5 +547,88 @@
     "title": "Page introuvable",
     "body": "Cette page n’existe pas, ou n’est plus disponible.",
     "home": "Retour à Aujourd’hui"
+  },
+  "Run": {
+    "newTitle": "Enregistrer une course",
+    "editTitle": "Modifier la course",
+    "intro": "L’allure et la vitesse sont calculées à partir de ta distance et de ton temps.",
+    "date": "Date",
+    "startTime": "Heure de départ",
+    "distance": "Distance ({unit})",
+    "duration": "Temps",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "effort": "Effort (1–10)",
+    "effortHint": "5 ou moins, c’est une allure où tu peux parler.",
+    "routeName": "Parcours (facultatif)",
+    "notes": "Notes (facultatif)",
+    "unset": "Non renseigné",
+    "pace": "Allure",
+    "speed": "Vitesse",
+    "paceValue": "{pace} /{unit}",
+    "speedValue": "{speed, number} {unit}",
+    "metricsUnavailable": "Saisis une distance et un temps pour voir ton allure.",
+    "save": "Enregistrer la course",
+    "saving": "Enregistrement…",
+    "saveAnyway": "Enregistrer quand même",
+    "cancel": "Annuler",
+    "confirm": {
+      "title": "Vérifie l’allure",
+      "paceTooFast": "Une allure de {pace} /{unit} est inhabituellement rapide. Vérifie la distance et le temps, ou enregistre quand même.",
+      "paceTooSlow": "Une allure de {pace} /{unit} est inhabituellement lente. Vérifie la distance et le temps, ou enregistre quand même."
+    },
+    "link": {
+      "legend": "Cette course compte-t-elle pour ton programme ?",
+      "link": "Compter cette course comme la séance « {session} » du {day} ?",
+      "move": "Déplacer la séance « {session} » au {day} et compter cette course ?",
+      "yes": "Oui, la compter",
+      "no": "Non, la garder à part",
+      "fulfilled": "La séance « {session} » est déjà faite cette semaine : cette course est enregistrée à part.",
+      "blocked": "La séance « {session} » ne peut pas être déplacée à ce jour à cause des règles de récupération : cette course est enregistrée à part.",
+      "checking": "Vérification de ta semaine…"
+    },
+    "errors": {
+      "distance": "Saisis une distance supérieure à 0.",
+      "duration": "Saisis un temps supérieur à 0.",
+      "runIncomplete": "Saisis une distance et un temps.",
+      "start": "Saisis une date et une heure de départ.",
+      "futureStart": "Ce départ est dans le futur. Vérifie la date et l’heure.",
+      "answerRequired": "Choisis si cette course compte.",
+      "linkUnavailable": "Ta semaine a changé. Réponds à nouveau : cette course compte-t-elle ?",
+      "routeTooLong": "80 caractères maximum.",
+      "notesTooLong": "1 000 caractères maximum.",
+      "generic": "La course n’a pas pu être enregistrée. Réessaie."
+    },
+    "record": {
+      "title": "Course du {date}",
+      "started": "Départ à {time}",
+      "distance": "Distance",
+      "duration": "Temps",
+      "pace": "Allure",
+      "speed": "Vitesse",
+      "effort": "Effort",
+      "route": "Parcours",
+      "notes": "Notes",
+      "effortValue": "{effort}/10",
+      "counts": "Compte comme {session} du {day}",
+      "standalone": "Pas liée au programme",
+      "edit": "Modifier la course",
+      "delete": "Supprimer la course",
+      "pageTitle": "Course"
+    },
+    "delete": {
+      "title": "Supprimer cette course ?",
+      "body": "Elle est retirée de ton historique. Si elle comptait pour la sortie longue, ce jour est de nouveau libre.",
+      "confirm": "Supprimer la course",
+      "cancel": "La garder",
+      "error": "La course n’a pas pu être supprimée. Réessaie."
+    },
+    "loading": "Chargement de la course…",
+    "error": {
+      "title": "La course n’a pas pu être chargée",
+      "body": "Vérifie ta connexion, puis réessaie.",
+      "retry": "Réessayer"
+    }
   }
 }

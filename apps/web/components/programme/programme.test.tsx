@@ -36,6 +36,8 @@ const SESSION: WeekSession = {
   ],
   showsPlan: true,
   workoutSessionId: null,
+  runSessionId: null,
+  canLogRun: false,
   canMove: true,
   canSkip: true,
   canUndo: false,
@@ -141,6 +143,21 @@ describe('WeekDayRow (PRD §6.4, D58)', () => {
     expect(screen.getByText('Done')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'View workout' }).getAttribute('href')).toBe(
       '/train/w-1',
+    );
+  });
+
+  it('D33: a long-run day fulfilled by a run opens the run', () => {
+    row([
+      {
+        ...SESSION,
+        sessionType: 'run',
+        status: 'completed',
+        showsPlan: false,
+        runSessionId: 'r-1',
+      },
+    ]);
+    expect(screen.getByRole('link', { name: 'View run' }).getAttribute('href')).toBe(
+      '/train/run/r-1',
     );
   });
 
@@ -259,6 +276,32 @@ describe('SessionDetail (PRD §6.4, D58)', () => {
     expect(screen.getByRole('link', { name: 'View workout' }).getAttribute('href')).toBe(
       '/train/w-1',
     );
+  });
+
+  it('D33: a long-run day offers Log run while it can be logged, then View run', () => {
+    const run = { ...SESSION, sessionType: 'run' as const, date: d('2026-11-29') };
+    const { unmount } = renderWithIntl(
+      <SessionDetail day={{ ...DAY, session: { ...run, canLogRun: true } }} />,
+    );
+    expect(screen.getByRole('link', { name: 'Log run' }).getAttribute('href')).toBe(
+      '/train/run/new?date=2026-11-29',
+    );
+    unmount();
+    const logged = renderWithIntl(
+      <SessionDetail
+        day={{
+          ...DAY,
+          session: { ...run, status: 'completed', showsPlan: false, runSessionId: 'r-1' },
+        }}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'View run' }).getAttribute('href')).toBe(
+      '/train/run/r-1',
+    );
+    expect(screen.queryByRole('link', { name: 'Log run' })).toBeNull();
+    logged.unmount();
+    renderWithIntl(<SessionDetail day={{ ...DAY, session: run }} />);
+    expect(screen.queryByRole('link', { name: 'Log run' })).toBeNull();
   });
 
   it('a plan with no exercises shows no exercise list', () => {

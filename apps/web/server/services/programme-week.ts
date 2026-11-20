@@ -2,6 +2,7 @@ import {
   addDays,
   type BodyFocus,
   buildWeek,
+  canLogRun,
   checkMovable,
   checkSkippable,
   checkUndo,
@@ -17,7 +18,7 @@ import {
 } from '@getfit/domain';
 import { weekNumberSchema } from '@/lib/validation/programme';
 import type { DbClient } from '@/server/db/client';
-import { loadSchedule, type TodayExercise, workoutFor } from './schedule';
+import { loadSchedule, runFor, type TodayExercise, workoutFor } from './schedule';
 
 // PRD §6.4: one programme week, for the week view (P2-10). Each day shows its sessions, status and targets after
 // deload (BR-17), and whether the session can be moved or its move or skip undone (D38). The rules are the domain's.
@@ -39,6 +40,10 @@ export interface WeekSession {
   showsPlan: boolean;
   /** The workout logged for this day, if any (BR-25: shown as logged, never edited here). */
   workoutSessionId: string | null;
+  /** The run that fulfils this day, if any (D33). */
+  runSessionId: string | null;
+  /** D33 / D61: a run can be logged for this long run now. */
+  canLogRun: boolean;
   canMove: boolean;
   /** D57: skippable until the end of its week. */
   canSkip: boolean;
@@ -106,6 +111,8 @@ function weekView(schedule: Schedule, number: number): WeekOf {
           })),
           showsPlan: showsPlan(s, today),
           workoutSessionId: workoutFor(schedule.logged, s.programmeDayId),
+          runSessionId: runFor(schedule.logged, s.programmeDayId),
+          canLogRun: canLogRun(s, now, scheduleInput.timeZone),
           canMove: checkMovable(context, s.programmeDayId).movable,
           canSkip: checkSkippable(context, s.programmeDayId).skippable,
           canUndo: checkUndo(context, s.programmeDayId).undoable,

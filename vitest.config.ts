@@ -59,6 +59,9 @@ export default defineConfig({
         // P2-10: programme screens (PRD §6.4).
         'apps/web/components/programme/**/*.tsx',
         'apps/web/lib/programme/**/*.ts',
+        // P2-13: the run log (PRD §6.6).
+        'apps/web/components/running/**/*.tsx',
+        'apps/web/lib/running/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

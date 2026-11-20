@@ -78,6 +78,8 @@ export async function deleteOverride(
 /** A logged session plus the workout row behind it (null for a run), so Today can open or resume it. */
 export interface LoggedRecord extends LoggedSession {
   workoutSessionId: string | null;
+  /** The run that fulfils the day (D33), when it is a run. */
+  runSessionId: string | null;
 }
 
 /** Workouts and runs linked to a programme day. Soft-deleted rows never count (D26). */
@@ -94,7 +96,7 @@ export async function findLoggedSessions(
       .is('deleted_at', null),
     client
       .from('running_sessions')
-      .select('programme_day_id')
+      .select('id, programme_day_id')
       .eq('user_programme_id', userProgrammeId)
       .not('programme_day_id', 'is', null)
       .is('deleted_at', null),
@@ -106,12 +108,14 @@ export async function findLoggedSessions(
       programmeDayId: w.programme_day_id!,
       status: w.status,
       workoutSessionId: w.id,
+      runSessionId: null,
     })),
     // A logged run is always complete (D26).
     ...runs.data.map((r) => ({
       programmeDayId: r.programme_day_id!,
       status: 'completed' as const,
       workoutSessionId: null,
+      runSessionId: r.id,
     })),
   ];
 }

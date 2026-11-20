@@ -2,11 +2,11 @@ import { formatDuration, formatPace, type UnitSystem } from '@getfit/domain';
 import { useTranslations } from 'next-intl';
 import {
   baselineDefaults,
-  liveMetrics,
   type SavedBaselines,
   TEST_FIELDS,
   unitsFor,
 } from '@/lib/onboarding/baselines-form';
+import { liveMetrics } from '@/lib/running/run-values';
 import { Field } from './profile-section';
 
 // D35 / BR-26: the baselines on Profile, in the user's units, through the same conversions and pace as step 6

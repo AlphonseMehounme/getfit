@@ -1,21 +1,17 @@
 import {
-  checkPace,
   distanceUnitFor,
   type DistanceUnit,
   loadForDisplay,
   massUnitFor,
   type MassUnit,
   metresTo,
-  type PaceCheck,
   roundTo,
-  runMetrics,
-  type RunMetrics,
-  toMetres,
   type UnitSystem,
 } from '@getfit/domain';
+import { durationOf, splitDuration } from '@/lib/running/run-values';
 
 // Onboarding step 6 (BR-26): the form's values, typed in the user's units, to and from the step schema's input.
-// Every number is optional: an empty field is null. Pace and speed always come from the domain (BR-22, AGENTS §5.3).
+// Every number is optional: an empty field is null. Pace, speed and the BR-21 check are in lib/running/run-values.
 
 /** The saved baselines the step shows again (D51), in storage units. */
 export interface SavedBaselines {
@@ -72,48 +68,9 @@ export function baselineDefaults(saved: SavedBaselines, system: UnitSystem): Bas
     maxPushUps: saved.maxPushUps?.value ?? null,
     maxSquats: saved.maxSquats?.value ?? null,
     distance: run ? roundTo(metresTo(run.distanceM, units.distance), 2) : null,
-    hours: run ? Math.floor(run.durationS / 3600) : null,
-    minutes: run ? Math.floor((run.durationS % 3600) / 60) : null,
-    seconds: run ? run.durationS % 60 : null,
+    ...(run ? splitDuration(run.durationS) : { hours: null, minutes: null, seconds: null }),
     effort: run?.rpe ? String(run.rpe) : '',
   };
-}
-
-/** h, min and s as seconds; null when all three are empty. */
-export function durationOf(v: Pick<BaselineValues, 'hours' | 'minutes' | 'seconds'>) {
-  if (v.hours === null && v.minutes === null && v.seconds === null) return null;
-  return (v.hours ?? 0) * 3600 + (v.minutes ?? 0) * 60 + (v.seconds ?? 0);
-}
-
-/** The run as stored (whole metres and seconds, BR-20), or null while either part is missing or not > 0. */
-export function runMeasurement(
-  v: Pick<BaselineValues, 'distance' | 'hours' | 'minutes' | 'seconds'>,
-  unit: DistanceUnit,
-) {
-  const durationS = durationOf(v);
-  if (v.distance === null || !Number.isFinite(v.distance) || durationS === null) return null;
-  const distanceM = toMetres(v.distance, unit);
-  return distanceM > 0 && Number.isInteger(durationS) && durationS > 0
-    ? { distanceM, durationS }
-    : null;
-}
-
-/** BR-22 / BR-23: the live pace and speed, or null (shown as "—", BR-24). */
-export function liveMetrics(
-  v: Pick<BaselineValues, 'distance' | 'hours' | 'minutes' | 'seconds'>,
-  unit: DistanceUnit,
-): RunMetrics | null {
-  const run = runMeasurement(v, unit);
-  return run ? runMetrics(run.distanceM, run.durationS, unit) : null;
-}
-
-/** BR-21: whether this run's pace asks for a confirmation; never a block. */
-export function paceCheck(
-  v: Pick<BaselineValues, 'distance' | 'hours' | 'minutes' | 'seconds'>,
-  unit: DistanceUnit,
-): PaceCheck {
-  const run = runMeasurement(v, unit);
-  return run ? checkPace(run) : { needsConfirmation: false };
 }
 
 /**

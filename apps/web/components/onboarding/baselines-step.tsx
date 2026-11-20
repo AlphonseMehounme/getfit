@@ -11,13 +11,12 @@ import {
   baselineIds,
   baselinesInput,
   type BaselineValues,
-  liveMetrics,
-  paceCheck,
   type SavedBaselines,
   TEST_FIELDS,
   unitsFor,
 } from '@/lib/onboarding/baselines-form';
 import { optionalNumber, shown } from '@/lib/onboarding/optional-number';
+import { liveMetrics, paceCheck, runKey } from '@/lib/running/run-values';
 import { schemaResolver } from '@/lib/onboarding/schema-resolver';
 import { type StepActions, useStepSubmit } from '@/lib/onboarding/use-step-submit';
 import { baselinesStepSchema } from '@/lib/validation/onboarding';
@@ -38,10 +37,6 @@ const FIELD_OF = {
   'run.distance': 'distance',
   'run.durationS': 'hours',
 } as const satisfies Record<string, keyof BaselineValues>;
-
-/** Identifies a run, so a confirmation applies only to the run it was asked for. */
-const runKey = (v: Pick<BaselineValues, 'distance' | 'hours' | 'minutes' | 'seconds'>) =>
-  [v.distance, v.hours, v.minutes, v.seconds].join('|');
 
 export function BaselinesStep({
   saved,
