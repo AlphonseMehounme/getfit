@@ -24,6 +24,12 @@ export function localDateAt(instant: Instant, timeZone: string): LocalDate {
   return format(new TZDate(instant.getTime(), timeZone), 'yyyy-MM-dd') as LocalDate;
 }
 
+/** The wall-clock time in `timeZone` at `instant`, as "HH:mm" (a run's start, PRD §6.6). */
+export function localTimeAt(instant: Instant, timeZone: string): string {
+  assertTimeZone(timeZone);
+  return format(new TZDate(instant.getTime(), timeZone), 'HH:mm');
+}
+
 /**
  * The first instant of `date` in `timeZone`. Usually local midnight; where a DST change skips
  * midnight (e.g. America/Santiago), the first instant that exists on that day.

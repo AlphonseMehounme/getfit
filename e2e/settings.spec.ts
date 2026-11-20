@@ -51,9 +51,9 @@ test('units: imperial shows the baseline run in mi on Profile and the long run i
   await enrolOnMonday(page);
   await page.goto('/profile/edit/baselines');
   await page.getByLabel('Distance (km)').fill('10.84');
-  await page.getByLabel(en.Onboarding.baselines.hours).fill('1');
-  await page.getByLabel(en.Onboarding.baselines.minutes).fill('19');
-  await page.getByLabel(en.Onboarding.baselines.seconds).fill('30');
+  await page.getByLabel(en.Run.hours).fill('1');
+  await page.getByLabel(en.Run.minutes).fill('19');
+  await page.getByLabel(en.Run.seconds).fill('30');
   await save(page);
   await expect(page).toHaveURL('/profile?saved=baselines');
   await expect(page.getByText('10.84 km in 1:19:30 · 7:20 /km')).toBeVisible();

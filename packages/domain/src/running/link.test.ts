@@ -5,7 +5,8 @@ import type { LoggedSession, ScheduleInput, ScheduleOverride } from '../schedule
 import { dayId, standardProgramme } from '../test-support/standard-programme';
 import { parseInstant } from '../time/clock';
 import { parseLocalDate } from '../time/local-date';
-import { runLinkOption, unlinkedRunActivity } from './link';
+import { canLogRun, runLinkOption, unlinkedRunActivity } from './link';
+import { buildWeek } from '../schedule/engine';
 
 // The standard week from 23 Nov 2026 (Paris): Mon A, Tue recovery, Wed B (lower), Thu rest, Fri C, Sat rest, Sun run.
 const d = parseLocalDate;
@@ -149,5 +150,30 @@ describe('D22: unlinked runs block like logged sessions', () => {
     expect(runLinkOption(context, { id: RUN, date: d('2026-11-28') })).toMatchObject({
       kind: 'move_and_link',
     });
+  });
+});
+
+describe('D61: canLogRun', () => {
+  const sundayAt = (today: string, options?: Parameters<typeof input>[0]) =>
+    buildWeek(input(options), WEEK_1, evening(today)).days[6]!.sessions[0]!;
+  const now = (today: string) => evening(today);
+
+  it('a long run can be logged on its day and late, not before or after the window', () => {
+    expect(canLogRun(sundayAt('2026-11-29'), now('2026-11-29'), 'Europe/Paris')).toBe(true);
+    expect(canLogRun(sundayAt('2026-12-04'), now('2026-12-04'), 'Europe/Paris')).toBe(true);
+    expect(canLogRun(sundayAt('2026-11-28'), now('2026-11-28'), 'Europe/Paris')).toBe(false);
+    expect(canLogRun(sundayAt('2026-12-08'), now('2026-12-08'), 'Europe/Paris')).toBe(false);
+  });
+
+  it('a skipped long run can still be logged in its window; a strength day never as a run', () => {
+    const overrides: ScheduleOverride[] = [{ programmeDayId: SUN_RUN, action: 'skipped' }];
+    expect(
+      canLogRun(sundayAt('2026-11-29', { overrides }), now('2026-11-29'), 'Europe/Paris'),
+    ).toBe(true);
+    expect(
+      canLogRun(sundayAt('2026-12-08', { overrides }), now('2026-12-08'), 'Europe/Paris'),
+    ).toBe(false);
+    const monday = buildWeek(input(), WEEK_1, evening('2026-11-23')).days[0]!.sessions[0]!;
+    expect(canLogRun(monday, now('2026-11-23'), 'Europe/Paris')).toBe(false);
   });
 });

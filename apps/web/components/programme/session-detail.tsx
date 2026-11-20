@@ -2,6 +2,7 @@ import { compareLocalDates, type LocalDate } from '@getfit/domain';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { ExerciseCard } from '@/components/exercise/exercise-card';
+import { LogRunLink, ViewRunLink } from '@/components/running/run-links';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
 import { restMessage, targetMessage } from '@/lib/format/target';
@@ -60,6 +61,11 @@ export function SessionDetail({
           </p>
         ) : null}
       </header>
+      {session.runSessionId ? (
+        <ViewRunLink runId={session.runSessionId} />
+      ) : session.sessionType === 'run' && session.canLogRun ? (
+        <LogRunLink date={session.date} />
+      ) : null}
       {actions}
 
       <section aria-labelledby="session-why" className="flex flex-col gap-2">

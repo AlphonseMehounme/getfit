@@ -2,6 +2,7 @@ import {
   type Activity,
   addDays,
   buildWeek,
+  canLogRun,
   type BodyFocus,
   type Clock,
   compareLocalDates,
@@ -58,6 +59,10 @@ export interface TodaySession {
   movedFrom: LocalDate | null;
   /** The workout logged for this day, if any: the one its status comes from. */
   workoutSessionId: string | null;
+  /** The run that fulfils this day, if any (D33). */
+  runSessionId: string | null;
+  /** D33 / D61: a run can be logged for this long run now. */
+  canLogRun: boolean;
   exercises: TodayExercise[];
 }
 
@@ -165,6 +170,13 @@ export function workoutFor(logged: readonly LoggedRecord[], programmeDayId: stri
   return candidates[0]?.workoutSessionId ?? null;
 }
 
+/** The run that fulfils a day (D26: at most one). */
+export function runFor(logged: readonly LoggedRecord[], programmeDayId: string): string | null {
+  return (
+    logged.find((l) => l.programmeDayId === programmeDayId && l.runSessionId)?.runSessionId ?? null
+  );
+}
+
 /** Null when nobody is signed in. */
 export async function getToday(client: DbClient, clock: Clock): Promise<TodayView | null> {
   const context = await loadSchedule(client, clock);
@@ -208,6 +220,8 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
       start: s.start,
       movedFrom: s.movedFrom,
       workoutSessionId: workoutFor(context.logged, s.programmeDayId),
+      runSessionId: runFor(context.logged, s.programmeDayId),
+      canLogRun: canLogRun(s, now, profile.timezone),
       exercises: prescriptions.map((prescription) => ({
         ...template.exerciseInfo.get(prescription.exerciseId)!,
         prescription,

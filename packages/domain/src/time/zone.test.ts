@@ -6,6 +6,7 @@ import {
   isValidTimeZone,
   localDateAt,
   localDayBounds,
+  localTimeAt,
   startOfLocalDay,
 } from './zone';
 
@@ -97,6 +98,14 @@ describe('instantAtLocalTime (PRD §6.6 run start)', () => {
     const gap = instantAtLocalTime(parseLocalDate('2026-03-29'), 2, 30, 'Europe/Paris');
     expect(localDateAt(gap, 'Europe/Paris')).toBe('2026-03-29');
     expect(gap.toISOString()).toBe('2026-03-29T01:30:00.000Z');
+  });
+
+  it('localTimeAt reads the wall-clock time back, in summer and winter', () => {
+    expect(localTimeAt(parseInstant('2026-11-29T08:30:00Z'), 'Europe/Paris')).toBe('09:30');
+    expect(localTimeAt(parseInstant('2026-06-14T05:00:00Z'), 'Europe/Paris')).toBe('07:00');
+    expect(() => localTimeAt(parseInstant('2026-06-14T05:00:00Z'), 'Mars/Olympus')).toThrow(
+      RangeError,
+    );
   });
 
   it('refuses a time that is not one, or an unknown zone', () => {
