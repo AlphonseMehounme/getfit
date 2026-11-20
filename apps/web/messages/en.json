@@ -161,6 +161,7 @@
     "label": "Main navigation",
     "today": "Today",
     "programme": "Programme",
+    "train": "Train",
     "profile": "Profile"
   },
   "Start": {
@@ -421,6 +422,45 @@
       "reasonTooLong": "Use 200 characters or fewer.",
       "confirm": "Skip this session",
       "cancel": "Cancel"
+    }
+  },
+  "Train": {
+    "title": "Train",
+    "intro": "Start today’s session, log a run, and find everything you have logged.",
+    "today": "Today",
+    "restDay": "A rest day: nothing to start today.",
+    "nothingToday": "Nothing left to log today.",
+    "beforeStart": "Your programme starts on {date}.",
+    "notEnrolled": "Start your programme to see today’s session here.",
+    "start": "Start your programme",
+    "logRun": "Log a run",
+    "logRunHint": "Any run, on any day. It can count for the long run of its week.",
+    "history": "History",
+    "showOlder": "Show older",
+    "empty": {
+      "title": "Nothing logged yet",
+      "body": "Your workouts and runs will be listed here once you log them."
+    },
+    "item": {
+      "workout": "Workout",
+      "run": "Run",
+      "untitled": "Workout",
+      "sets": "{count, plural, one {# set} other {# sets}}",
+      "duration": "{duration}",
+      "distance": "{distance, number} {unit}",
+      "pace": "{pace} /{unit}",
+      "counts": "Counts for the programme",
+      "status": {
+        "in_progress": "In progress",
+        "partial": "Partly done",
+        "completed": "Done"
+      }
+    },
+    "loading": "Loading your training…",
+    "error": {
+      "title": "Your training could not be loaded",
+      "body": "Check your connection, then try again.",
+      "retry": "Try again"
     }
   },
   "Workout": {
