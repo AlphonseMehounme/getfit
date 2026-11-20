@@ -356,6 +356,10 @@ Each task lists: **Goal · Files · Rules · Tests · Exit.**
 - **Exit:**
   - CI green;
   - AL logs a real week (or a test-clock week) on a preview phone. This is the Phase 2 exit.
+- **Status (20 Nov 2026):** `e2e/core-loop.spec.ts` passes on mobile and desktop: the core loop, and a full test-clock
+  week (Mon A done, Wed B's move to Thursday shown blocked by BR-9 then done on Wednesday, Fri C partial then reopened
+  and completed, the Sunday run linked) ending at 100% adherence with each day right on the week strip. The Phase 2
+  exit now waits for CI and AL's week on a preview phone.
 
 ## C. Dependency order
 
