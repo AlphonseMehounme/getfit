@@ -2,7 +2,11 @@ import type { LocalDate } from '@getfit/domain';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { AttentionCard } from '@/components/today/attention-card';
+import { RecentActivity } from '@/components/today/recent-activity';
 import { SessionAction } from '@/components/today/session-action';
+import { ThisWeek } from '@/components/today/this-week';
+import { TodayHeader } from '@/components/today/today-header';
 import { SessionCard } from '@/components/today/session-card';
 import { startSessionAction } from '../train/actions';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -63,14 +67,8 @@ export default async function TodayPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-1">
-        <p className="text-muted text-sm">{view.programmeTitle}</p>
-        <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-        <p className="font-medium">
-          {t('week', { week: view.weekNumber, total: view.durationWeeks, label: view.weekLabel })}
-        </p>
-        <p className="text-muted text-sm">{view.weekFocus}</p>
-      </header>
+      <TodayHeader view={view} />
+      {view.attention ? <AttentionCard attention={view.attention} /> : null}
       {view.sessions.map((session) => (
         <SessionCard
           key={session.programmeDayId}
@@ -82,6 +80,8 @@ export default async function TodayPage() {
         />
       ))}
       <WeekStrip days={view.week} />
+      <ThisWeek thisWeek={view.thisWeek} units={view.units} />
+      <RecentActivity items={view.recent} units={view.units} />
     </div>
   );
 }

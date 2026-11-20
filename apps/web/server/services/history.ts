@@ -1,40 +1,18 @@
-import { type Clock, type LocalDate, localDateAt, parseInstant } from '@getfit/domain';
+import { type Clock, parseInstant } from '@getfit/domain';
 import { z } from 'zod';
 import type { DbClient } from '@/server/db/client';
-import {
-  findRunHistory,
-  findWorkoutHistory,
-  type HistoryCursor,
-} from '@/server/repositories/history';
+import type { HistoryCursor } from '@/server/repositories/history';
 import { findProfileSettings } from '@/server/repositories/profiles';
 import { getCurrentUser } from './auth';
+import { type HistoryItem, historyItems } from './activity';
 import { getToday, type TodayView } from './schedule';
+
+export type { HistoryItem } from './activity';
 
 // PRD §9 Train: today's action, and the history of workouts and runs, newest first, a page at a time. History is
 // shown as logged (BR-25); pace is computed at display (BR-22).
 
 export const HISTORY_PAGE_SIZE = 20;
-
-export type HistoryItem =
-  | {
-      kind: 'workout';
-      id: string;
-      startedAt: Date;
-      date: LocalDate;
-      title: string | null;
-      status: 'in_progress' | 'partial' | 'completed';
-      durationS: number | null;
-      setsLogged: number;
-    }
-  | {
-      kind: 'run';
-      id: string;
-      startedAt: Date;
-      date: LocalDate;
-      distanceM: number;
-      durationS: number;
-      linked: boolean;
-    };
 
 export interface TrainHub {
   today: TodayView;
@@ -59,10 +37,6 @@ const cursorSchema = z
 
 const cursorOf = (item: HistoryItem) => `${item.startedAt.toISOString()}|${item.id}`;
 
-/** Newest first; at the same instant, the higher ID first (as the repositories order them). */
-const newestFirst = (a: HistoryItem, b: HistoryItem) =>
-  b.startedAt.getTime() - a.startedAt.getTime() || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0);
-
 /** Null when nobody is signed in. An invalid `before` reads as the first page. */
 export async function getTrainHub(
   client: DbClient,
@@ -75,27 +49,16 @@ export async function getTrainHub(
   if (!profile) throw new Error('profile missing for signed-in user');
   const parsed = cursorSchema.safeParse(input.before);
   const before = parsed.success ? parsed.data : null;
-  const limit = HISTORY_PAGE_SIZE + 1;
 
-  const [today, workouts, runs] = await Promise.all([
+  const [today, items] = await Promise.all([
     getToday(client, clock),
-    findWorkoutHistory(client, user.id, { before, limit, locale: profile.locale }),
-    findRunHistory(client, user.id, { before, limit }),
+    historyItems(client, user.id, profile, { before, limit: HISTORY_PAGE_SIZE + 1 }),
   ]);
-  const zone = profile.timezone;
-  const merged: HistoryItem[] = [
-    ...workouts.map((w): HistoryItem => ({
-      kind: 'workout',
-      ...w,
-      date: localDateAt(w.startedAt, zone),
-    })),
-    ...runs.map((r): HistoryItem => ({ kind: 'run', ...r, date: localDateAt(r.startedAt, zone) })),
-  ].sort(newestFirst);
-  const page = merged.slice(0, HISTORY_PAGE_SIZE);
+  const page = items.slice(0, HISTORY_PAGE_SIZE);
   return {
     today: today!,
     units: profile.preferred_units,
     history: page,
-    nextBefore: merged.length > HISTORY_PAGE_SIZE ? cursorOf(page.at(-1)!) : null,
+    nextBefore: items.length > HISTORY_PAGE_SIZE ? cursorOf(page.at(-1)!) : null,
   };
 }

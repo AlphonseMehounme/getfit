@@ -350,6 +350,34 @@
       "view": "View workout",
       "logRun": "Log run",
       "viewRun": "View run"
+    },
+    "greeting": "Hello",
+    "greetingNamed": "Hello, {name}",
+    "progress": {
+      "label": "Programme progress",
+      "value": "{percent}",
+      "detail": "{completed} of {planned} sessions"
+    },
+    "thisWeek": {
+      "title": "This week",
+      "sessions": "Sessions done",
+      "sessionsValue": "{done} of {planned}",
+      "partly": "{count, plural, one {# partly done} other {# partly done}}",
+      "distance": "Running distance",
+      "distanceValue": "{distance, number} {unit}",
+      "adherence": "Adherence",
+      "adherenceUnavailable": "No training session is planned this week."
+    },
+    "recent": {
+      "title": "Recent activity",
+      "empty": "Nothing logged yet",
+      "emptyBody": "Your workouts and runs will appear here once you log them.",
+      "all": "See all in Train"
+    },
+    "attention": {
+      "title": "{day} was missed",
+      "body": "{session} can still be moved to another day this week, or skipped.",
+      "options": "See options"
     }
   },
   "Programme": {

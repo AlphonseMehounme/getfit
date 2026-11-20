@@ -2,7 +2,10 @@ import type { DbClient } from '@/server/db/client';
 import type { Database } from '@/server/db/types';
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
-export type ProfileSettings = Pick<ProfileRow, 'locale' | 'timezone' | 'preferred_units'>;
+export type ProfileSettings = Pick<
+  ProfileRow,
+  'locale' | 'timezone' | 'preferred_units' | 'first_name'
+>;
 
 /** Reads the signed-in user's own profile; RLS returns nothing for anyone else's. */
 export async function findProfileSettings(
@@ -11,7 +14,7 @@ export async function findProfileSettings(
 ): Promise<ProfileSettings | null> {
   const { data, error } = await client
     .from('profiles')
-    .select('locale, timezone, preferred_units')
+    .select('locale, timezone, preferred_units, first_name')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw new Error(`profiles: ${error.code}`);

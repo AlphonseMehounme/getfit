@@ -23,14 +23,18 @@ export function fixtureSlug(prefix: string): string {
   return `${prefix}-${randomUUID().slice(0, 8)}`;
 }
 
+/**
+ * A fixture exercise. It is unpublished, so a fixture committed by one test file (outside a rolled-back
+ * transaction) never shows in the published library another test file is reading at the same time.
+ */
 export async function insertExercise(
   db: pg.Client,
   values: { slug?: string; mediaKey?: string } = {},
 ): Promise<string> {
   const slug = values.slug ?? fixtureSlug('fixture-exercise');
   const { rows } = await db.query<{ id: string }>(
-    `insert into public.exercises (slug, category, difficulty, media_key)
-     values ($1, 'upper', 'beginner', $2) returning id`,
+    `insert into public.exercises (slug, category, difficulty, media_key, published)
+     values ($1, 'upper', 'beginner', $2, false) returning id`,
     [slug, values.mediaKey ?? slug],
   );
   return rows[0]!.id;

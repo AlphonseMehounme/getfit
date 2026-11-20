@@ -52,7 +52,7 @@ export default defineConfig({
         // P2-07: onboarding flow.
         'apps/web/lib/onboarding/**/*.ts',
         'apps/web/components/onboarding/**/*.tsx',
-        'apps/web/components/ui/{selector,select,notice,date-picker}.tsx',
+        'apps/web/components/ui/{selector,select,notice,date-picker,progress-ring}.tsx',
         // P2-08: Profile and settings (D35, D56).
         'apps/web/components/profile/**/*.tsx',
         'apps/web/lib/profile/**/*.ts',

@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.15 (D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.16 (D63 added, 20 Nov 2026; D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -84,6 +84,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D60 | Changing a linked run's date unlinks it | Distance, time, effort, route and notes can always be edited. If the date changes to another day, the link is removed and D33's link or move-and-link is offered again for the new date, as for a new run. | 20 Nov 2026 |
 | D61 | A run can fulfil a skipped long run | A run on a skipped long run's day is offered the link (and a run elsewhere in its week, the move-and-link). Accepting removes the skip, which the run replaces. | 20 Nov 2026 |
 | D62 | No library links on the workout screen | Exercise mentions link to the library everywhere (Today, the programme week and session detail, Train), except on the workout screen. It already shows the media and cues, and a tap there would leave the workout mid-set. | 20 Nov 2026 |
+| D63 | Today's counts show real values from day one | Programme progress, sessions done of scheduled, adherence and the week's running distance show their true value as soon as they can be computed, 0 included ("0%", "0 of 3", "0 km"). "—" with an explanation (BR-24) is kept for what can't be computed, such as adherence in a week with no scheduled training session. | 20 Nov 2026 |
 
 ## 1. Vision, principles and users
 

@@ -148,6 +148,14 @@ describe('TodayPanel (PRD §9)', () => {
     weekFocus: '',
     week: [],
     sessions,
+    firstName: 'Alex',
+    programmeProgress: { available: true, completed: 0, partial: 0, planned: 32, ratio: 0 },
+    thisWeek: {
+      adherence: { available: true, completed: 0, partial: 0, planned: 4, ratio: 0 },
+      runningDistanceM: 0,
+    },
+    recent: [],
+    attention: null,
   });
 
   it('a training day shows the session and its action', () => {
