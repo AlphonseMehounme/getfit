@@ -250,7 +250,11 @@ describe('RunForm (PRD §6.6)', () => {
     await userEvent.type(date, '2026-11-28');
     resolveFirst(LINK);
     await typeReference();
-    await save();
+    // Save waits while the week is checked; Enter in a field doesn't submit either.
+    expect((screen.getByRole('button', { name: 'Save run' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    await userEvent.type(screen.getByLabelText('Distance (km)'), '{Enter}');
     expect(screen.getByText('Checking your week…')).toBeTruthy();
     expect(screen.queryByRole('group', { name: /Count this run/ })).toBeNull();
     expect(saveRun).not.toHaveBeenCalled();

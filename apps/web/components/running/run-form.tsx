@@ -89,6 +89,9 @@ export function RunForm({
   const linkKept = keepsLink !== null && date === keepsLink.date;
   const promptKey = `${date}|${checkedFor}`;
   const prompt = fetched?.key === promptKey ? fetched.prompt : null;
+  // D33: the question for the date must be known before saving, so Save waits while the week is checked. With the
+  // form's submit button disabled, Enter in a field doesn't submit either (HTML implicit submission).
+  const checking = !linkKept && prompt === null;
   const answer = answered?.key === promptKey ? answered.value : null;
 
   // D33: the question depends on the date only, so it is asked again whenever the date changes.
@@ -115,7 +118,6 @@ export function RunForm({
     asks && answer === 'yes' ? (prompt!.kind as 'link' | 'move_and_link') : 'none';
 
   const onValid = (values: RunFormValues) => {
-    if (!linkKept && prompt === null) return;
     if (asks && answer === null) {
       setAnswerError(true);
       return;
@@ -239,7 +241,7 @@ export function RunForm({
           {t(`confirm.${confirmation.reason}`, { pace: formatPace(metrics.paceS), unit })}
         </Notice>
       ) : null}
-      <Button type="submit" width="full" disabled={busy}>
+      <Button type="submit" width="full" disabled={busy || checking}>
         {pending ? t('saving') : confirmation ? t('saveAnyway') : submitLabel}
       </Button>
     </form>
