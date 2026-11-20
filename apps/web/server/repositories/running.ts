@@ -127,3 +127,22 @@ export async function softDeleteRun(client: DbClient, id: string, now: Date): Pr
     .eq('id', id);
   if (error) throw new Error(`running_sessions: ${error.code}`);
 }
+
+/** D37: the user's runs dated within `from`–`to` (local dates), never a baseline or a deleted run (BR-26). */
+export async function findRunsInRange(
+  client: DbClient,
+  userId: string,
+  from: LocalDate,
+  to: LocalDate,
+): Promise<{ localDate: LocalDate; distanceM: number }[]> {
+  const { data, error } = await client
+    .from('running_sessions')
+    .select('local_date, distance_m')
+    .eq('user_id', userId)
+    .eq('is_baseline', false)
+    .is('deleted_at', null)
+    .gte('local_date', from)
+    .lte('local_date', to);
+  if (error) throw new Error(`running_sessions: ${error.code}`);
+  return data.map((r) => ({ localDate: parseLocalDate(r.local_date), distanceM: r.distance_m }));
+}

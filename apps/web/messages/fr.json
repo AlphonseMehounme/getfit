@@ -350,6 +350,34 @@
       "view": "Voir la séance",
       "logRun": "Enregistrer la course",
       "viewRun": "Voir la course"
+    },
+    "greeting": "Bonjour",
+    "greetingNamed": "Bonjour {name}",
+    "progress": {
+      "label": "Avancement du programme",
+      "value": "{percent}",
+      "detail": "{completed} séances sur {planned}"
+    },
+    "thisWeek": {
+      "title": "Cette semaine",
+      "sessions": "Séances faites",
+      "sessionsValue": "{done} sur {planned}",
+      "partly": "{count, plural, one {# en partie} other {# en partie}}",
+      "distance": "Distance courue",
+      "distanceValue": "{distance, number} {unit}",
+      "adherence": "Assiduité",
+      "adherenceUnavailable": "Aucune séance d’entraînement n’est prévue cette semaine."
+    },
+    "recent": {
+      "title": "Activité récente",
+      "empty": "Rien d’enregistré pour l’instant",
+      "emptyBody": "Tes séances et tes courses apparaîtront ici dès que tu les enregistres.",
+      "all": "Tout voir dans Entraînement"
+    },
+    "attention": {
+      "title": "{day} a été manqué",
+      "body": "La séance « {session} » peut encore être déplacée à un autre jour de cette semaine, ou passée.",
+      "options": "Voir les options"
     }
   },
   "Programme": {

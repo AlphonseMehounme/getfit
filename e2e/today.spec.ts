@@ -1,6 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 import programme from '../content/programmes/force-muscle-endurance-8w.json' with { type: 'json' };
 import en from '../apps/web/messages/en.json' with { type: 'json' };
+import { logEverySet, startOnMonday } from './support/workout-flow';
 import {
   expectNoAxeViolations,
   newEmail,
@@ -68,6 +69,70 @@ test('start on Monday, then Monday shows Strength A and Tuesday the recovery gui
   await expect(page.getByRole('list', { name: en.WeekStrip.label })).toContainText(
     'Monday, November 23: Missed',
   );
+});
+
+test('D37 / D63: a new account sees real values; after logging, This week and recent activity follow', async ({
+  page,
+}) => {
+  await startOnMonday(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'Hello, Alex' })).toBeVisible();
+  await expect(page.getByRole('img', { name: `${en.Today.progress.label}: 0%` })).toBeVisible();
+  const thisWeek = page.getByRole('region', { name: en.Today.thisWeek.title });
+  await expect(thisWeek).toContainText('0 of 4');
+  await expect(thisWeek).toContainText('0 km');
+  await expect(thisWeek).toContainText('0%');
+  await expect(page.getByRole('region', { name: en.Today.recent.title })).toContainText(
+    en.Today.recent.empty,
+  );
+
+  // Strength A done, and a 5 km run in the evening.
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
+  await logEverySet(page, template('strength-a').exercises.length);
+  await page.locator('label').filter({ hasText: /^7$/ }).click();
+  await page.getByRole('button', { name: en.Workout.summary.saveCompleted }).click();
+  await expect(page).toHaveURL('/today');
+  await setNow(page, '2026-11-23T19:00:00+01:00');
+  await page.goto('/train/run/new');
+  await page.getByLabel('Distance (km)').fill('5');
+  await page.getByLabel(en.Run.minutes).fill('30');
+  // BR-11: Strength A takes Monday, so the long run can't move here and nothing is asked (D33).
+  await expect(page.getByText(en.Run.link.checking)).toHaveCount(0);
+  await page.getByRole('button', { name: en.Run.save, exact: true }).click();
+  await expect(page).toHaveURL(/\/train\/run\/[0-9a-f-]{36}$/);
+
+  await page.goto('/today');
+  await expect(page.getByRole('img', { name: `${en.Today.progress.label}: 3%` })).toBeVisible();
+  await expect(thisWeek).toContainText('1 of 4');
+  await expect(thisWeek).toContainText('5 km');
+  await expect(thisWeek).toContainText('25%');
+  const recent = page.getByRole('region', { name: en.Today.recent.title }).getByRole('listitem');
+  await expect(recent).toHaveCount(2);
+  await expect(recent.nth(0)).toContainText('Run');
+  await expect(recent.nth(1)).toContainText(template('strength-a').en.title);
+});
+
+test('D37: a missed Monday shows the attention card, linking to its options', async ({ page }) => {
+  await startOnMonday(page);
+  await expect(page.getByText('Monday was missed')).toHaveCount(0);
+  await setNow(page, TUESDAY);
+  await page.reload();
+  await expect(page.getByText('Monday was missed')).toBeVisible();
+  await page.getByRole('link', { name: en.Today.attention.options }).click();
+  await expect(page).toHaveURL(/\/programme\/day\//);
+  await expect(page.getByRole('button', { name: en.Programme.actions.move })).toBeVisible();
+});
+
+test('PRD §6.3 AC: at 360 × 780 the primary action is on screen without scrolling', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await startOnMonday(page);
+  const start = page.getByRole('button', { name: en.Today.action.start });
+  await expect(start).toBeVisible();
+  const box = (await start.boundingBox())!;
+  expect(box.y + box.height).toBeLessThanOrEqual(780);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {

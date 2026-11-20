@@ -1,5 +1,6 @@
 import {
   type Activity,
+  type Adherence,
   addDays,
   buildWeek,
   canLogRun,
@@ -20,6 +21,11 @@ import {
   type StartCheck,
   type UnitSystem,
   unlinkedRunActivity,
+  missedWithOptions,
+  moveContextFor,
+  programmeProgress,
+  weeklyAdherence,
+  weekRunningDistance,
 } from '@getfit/domain';
 import type { DbClient } from '@/server/db/client';
 import { type EnrolmentRecord, findActiveEnrolment } from '@/server/repositories/enrolment';
@@ -29,7 +35,8 @@ import {
   type ProgrammeContent,
 } from '@/server/repositories/programme';
 import { findProfileSettings, type ProfileSettings } from '@/server/repositories/profiles';
-import { findUnlinkedRuns } from '@/server/repositories/running';
+import { findRunsInRange, findUnlinkedRuns } from '@/server/repositories/running';
+import { type HistoryItem, historyItems } from './activity';
 import {
   findLoggedSessions,
   type LoggedRecord,
@@ -89,6 +96,16 @@ export type TodayView =
       weekFocus: string;
       week: WeekDay[];
       sessions: TodaySession[];
+      /** D37: for the greeting; empty until onboarding step 1 is saved (D55). */
+      firstName: string | null;
+      /** D37: (completed + 0.5 × partial) ÷ training sessions in the whole programme. */
+      programmeProgress: Adherence;
+      /** D37 "This week" (D63: real values, 0 included). */
+      thisWeek: { adherence: Adherence; runningDistanceM: number };
+      /** D37: the last 5 workouts and runs. */
+      recent: HistoryItem[];
+      /** D37: one missed session that still has options, or null. */
+      attention: { programmeDayId: string; title: string; date: LocalDate } | null;
     };
 
 export interface ScheduleContext {
@@ -240,5 +257,45 @@ export async function getToday(client: DbClient, clock: Clock): Promise<TodayVie
     weekFocus: weekContent.focus,
     week: week.days.map((d) => ({ date: d.date, status: dayStatus(d), isToday: d.isToday })),
     sessions,
+    firstName: profile.first_name,
+    ...(await dashboard(client, context, week)),
   };
 }
+
+/** D37: progress, "This week", recent activity and the attention card for Today. */
+async function dashboard(
+  client: DbClient,
+  context: ScheduleContext,
+  week: ReturnType<typeof buildWeek>,
+) {
+  const { scheduleInput, programme, enrolment, now, userId, profile } = context;
+  const sunday = addDays(week.monday, 6);
+  const everyWeek = Array.from({ length: programme.shape.durationWeeks }, (_, w) =>
+    buildWeek(scheduleInput, addDays(enrolment.startDate, w * 7), now),
+  );
+  const [runs, recent] = await Promise.all([
+    findRunsInRange(client, userId, week.monday, sunday),
+    historyItems(client, userId, profile, { before: null, limit: RECENT_ACTIVITY_LIMIT }),
+  ]);
+  const missed = missedWithOptions(moveContextFor(scheduleInput, week.monday, now, context.adHoc));
+  return {
+    programmeProgress: programmeProgress(
+      everyWeek.flatMap((w) => w.days.flatMap((d) => d.sessions)),
+    ),
+    thisWeek: {
+      adherence: weeklyAdherence(week.days.flatMap((d) => d.sessions)),
+      runningDistanceM: weekRunningDistance(runs, week.monday),
+    },
+    recent,
+    attention: missed
+      ? {
+          programmeDayId: missed.programmeDayId,
+          title: programme.templates.get(missed.template.id)!.title,
+          date: missed.date,
+        }
+      : null,
+  };
+}
+
+/** D37: the last 5 workouts and runs on Today. */
+export const RECENT_ACTIVITY_LIMIT = 5;

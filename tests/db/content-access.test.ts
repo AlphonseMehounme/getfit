@@ -111,7 +111,8 @@ describe('authenticated user', () => {
       .from('exercises')
       .select('id, published')
       .eq('id', fixtureId);
-    expect(data).toEqual([{ id: fixtureId, published: true }]);
+    // The fixture is unpublished (content-fixtures.ts); the write attempts left that unchanged.
+    expect(data).toEqual([{ id: fixtureId, published: false }]);
   });
 });
 
