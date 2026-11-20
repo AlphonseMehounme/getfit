@@ -62,6 +62,8 @@ export default defineConfig({
         // P2-13: the run log (PRD §6.6).
         'apps/web/components/running/**/*.tsx',
         'apps/web/lib/running/**/*.ts',
+        // P2-15: Train hub and history.
+        'apps/web/components/train/**/*.tsx',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

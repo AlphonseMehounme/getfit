@@ -2,18 +2,16 @@ import type { LocalDate } from '@getfit/domain';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
-import { LogRunLink, ViewRunLink } from '@/components/running/run-links';
-import { PrimaryAction } from '@/components/today/primary-action';
+import { SessionAction } from '@/components/today/session-action';
 import { SessionCard } from '@/components/today/session-card';
-import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { startSessionAction } from '../train/actions';
 import { Card, CardHeader } from '@/components/ui/card';
 import { WeekStrip } from '@/components/ui/week-strip';
-import { START_PATH, TRAIN_PATH } from '@/lib/auth/paths';
+import { START_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
-import { getToday, type TodaySession } from '@/server/services/schedule';
+import { getToday } from '@/server/services/schedule';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Today');
@@ -22,33 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Noon UTC, formatted in UTC, so the calendar date never shifts with the viewer's time zone. */
 const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
-
-/**
- * PRD §6.3: one primary action. Start or Resume while the domain allows it (D14, D23, D32); otherwise View for a
- * saved workout (BR-25); nothing on rest days or when the day can no longer be logged. A long run is logged as a
- * run (PRD §6.6, D33).
- */
-function primaryAction(session: TodaySession, today: LocalDate) {
-  if (session.sessionType === 'run') {
-    if (session.runSessionId) return <ViewRunLink runId={session.runSessionId} />;
-    return session.canLogRun ? <LogRunLink date={today} /> : undefined;
-  }
-  if (session.sessionType !== 'strength') return undefined;
-  if (session.start.allowed) {
-    return (
-      <PrimaryAction
-        programmeDayId={session.programmeDayId}
-        mode={session.start.mode}
-        action={startSessionAction}
-        trainPath={TRAIN_PATH}
-      />
-    );
-  }
-  const saved = session.status === 'completed' || session.status === 'partial';
-  return saved && session.workoutSessionId ? (
-    <ViewWorkoutLink href={`${TRAIN_PATH}/${session.workoutSessionId}`} />
-  ) : undefined;
-}
 
 // PRD §6.3 (Phase 1 subset): what to do today, then the week. Every value comes from getToday (AGENTS §5).
 export default async function TodayPage() {
@@ -105,7 +76,9 @@ export default async function TodayPage() {
           key={session.programmeDayId}
           session={session}
           units={view.units}
-          action={primaryAction(session, view.today)}
+          action={
+            <SessionAction session={session} today={view.today} startAction={startSessionAction} />
+          }
         />
       ))}
       <WeekStrip days={view.week} />

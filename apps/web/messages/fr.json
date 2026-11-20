@@ -161,6 +161,7 @@
     "label": "Navigation principale",
     "today": "Aujourd’hui",
     "programme": "Programme",
+    "train": "Entraînement",
     "profile": "Profil"
   },
   "Start": {
@@ -421,6 +422,45 @@
       "reasonTooLong": "200 caractères maximum.",
       "confirm": "Passer cette séance",
       "cancel": "Annuler"
+    }
+  },
+  "Train": {
+    "title": "Entraînement",
+    "intro": "Lance la séance du jour, enregistre une course et retrouve tout ce que tu as enregistré.",
+    "today": "Aujourd’hui",
+    "restDay": "Jour de repos : rien à lancer aujourd’hui.",
+    "nothingToday": "Plus rien à enregistrer aujourd’hui.",
+    "beforeStart": "Ton programme commence le {date}.",
+    "notEnrolled": "Commence ton programme pour voir ici la séance du jour.",
+    "start": "Commencer le programme",
+    "logRun": "Enregistrer une course",
+    "logRunHint": "N’importe quelle course, n’importe quel jour. Elle peut compter pour la sortie longue de sa semaine.",
+    "history": "Historique",
+    "showOlder": "Voir plus ancien",
+    "empty": {
+      "title": "Rien d’enregistré pour l’instant",
+      "body": "Tes séances et tes courses apparaîtront ici dès que tu les enregistres."
+    },
+    "item": {
+      "workout": "Séance",
+      "run": "Course",
+      "untitled": "Séance",
+      "sets": "{count, plural, one {# série} other {# séries}}",
+      "duration": "{duration}",
+      "distance": "{distance, number} {unit}",
+      "pace": "{pace} /{unit}",
+      "counts": "Compte pour le programme",
+      "status": {
+        "in_progress": "En cours",
+        "partial": "En partie faite",
+        "completed": "Faite"
+      }
+    },
+    "loading": "Chargement de ton entraînement…",
+    "error": {
+      "title": "Ton entraînement n’a pas pu être chargé",
+      "body": "Vérifie ta connexion, puis réessaie.",
+      "retry": "Réessayer"
     }
   },
   "Workout": {

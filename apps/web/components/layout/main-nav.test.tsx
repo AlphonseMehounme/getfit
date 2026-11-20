@@ -13,6 +13,7 @@ describe('MainNav', () => {
     expect(links.map((l) => [l.textContent, l.getAttribute('href')])).toEqual([
       ['Today', '/today'],
       ['Programme', '/programme'],
+      ['Train', '/train'],
       ['Profile', '/profile'],
     ]);
     expect(links[0]!.getAttribute('aria-current')).toBe('page');
