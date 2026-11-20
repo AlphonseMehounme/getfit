@@ -37,6 +37,7 @@ const SESSION: WeekSession = {
   showsPlan: true,
   workoutSessionId: null,
   canMove: true,
+  canSkip: true,
   canUndo: false,
 };
 

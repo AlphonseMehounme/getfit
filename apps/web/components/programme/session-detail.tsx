@@ -1,5 +1,6 @@
 import { compareLocalDates, type LocalDate } from '@getfit/domain';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 import { ExerciseCard } from '@/components/exercise/exercise-card';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
@@ -15,7 +16,14 @@ import { StatusLabel } from './status-label';
 /** Noon UTC, formatted in UTC, so the calendar date never shifts with the viewer's time zone. */
 const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
 
-export function SessionDetail({ day }: { day: Extract<ProgrammeDay, { kind: 'day' }> }) {
+export function SessionDetail({
+  day,
+  actions,
+}: {
+  day: Extract<ProgrammeDay, { kind: 'day' }>;
+  /** PRD §6.4: move, skip or undo, under the header (P2-11). */
+  actions?: ReactNode;
+}) {
   const t = useTranslations();
   const format = useFormatter();
   // ADR 0003: the request locale is always one of ours.
@@ -52,6 +60,7 @@ export function SessionDetail({ day }: { day: Extract<ProgrammeDay, { kind: 'day
           </p>
         ) : null}
       </header>
+      {actions}
 
       <section aria-labelledby="session-why" className="flex flex-col gap-2">
         <h2 id="session-why" className="text-xl font-semibold">

@@ -263,6 +263,7 @@ describe('skipping (D57)', () => {
     expect(await sessionOf(user, friC, '2026-11-24')).toMatchObject({
       status: 'skipped',
       canMove: false,
+      canSkip: false,
       canUndo: true,
     });
     // The reason is never sent.
@@ -274,6 +275,9 @@ describe('skipping (D57)', () => {
 
   it('a missed session can be skipped in its week, not after it', async () => {
     const { user, monA, wedB } = await enrolled();
+    // D57 in the week data: missed and still in its week, then after its week.
+    expect((await sessionOf(user, monA, '2026-11-29')).canSkip).toBe(true);
+    expect((await sessionOf(user, wedB, '2026-11-30')).canSkip).toBe(false);
     expect(
       await skipSession(user.client, { programmeDayId: monA }, on('2026-11-29'), noTrack),
     ).toEqual({
@@ -516,6 +520,7 @@ describe('programme overview, week and day (PRD §6.4, D58)', () => {
     const sessionId = randomUUID();
     await startSession(user.client, { sessionId, programmeDayId: monA }, monday, noTrack);
     expect(await sessionOf(user, monA, '2026-11-25')).toMatchObject({
+      canSkip: false,
       status: 'in_progress',
       showsPlan: false,
       workoutSessionId: sessionId,
