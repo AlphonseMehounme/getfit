@@ -14,6 +14,7 @@ describe('MainNav', () => {
       ['Today', '/today'],
       ['Programme', '/programme'],
       ['Train', '/train'],
+      ['Library', '/library'],
       ['Profile', '/profile'],
     ]);
     expect(links[0]!.getAttribute('aria-current')).toBe('page');

@@ -162,6 +162,7 @@
     "today": "Aujourd’hui",
     "programme": "Programme",
     "train": "Entraînement",
+    "library": "Bibliothèque",
     "profile": "Profil"
   },
   "Start": {
@@ -459,6 +460,78 @@
     "loading": "Chargement de ton entraînement…",
     "error": {
       "title": "Ton entraînement n’a pas pu être chargé",
+      "body": "Vérifie ta connexion, puis réessaie.",
+      "retry": "Réessayer"
+    }
+  },
+  "Library": {
+    "title": "Bibliothèque d’exercices",
+    "intro": "Comment faire chaque exercice de ton programme, en français ou en anglais.",
+    "search": "Rechercher",
+    "searchHint": "Par nom, en français ou en anglais.",
+    "category": "Catégorie",
+    "equipment": "Matériel",
+    "muscle": "Groupe musculaire",
+    "difficulty": "Difficulté",
+    "any": "Tous",
+    "apply": "Rechercher",
+    "clear": "Effacer les filtres",
+    "results": "{count, plural, =0 {Aucun exercice} one {# exercice} other {# exercices}}",
+    "noResults": {
+      "title": "Aucun exercice ne correspond",
+      "body": "Essaie un autre nom, ou efface les filtres."
+    },
+    "categories": {
+      "upper": "Haut du corps",
+      "lower": "Bas du corps",
+      "core": "Gainage",
+      "recovery": "Récupération",
+      "mobility": "Mobilité",
+      "running": "Course"
+    },
+    "difficulties": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "muscles": {
+      "ankles": "Chevilles",
+      "biceps": "Biceps",
+      "calves": "Mollets",
+      "cardio": "Cœur et poumons",
+      "chest": "Pectoraux",
+      "core": "Sangle abdominale",
+      "glutes": "Fessiers",
+      "hamstrings": "Ischio-jambiers",
+      "hip_flexors": "Fléchisseurs de hanche",
+      "hips": "Hanches",
+      "lats": "Grands dorsaux",
+      "obliques": "Obliques",
+      "quadriceps": "Quadriceps",
+      "shoulders": "Épaules",
+      "triceps": "Triceps",
+      "upper_back": "Haut du dos"
+    },
+    "detail": {
+      "steps": "Comment le faire",
+      "mistakes": "Erreurs fréquentes",
+      "muscles": "Muscles travaillés",
+      "equipment": "Matériel",
+      "variations": "Variantes",
+      "substitutes": "Peut le remplacer",
+      "perSide": "Se fait de chaque côté",
+      "back": "Retour à la bibliothèque",
+      "history": "Ton historique",
+      "notLogged": "Tu n’as pas encore enregistré cet exercice.",
+      "historyItem": "{sets, plural, one {# série} other {# séries}}",
+      "bestReps": "meilleure série : {reps} répétitions",
+      "bestSeconds": "plus long maintien : {seconds} s",
+      "runsInTrain": "Tes courses sont listées dans Entraînement."
+    },
+    "shortcut": "Bibliothèque d’exercices",
+    "loading": "Chargement de la bibliothèque…",
+    "error": {
+      "title": "La bibliothèque n’a pas pu être chargée",
       "body": "Vérifie ta connexion, puis réessaie.",
       "retry": "Réessayer"
     }

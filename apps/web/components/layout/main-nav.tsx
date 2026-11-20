@@ -1,9 +1,15 @@
 'use client';
 
-import { CalendarDays, Dumbbell, House, User } from 'lucide-react';
+import { BookOpen, CalendarDays, Dumbbell, House, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { AppNav, type NavItem } from '@/components/ui/app-nav';
-import { HOME_PATH, PROFILE_PATH, PROGRAMME_PATH, TRAIN_PATH } from '@/lib/auth/paths';
+import {
+  HOME_PATH,
+  LIBRARY_PATH,
+  PROFILE_PATH,
+  PROGRAMME_PATH,
+  TRAIN_PATH,
+} from '@/lib/auth/paths';
 
 // PRD §9 navigation: only destinations that exist are listed (AGENTS §9: no dead links).
 // Progress joins as its screens ship. A client component, because icons are components
@@ -15,6 +21,8 @@ export function MainNav() {
     { href: PROGRAMME_PATH, label: t('programme'), icon: CalendarDays },
     // PRD §9: Train is the centre item.
     { href: TRAIN_PATH, label: t('train'), icon: Dumbbell },
+    // PRD §9: the library is in the desktop sidebar; on mobile it is reached from Train and Profile.
+    { href: LIBRARY_PATH, label: t('library'), icon: BookOpen, desktopOnly: true },
     { href: PROFILE_PATH, label: t('profile'), icon: User },
   ];
   return <AppNav items={items} />;

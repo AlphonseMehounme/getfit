@@ -162,6 +162,7 @@
     "today": "Today",
     "programme": "Programme",
     "train": "Train",
+    "library": "Library",
     "profile": "Profile"
   },
   "Start": {
@@ -459,6 +460,78 @@
     "loading": "Loading your training…",
     "error": {
       "title": "Your training could not be loaded",
+      "body": "Check your connection, then try again.",
+      "retry": "Try again"
+    }
+  },
+  "Library": {
+    "title": "Exercise library",
+    "intro": "How to do every exercise in your programme, in French or English.",
+    "search": "Search",
+    "searchHint": "By name, in French or English.",
+    "category": "Category",
+    "equipment": "Equipment",
+    "muscle": "Muscle group",
+    "difficulty": "Difficulty",
+    "any": "Any",
+    "apply": "Search",
+    "clear": "Clear filters",
+    "results": "{count, plural, =0 {No exercises} one {# exercise} other {# exercises}}",
+    "noResults": {
+      "title": "No exercise matches",
+      "body": "Try another name, or clear the filters."
+    },
+    "categories": {
+      "upper": "Upper body",
+      "lower": "Lower body",
+      "core": "Core",
+      "recovery": "Recovery",
+      "mobility": "Mobility",
+      "running": "Running"
+    },
+    "difficulties": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "muscles": {
+      "ankles": "Ankles",
+      "biceps": "Biceps",
+      "calves": "Calves",
+      "cardio": "Heart and lungs",
+      "chest": "Chest",
+      "core": "Core",
+      "glutes": "Glutes",
+      "hamstrings": "Hamstrings",
+      "hip_flexors": "Hip flexors",
+      "hips": "Hips",
+      "lats": "Lats",
+      "obliques": "Obliques",
+      "quadriceps": "Quadriceps",
+      "shoulders": "Shoulders",
+      "triceps": "Triceps",
+      "upper_back": "Upper back"
+    },
+    "detail": {
+      "steps": "How to do it",
+      "mistakes": "Common mistakes",
+      "muscles": "Muscles worked",
+      "equipment": "Equipment",
+      "variations": "Variations",
+      "substitutes": "Can replace it",
+      "perSide": "Done on each side",
+      "back": "Back to the library",
+      "history": "Your history",
+      "notLogged": "You haven’t logged this exercise yet.",
+      "historyItem": "{sets, plural, one {# set} other {# sets}}",
+      "bestReps": "best: {reps} reps",
+      "bestSeconds": "longest: {seconds} s",
+      "runsInTrain": "Your runs are listed in Train."
+    },
+    "shortcut": "Exercise library",
+    "loading": "Loading the library…",
+    "error": {
+      "title": "The library could not be loaded",
       "body": "Check your connection, then try again.",
       "retry": "Try again"
     }

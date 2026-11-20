@@ -36,4 +36,18 @@ describe('ExerciseCard', () => {
     expect(screen.getByRole('img', { name: 'Side plank: illustration coming soon' })).toBeTruthy();
     expect(screen.queryByText(/Rest/)).toBeNull();
   });
+
+  it('PRD §9: the name links to the exercise in the library when given a link', () => {
+    renderWithIntl(
+      <ExerciseCard
+        name="Pull-up"
+        target="3 × 6"
+        media={resolveExerciseMedia('pull-up', 'upper', 'en')}
+        href="/library/pull-up"
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Pull-up' }).getAttribute('href')).toBe(
+      '/library/pull-up',
+    );
+  });
 });

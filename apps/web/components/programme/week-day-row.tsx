@@ -5,6 +5,7 @@ import { ViewRunLink } from '@/components/running/run-links';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
 import { targetMessage } from '@/lib/format/target';
+import { exercisePath } from '@/lib/library/paths';
 import { dayPath } from '@/lib/programme/paths';
 import { cn } from '@/lib/utils/cn';
 import type { WeekSession } from '@/server/services/programme-week';
@@ -72,14 +73,19 @@ export function WeekDayRow({
             ) : null}
             {session.showsPlan && session.exercises.length > 0 ? (
               <ul className="text-muted flex flex-col gap-1 text-sm">
-                {session.exercises.map(({ name, prescription }) => {
+                {session.exercises.map(({ name, slug, prescription }) => {
                   const target = targetMessage(prescription, units);
                   return (
                     <li
                       key={prescription.templateExerciseId}
                       className="flex justify-between gap-3"
                     >
-                      <span>{name}</span>
+                      <Link
+                        href={exercisePath(slug)}
+                        className="focus-visible:outline-focus inline-flex min-h-6 items-center underline-offset-4 hover:underline focus-visible:outline-2"
+                      >
+                        {name}
+                      </Link>
                       <span className="text-foreground font-semibold tabular-nums">
                         {t(`Today.target.${target.key}`, target.values)}
                       </span>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { LibraryShortcut } from '@/components/library/library-shortcut';
 import { HistoryList } from '@/components/train/history-list';
 import { TodayPanel } from '@/components/train/today-panel';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
@@ -48,6 +49,7 @@ export default async function TrainPage({
       <section className="flex flex-col gap-2">
         {logRun}
         <p className="text-muted text-sm">{t('logRunHint')}</p>
+        <LibraryShortcut />
       </section>
       <HistoryList
         items={hub.history}

@@ -28,6 +28,7 @@ export default defineConfig({
         'packages/domain/src/running/**/*.ts',
         'packages/domain/src/workout/**/*.ts',
         'packages/domain/src/onboarding/**/*.ts',
+        'packages/domain/src/library/**/*.ts',
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',
@@ -64,6 +65,9 @@ export default defineConfig({
         'apps/web/lib/running/**/*.ts',
         // P2-15: Train hub and history.
         'apps/web/components/train/**/*.tsx',
+        // P2-14: exercise library.
+        'apps/web/components/library/**/*.tsx',
+        'apps/web/lib/library/**/*.ts',
       ],
       // generate.ts is the thin CLI around the tested builder (ADR 0005).
       exclude: ['**/*.test.{ts,tsx}', 'supabase/seed/generate.ts'],

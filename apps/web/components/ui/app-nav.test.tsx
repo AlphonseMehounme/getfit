@@ -55,4 +55,18 @@ describe('AppNav', () => {
     renderWithIntl(<AppNav items={ITEMS.slice(0, 1)} />, 'fr');
     expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeTruthy();
   });
+
+  it('PRD §9: a desktop-only item is hidden from the mobile bar', () => {
+    renderWithIntl(
+      <AppNav
+        items={[...ITEMS, { href: '/library', label: 'Library', icon: House, desktopOnly: true }]}
+      />,
+    );
+    const library = screen.getByRole('link', { name: 'Library' }).closest('li')!;
+    expect(library.className).toContain('hidden');
+    expect(library.className).toContain('md:block');
+    expect(screen.getByRole('link', { name: 'Home' }).closest('li')!.className).not.toContain(
+      'hidden',
+    );
+  });
 });

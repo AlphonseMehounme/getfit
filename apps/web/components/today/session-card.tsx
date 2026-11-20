@@ -5,6 +5,7 @@ import { ExerciseCard } from '@/components/exercise/exercise-card';
 import { Card, CardHeader } from '@/components/ui/card';
 import { restMessage, targetMessage } from '@/lib/format/target';
 import type { Locale } from '@/lib/i18n/config';
+import { exercisePath } from '@/lib/library/paths';
 import { resolveExerciseMedia } from '@/lib/media/resolve';
 import type { TodaySession } from '@/server/services/schedule';
 
@@ -82,6 +83,7 @@ export function SessionCard({
                       target={t(`target.${target.key}`, target.values)}
                       rest={rest ? t(`rest.${rest.key}`, rest.values) : undefined}
                       media={resolveExerciseMedia(exercise.slug, exercise.category, locale)}
+                      href={exercisePath(exercise.slug)}
                     />
                   </li>
                 );
