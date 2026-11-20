@@ -384,7 +384,49 @@
       "body": "Check your connection, then try again.",
       "retry": "Try again"
     },
-    "savedDay": "This session is saved. Open the workout to see what you logged."
+    "savedDay": "This session is saved. Open the workout to see what you logged.",
+    "actions": {
+      "title": "Change this session",
+      "move": "Move",
+      "skip": "Skip",
+      "undoMove": "Undo move",
+      "undoSkip": "Undo skip",
+      "moved": "Moved to {date}.",
+      "skipped": "Skipped.",
+      "undone": "Back on {date}.",
+      "pending": "Saving…",
+      "refused": "This change isn’t possible any more: the week has changed. The page now shows it as it is.",
+      "error": "The change could not be saved. Please try again."
+    },
+    "reschedule": {
+      "title": "Move this session",
+      "description": "Pick a day in this week. Days that break a recovery rule can’t be chosen.",
+      "legend": "Days this week",
+      "confirm": "Move to this day",
+      "cancel": "Cancel",
+      "allowed": "Free",
+      "noDate": "No day this week fits the recovery rules. Skipping keeps the plan safe; never double up.",
+      "skipInstead": "Skip instead",
+      "rule": "Rule {rule}"
+    },
+    "blocks": {
+      "strength_day_before": "{session} is the day before: no strength on consecutive days",
+      "strength_day_after": "{session} is the day after: no strength on consecutive days",
+      "lower_body_before_run": "Within 2 days before {session}: legs stay fresh for the long run",
+      "run_after_lower_body": "{session} is within the 2 days before: legs stay fresh for the long run",
+      "day_taken": "{session} is already on this day: one session per day",
+      "other_week": "Outside this session’s week",
+      "past_date": "This day has passed"
+    },
+    "skip": {
+      "title": "Skip this session",
+      "description": "A skipped session isn’t counted as missed. You can undo it until its day.",
+      "reason": "Reason (optional)",
+      "reasonHint": "Only you see it. {count} of 200 characters.",
+      "reasonTooLong": "Use 200 characters or fewer.",
+      "confirm": "Skip this session",
+      "cancel": "Cancel"
+    }
   },
   "Workout": {
     "exerciseOf": "Exercise {current} of {total}",

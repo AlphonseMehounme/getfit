@@ -3,6 +3,7 @@ import {
   type BodyFocus,
   buildWeek,
   checkMovable,
+  checkSkippable,
   checkUndo,
   type Clock,
   type LocalDate,
@@ -39,6 +40,8 @@ export interface WeekSession {
   /** The workout logged for this day, if any (BR-25: shown as logged, never edited here). */
   workoutSessionId: string | null;
   canMove: boolean;
+  /** D57: skippable until the end of its week. */
+  canSkip: boolean;
   canUndo: boolean;
 }
 
@@ -104,6 +107,7 @@ function weekView(schedule: Schedule, number: number): WeekOf {
           showsPlan: showsPlan(s, today),
           workoutSessionId: workoutFor(schedule.logged, s.programmeDayId),
           canMove: checkMovable(context, s.programmeDayId).movable,
+          canSkip: checkSkippable(context, s.programmeDayId).skippable,
           canUndo: checkUndo(context, s.programmeDayId).undoable,
         };
       }),

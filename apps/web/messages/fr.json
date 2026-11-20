@@ -384,7 +384,49 @@
       "body": "Vérifie ta connexion, puis réessaie.",
       "retry": "Réessayer"
     },
-    "savedDay": "Cette séance est enregistrée. Ouvre l’entraînement pour voir ce que tu as noté."
+    "savedDay": "Cette séance est enregistrée. Ouvre l’entraînement pour voir ce que tu as noté.",
+    "actions": {
+      "title": "Modifier cette séance",
+      "move": "Déplacer",
+      "skip": "Passer",
+      "undoMove": "Annuler le déplacement",
+      "undoSkip": "Annuler le passage",
+      "moved": "Déplacée au {date}.",
+      "skipped": "Séance passée.",
+      "undone": "De retour le {date}.",
+      "pending": "Enregistrement…",
+      "refused": "Ce changement n’est plus possible : la semaine a changé. La page la montre maintenant telle qu’elle est.",
+      "error": "Le changement n’a pas pu être enregistré. Réessaie."
+    },
+    "reschedule": {
+      "title": "Déplacer cette séance",
+      "description": "Choisis un jour de cette semaine. Les jours qui ne respectent pas une règle de récupération ne peuvent pas être choisis.",
+      "legend": "Jours de cette semaine",
+      "confirm": "Déplacer à ce jour",
+      "cancel": "Annuler",
+      "allowed": "Libre",
+      "noDate": "Aucun jour de cette semaine ne respecte les règles de récupération. Passer la séance garde le plan sûr ; ne double jamais.",
+      "skipInstead": "Passer plutôt",
+      "rule": "Règle {rule}"
+    },
+    "blocks": {
+      "strength_day_before": "{session} est la veille : pas de renforcement deux jours de suite",
+      "strength_day_after": "{session} est le lendemain : pas de renforcement deux jours de suite",
+      "lower_body_before_run": "Dans les 2 jours avant {session} : les jambes restent fraîches pour la sortie longue",
+      "run_after_lower_body": "{session} est dans les 2 jours avant : les jambes restent fraîches pour la sortie longue",
+      "day_taken": "{session} est déjà ce jour-là : une séance par jour",
+      "other_week": "Hors de la semaine de cette séance",
+      "past_date": "Ce jour est passé"
+    },
+    "skip": {
+      "title": "Passer cette séance",
+      "description": "Une séance passée ne compte pas comme manquée. Tu peux l’annuler jusqu’à son jour.",
+      "reason": "Raison (facultatif)",
+      "reasonHint": "Elle n’est visible que par toi. {count} sur 200 caractères.",
+      "reasonTooLong": "200 caractères maximum.",
+      "confirm": "Passer cette séance",
+      "cancel": "Annuler"
+    }
   },
   "Workout": {
     "exerciseOf": "Exercice {current} sur {total}",
