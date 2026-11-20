@@ -8,6 +8,7 @@ import {
   GoalsSummary,
   WeekSummary,
 } from '@/components/profile/answers-summary';
+import { LibraryShortcut } from '@/components/library/library-shortcut';
 import { BaselinesSummary } from '@/components/profile/baselines-summary';
 import { Field, ProfileSection } from '@/components/profile/profile-section';
 import { Button } from '@/components/ui/button';
@@ -98,6 +99,7 @@ export default async function ProfilePage({
           <Field label={t('fields.theme')}>{t(`themes.${theme}`)}</Field>
         </dl>
       </ProfileSection>
+      <LibraryShortcut />
       <ProfileSection id="account" title={t('account')}>
         <dl className="grid gap-3">
           <Field label={t('email')}>

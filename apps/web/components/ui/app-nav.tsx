@@ -14,6 +14,8 @@ export interface NavItem {
   /** Already translated. */
   label: string;
   icon: LucideIcon;
+  /** PRD §9: shown in the desktop sidebar only, not in the mobile bar. */
+  desktopOnly?: boolean;
 }
 
 const isCurrent = (pathname: string, href: string) =>
@@ -32,10 +34,10 @@ export function AppNav({ items }: { items: readonly NavItem[] }) {
       )}
     >
       <ul className="flex justify-around md:flex-col md:gap-1 md:p-4">
-        {items.map(({ href, label, icon: Icon }) => {
+        {items.map(({ href, label, icon: Icon, desktopOnly }) => {
           const current = isCurrent(pathname, href);
           return (
-            <li key={href} className="flex-1 md:flex-none">
+            <li key={href} className={cn('flex-1 md:flex-none', desktopOnly && 'hidden md:block')}>
               <Link
                 href={href}
                 aria-current={current ? 'page' : undefined}

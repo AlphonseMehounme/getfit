@@ -9,6 +9,8 @@ export const PROFILE_PATH = '/profile';
 export const PROGRAMME_PATH = '/programme';
 /** The workout screen: `/train/<session id>` (PRD §6.5). */
 export const TRAIN_PATH = '/train';
+/** PRD §6.7: the exercise library, `/library/<slug>` for one exercise. */
+export const LIBRARY_PATH = '/library';
 export const LOGIN_PATH = '/login';
 export const SIGN_UP_PATH = '/sign-up';
 export const CONFIRM_PATH = '/auth/confirm';

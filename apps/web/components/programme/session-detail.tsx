@@ -7,6 +7,7 @@ import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
 import { restMessage, targetMessage } from '@/lib/format/target';
 import type { Locale } from '@/lib/i18n/config';
+import { exercisePath } from '@/lib/library/paths';
 import { resolveExerciseMedia } from '@/lib/media/resolve';
 import type { ProgrammeDay } from '@/server/services/programme-week';
 import { StatusLabel } from './status-label';
@@ -107,6 +108,7 @@ export function SessionDetail({
                         target={t(`Today.target.${target.key}`, target.values)}
                         rest={rest ? t(`Today.rest.${rest.key}`, rest.values) : undefined}
                         media={resolveExerciseMedia(exercise.slug, exercise.category, locale)}
+                        href={exercisePath(exercise.slug)}
                       />
                     </li>
                   );
