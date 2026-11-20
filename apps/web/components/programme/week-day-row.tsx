@@ -80,12 +80,18 @@ export function WeekDayRow({
                       key={prescription.templateExerciseId}
                       className="flex justify-between gap-3"
                     >
-                      <Link
-                        href={exercisePath(slug)}
-                        className="focus-visible:outline-focus inline-flex min-h-6 items-center underline-offset-4 hover:underline focus-visible:outline-2"
-                      >
-                        {name}
-                      </Link>
+                      {/* WCAG 2.4.4: an exercise named like its session (the long run) isn't a second link
+                          with the same name; its library page is linked from the session detail. */}
+                      {name === session.title ? (
+                        <span>{name}</span>
+                      ) : (
+                        <Link
+                          href={exercisePath(slug)}
+                          className="focus-visible:outline-focus inline-flex min-h-6 items-center underline-offset-4 hover:underline focus-visible:outline-2"
+                        >
+                          {name}
+                        </Link>
+                      )}
                       <span className="text-foreground font-semibold tabular-nums">
                         {t(`Today.target.${target.key}`, target.values)}
                       </span>
