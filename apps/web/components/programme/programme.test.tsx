@@ -146,6 +146,26 @@ describe('WeekDayRow (PRD §6.4, D58)', () => {
     );
   });
 
+  it('exercise names link to the library, except one named like its session (one link per name)', () => {
+    const { unmount } = row([SESSION]);
+    expect(screen.getByRole('link', { name: 'Pull-up' }).getAttribute('href')).toBe(
+      '/library/pull-up',
+    );
+    unmount();
+    row([
+      {
+        ...SESSION,
+        title: 'Long run',
+        sessionType: 'run',
+        exercises: [
+          { ...SESSION.exercises[0]!, slug: 'long-run', name: 'Long run', category: 'running' },
+        ],
+      },
+    ]);
+    expect(screen.getAllByRole('link', { name: 'Long run' })).toHaveLength(1);
+    expect(screen.getByText('Long run', { selector: 'span' })).toBeTruthy();
+  });
+
   it('D33: a long-run day fulfilled by a run opens the run', () => {
     row([
       {
