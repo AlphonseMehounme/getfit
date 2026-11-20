@@ -35,6 +35,7 @@ export * from './units/length';
 export * from './units/format';
 export * from './running/pace';
 export * from './running/validate';
+export * from './running/link';
 export * from './onboarding/equipment-check';
 export * from './onboarding/availability';
 export * from './onboarding/steps';

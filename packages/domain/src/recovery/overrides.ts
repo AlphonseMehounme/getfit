@@ -6,6 +6,7 @@ import type { Instant } from '../time/clock';
 import { addDays, compareLocalDates, type LocalDate } from '../time/local-date';
 import { localDateAt } from '../time/zone';
 import { checkMovable, type MoveContext, type NotMovableReason } from './evaluate-move';
+import type { Activity } from './rules';
 
 /**
  * The move context around a session planned in the week of `plannedMonday`: that week and the two next to it, so a
@@ -15,12 +16,13 @@ export function moveContextFor(
   input: ScheduleInput,
   plannedMonday: LocalDate,
   now: Instant,
+  /** D22: logged runs that fulfil no programme day block like logged sessions (never a baseline, BR-26). */
+  adHoc: readonly Activity[] = [],
 ): MoveContext {
   const sessions = [-7, 0, 7].flatMap((offset) =>
     buildWeek(input, addDays(plannedMonday, offset), now).days.flatMap((day) => day.sessions),
   );
-  // P2-12: unlinked runs join `adHoc`; a baseline run never blocks (BR-26).
-  return { sessions, now, timeZone: input.timeZone };
+  return { sessions, adHoc, now, timeZone: input.timeZone };
 }
 
 export type SkipCheck =

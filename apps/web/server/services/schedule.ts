@@ -1,4 +1,5 @@
 import {
+  type Activity,
   addDays,
   buildWeek,
   type BodyFocus,
@@ -17,6 +18,7 @@ import {
   type SessionType,
   type StartCheck,
   type UnitSystem,
+  unlinkedRunActivity,
 } from '@getfit/domain';
 import type { DbClient } from '@/server/db/client';
 import { type EnrolmentRecord, findActiveEnrolment } from '@/server/repositories/enrolment';
@@ -26,6 +28,7 @@ import {
   type ProgrammeContent,
 } from '@/server/repositories/programme';
 import { findProfileSettings, type ProfileSettings } from '@/server/repositories/profiles';
+import { findUnlinkedRuns } from '@/server/repositories/running';
 import {
   findLoggedSessions,
   type LoggedRecord,
@@ -92,6 +95,8 @@ export interface ScheduleContext {
   /** The same logged sessions, with their workout IDs. */
   logged: LoggedRecord[];
   prescriptionOverrides: PrescriptionOverride[];
+  /** D22: logged runs that fulfil no programme day; they block moves like logged sessions (never baselines). */
+  adHoc: Activity[];
   now: Instant;
   /** BR-1, BR-4: always in the profile's current zone. */
   today: LocalDate;
@@ -115,7 +120,7 @@ export async function loadSchedule(
 
   const now = clock.now();
   const timeZone = profile.timezone;
-  const [programme, overrides, logged, prescriptionOverrides] = await Promise.all([
+  const [programme, overrides, logged, prescriptionOverrides, unlinkedRuns] = await Promise.all([
     findProgramme(
       client,
       { id: enrolment.programmeId, version: enrolment.programmeVersion },
@@ -124,6 +129,7 @@ export async function loadSchedule(
     findOverrides(client, enrolment.id),
     findLoggedSessions(client, enrolment.id),
     findPrescriptionOverrides(client, enrolment.id),
+    findUnlinkedRuns(client, user.id),
   ]);
   if (!programme) throw new Error('content: enrolled programme not found');
 
@@ -135,6 +141,7 @@ export async function loadSchedule(
     scheduleInput: { enrolment, programme: programme.shape, overrides, logged, timeZone },
     logged,
     prescriptionOverrides,
+    adHoc: unlinkedRuns.map(unlinkedRunActivity),
     now,
     today: localDateAt(now, timeZone),
   };

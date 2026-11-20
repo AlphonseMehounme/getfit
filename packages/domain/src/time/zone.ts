@@ -47,3 +47,22 @@ export function localDayBounds(
     end: startOfLocalDay(addDays(date, 1), timeZone),
   };
 }
+
+/**
+ * The instant of a local wall-clock time on `date` in `timeZone` (a run's start, PRD §6.6). In a DST gap the time is
+ * moved forward past the gap; in an overlap, the first of the two instants is used.
+ */
+export function instantAtLocalTime(
+  date: LocalDate,
+  hours: number,
+  minutes: number,
+  timeZone: string,
+): Instant {
+  assertTimeZone(timeZone);
+  if (!Number.isInteger(hours) || hours < 0 || hours > 23) throw new RangeError(`Hours: ${hours}`);
+  if (!Number.isInteger(minutes) || minutes < 0 || minutes > 59) {
+    throw new RangeError(`Minutes: ${minutes}`);
+  }
+  const [year, month, day] = date.split('-').map(Number) as [number, number, number];
+  return new Date(new TZDate(year, month - 1, day, hours, minutes, timeZone).getTime());
+}
