@@ -162,6 +162,7 @@
     "today": "Aujourd’hui",
     "programme": "Programme",
     "train": "Entraînement",
+    "progress": "Progrès",
     "library": "Bibliothèque",
     "profile": "Profil"
   },
@@ -777,5 +778,127 @@
     "weekOf": "Semaine du {date}",
     "legend": "Légende",
     "baseline": "Référence : {label}"
+  },
+  "Progress": {
+    "title": "Progrès",
+    "intro": "Ce que tu as enregistré, semaine après semaine. Tes valeurs de référence sont ton point de départ.",
+    "loading": "Chargement de tes progrès…",
+    "error": {
+      "title": "Impossible d’afficher tes progrès",
+      "body": "Un problème est survenu. Réessaie dans un instant.",
+      "retry": "Réessayer"
+    },
+    "range": {
+      "label": "Période",
+      "4w": "4 semaines",
+      "8w": "8 semaines",
+      "programme": "Programme",
+      "all": "Depuis le début"
+    },
+    "noRange": {
+      "programme": {
+        "title": "Pas encore de programme",
+        "description": "Commence le programme pour suivre tes progrès.",
+        "action": "Commencer le programme"
+      },
+      "all": {
+        "title": "Rien d’enregistré pour l’instant",
+        "description": "Enregistre une séance ou une course pour voir tes progrès.",
+        "action": "Aller à Entraînement"
+      }
+    },
+    "date": "Date",
+    "week": "Semaine",
+    "month": "Mois",
+    "baselineMark": "{value} (référence)",
+    "strength": {
+      "title": "Force",
+      "reps": "{count, plural, one {# répétition} other {# répétitions}}",
+      "seconds": "{count} s",
+      "value": "Meilleure série",
+      "summary": "{count, plural, one {# séance} other {# séances}} sur la période.",
+      "record": "Record personnel : {value} le {date}",
+      "baselineOnly": "Référence : {value}. Dépasse-la pour établir un record.",
+      "volume": {
+        "title": "Séries par semaine",
+        "summary": "Séries faites, les semaines avec une séance.",
+        "value": "Séries",
+        "sets": "{count, plural, one {# série} other {# séries}}"
+      },
+      "empty": {
+        "title": "Aucune séance sur cette période",
+        "description": "Enregistre une séance pour voir tes meilleures séries et ton volume par semaine.",
+        "action": "Aller à Entraînement"
+      }
+    },
+    "running": {
+      "title": "Course",
+      "distance": "Distance",
+      "runs": "Courses",
+      "longest": "Plus longue course",
+      "bestPace": "Meilleure allure",
+      "distanceValue": "{distance} {unit}",
+      "paceValue": "{pace} /{unit}",
+      "weekly": {
+        "title": "Distance par semaine",
+        "summary": "{distance} {unit} sur la période."
+      },
+      "monthly": {
+        "title": "Distance par mois",
+        "summary": "{distance} {unit} sur la période."
+      },
+      "distanceColumn": "Distance ({unit})",
+      "pace": {
+        "title": "Allure dans le temps",
+        "summary": "L’allure de chaque course. Plus bas, c’est plus rapide.",
+        "value": "Allure (/{unit})"
+      },
+      "longRun": {
+        "title": "Sortie longue",
+        "summary": "Les courses comptées comme sortie longue du dimanche.",
+        "empty": {
+          "title": "Pas encore de sortie longue",
+          "description": "Compte une course comme sortie longue du dimanche pour la voir ici."
+        }
+      },
+      "reference": "Course de référence : {distance} {unit} à {pace} /{unit}",
+      "empty": {
+        "title": "Aucune course sur cette période",
+        "description": "Enregistre une course pour voir ta distance et ton allure.",
+        "action": "Enregistrer une course"
+      }
+    },
+    "consistency": {
+      "title": "Régularité",
+      "adherence": {
+        "title": "Assiduité par semaine",
+        "summary": "Séances faites sur celles prévues, semaine par semaine. Une séance en partie faite compte pour moitié.",
+        "value": "Assiduité",
+        "note": "Les semaines sans séance d’entraînement prévue ne sont pas comptées.",
+        "empty": {
+          "title": "Pas encore de semaine à mesurer",
+          "description": "L’assiduité s’affiche dès qu’une semaine avec une séance a commencé."
+        }
+      },
+      "streak": "Série",
+      "streakValue": "{count, plural, one {# semaine} other {# semaines}}",
+      "streakNote": "D’affilée à 75 % ou plus",
+      "missed": "Manquées",
+      "skipped": "Sautées",
+      "heatmap": {
+        "title": "Calendrier",
+        "summary": "Le statut de chaque jour sur la période.",
+        "empty": {
+          "title": "Aucun jour sur cette période",
+          "description": "Le calendrier se remplit au fil des semaines du programme."
+        }
+      },
+      "empty": {
+        "title": "Pas encore de programme",
+        "description": "Commence le programme pour voir ta régularité.",
+        "action": "Commencer le programme"
+      },
+      "week": "Semaine"
+    }
   }
 }

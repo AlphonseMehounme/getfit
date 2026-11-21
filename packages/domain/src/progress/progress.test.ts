@@ -16,6 +16,7 @@ import {
 import {
   longRunProgression,
   monthlyDistance,
+  totalDistance,
   paceSeries,
   runCount,
   weeklyDistance,
@@ -199,6 +200,8 @@ describe('PRD §6.8: running over time', () => {
       { monday: '2026-12-28', distanceM: 15_000 },
       { monday: '2026-11-23', distanceM: 10_840 },
     ]);
+    expect(totalDistance(runs)).toBe(25_840);
+    expect(totalDistance([])).toBe(0);
     expect(monthlyDistance(runs)).toEqual([
       { month: '2026-11', distanceM: 10_840 },
       { month: '2026-12', distanceM: 5000 },

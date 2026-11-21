@@ -42,3 +42,8 @@ export function runMetrics(
     speed: roundTo(speed(distanceM, durationS, unit), 1),
   };
 }
+
+/** BR-23: a pace kept in seconds per km (records), in the user's unit, in whole seconds (440 s/km → 708 s/mi). */
+export function paceIn(secondsPerKm: number, unit: DistanceUnit): number {
+  return Math.round((secondsPerKm * metresPerUnit(unit)) / 1000);
+}

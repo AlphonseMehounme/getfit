@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatPace } from '../units/format';
-import { paceSeconds, runMetrics, speed } from './pace';
+import { paceIn, paceSeconds, runMetrics, speed } from './pace';
 
 // D2: the reference run, a mandatory test case (AGENTS §10).
 const REFERENCE = { distanceM: 10_840, durationS: 4770 } as const;
@@ -43,5 +43,15 @@ describe('paceSeconds and speed', () => {
     expect(() => paceSeconds(distanceM, durationS)).toThrow(RangeError);
     expect(() => speed(distanceM, durationS)).toThrow(RangeError);
     expect(() => runMetrics(distanceM, durationS)).toThrow(RangeError);
+  });
+});
+
+describe('paceIn', () => {
+  it('BR-23 / D2: a pace per km in the user unit, whole seconds', () => {
+    expect(paceIn(440, 'km')).toBe(440);
+    expect(paceIn(440, 'mi')).toBe(708);
+    expect(paceIn(paceSeconds(REFERENCE.distanceM, REFERENCE.durationS), 'mi')).toBe(
+      runMetrics(REFERENCE.distanceM, REFERENCE.durationS, 'mi').paceS,
+    );
   });
 });
