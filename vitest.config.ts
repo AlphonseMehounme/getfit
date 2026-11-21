@@ -29,6 +29,7 @@ export default defineConfig({
         'packages/domain/src/workout/**/*.ts',
         'packages/domain/src/onboarding/**/*.ts',
         'packages/domain/src/library/**/*.ts',
+        'packages/domain/src/progress/**/*.ts',
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',
