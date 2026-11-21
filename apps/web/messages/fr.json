@@ -899,6 +899,21 @@
         "action": "Commencer le programme"
       },
       "week": "Semaine"
+    },
+    "retests": {
+      "title": "Nouveaux tests",
+      "intro": "Facultatif : refais ton max et compare-le à ton point de départ. Garde une bonne technique, inutile d’aller jusqu’à l’échec.",
+      "resultsIntro": "Tes tests de la semaine 8, comparés à ton point de départ.",
+      "results": "Résultats",
+      "save": "Enregistrer les tests",
+      "saving": "Enregistrement…",
+      "saved": "Tests enregistrés.",
+      "failed": "Les tests n’ont pas pu être enregistrés. Réessaie.",
+      "oneRequired": "Saisis au moins un résultat.",
+      "count": "Saisis un nombre entier de 0 à 500.",
+      "result": "{value} · référence {baseline} ({change})",
+      "resultNoBaseline": "{value} · pas de référence",
+      "notYet": "Pas encore testé"
     }
   }
 }

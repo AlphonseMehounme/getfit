@@ -50,6 +50,7 @@ export * from './progress/records';
 export * from './progress/volume';
 export * from './progress/running';
 export * from './progress/consistency';
+export * from './progress/retests';
 export * from './review/check-in';
 export * from './review/window';
 export * from './review/summary';

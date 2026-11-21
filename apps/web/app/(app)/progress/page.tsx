@@ -3,12 +3,15 @@ import { getTranslations } from 'next-intl/server';
 import { ConsistencySection } from '@/components/progress/consistency-section';
 import { NoRange } from '@/components/progress/no-range';
 import { RangeFilter } from '@/components/progress/range-filter';
+import { RetestsSection } from '@/components/progress/retests-section';
 import { RunningSection } from '@/components/progress/running-section';
 import { StrengthSection } from '@/components/progress/strength-section';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
 import { getProgress } from '@/server/services/progress';
+import { getRetests } from '@/server/services/tests';
+import { saveRetestsAction } from './actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Progress');
@@ -22,12 +25,12 @@ export default async function ProgressPage({
   searchParams: Promise<{ range?: string | string[] }>;
 }) {
   const { range } = await searchParams;
-  const view = await getProgress(
-    await createSupabaseServerClient(),
-    { range: typeof range === 'string' ? range : undefined },
-    await getRequestClock(),
-  );
-  if (!view) return redirectToLogin();
+  const [client, clock] = [await createSupabaseServerClient(), await getRequestClock()];
+  const [view, retests] = await Promise.all([
+    getProgress(client, { range: typeof range === 'string' ? range : undefined }, clock),
+    getRetests(client, clock),
+  ]);
+  if (!view || !retests) return redirectToLogin();
   const t = await getTranslations('Progress');
 
   return (
@@ -36,6 +39,8 @@ export default async function ProgressPage({
         <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
         <p className="text-muted">{t('intro')}</p>
       </header>
+      {/* D73: in week 8 the re-tests come first; they aren't tied to the range. */}
+      <RetestsSection retests={retests} save={saveRetestsAction} />
       <RangeFilter current={view.range} />
       {view.kind === 'no_range' ? (
         <NoRange range={view.range === 'programme' ? 'programme' : 'other'} />
