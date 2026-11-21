@@ -150,3 +150,40 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await expectNoAxeViolations(page);
   });
 }
+
+test('D73 / BR-26: week 8 offers re-tests, compared with the baseline; logged again, the latest counts', async ({
+  page,
+}) => {
+  await startOnMonday(page);
+  await page.goto('/profile/edit/baselines');
+  await page.getByLabel(en.Onboarding.baselines.maxPullUps).fill('10');
+  await page.getByRole('button', { name: en.Onboarding.save, exact: true }).click();
+  await expect(page).toHaveURL('/profile?saved=baselines');
+
+  // Week 7: not offered yet, and nothing to show.
+  await setNow(page, '2027-01-04T09:00:00+01:00');
+  await page.goto('/progress');
+  await expect(page.getByRole('heading', { level: 1, name: P.title })).toBeVisible();
+  await expect(page.getByRole('heading', { name: P.retests.title })).toHaveCount(0);
+
+  // Monday of week 8.
+  await setNow(page, '2027-01-11T09:00:00+01:00');
+  await page.goto('/progress');
+  const retests = section(page, P.retests.title);
+  const pullUps = retests.getByRole('definition').first();
+  await expect(pullUps).toHaveText(P.retests.notYet);
+  const save = async (value: string) => {
+    await retests.getByLabel(en.Onboarding.baselines.maxPullUps).fill(value);
+    await retests.getByRole('button', { name: P.retests.save }).click();
+    await expect(retests.getByRole('status')).toHaveText(P.retests.saved);
+  };
+  await save('12');
+  await expect(pullUps).toHaveText('12 · baseline 10 (+2)');
+  await save('13');
+  await expect(pullUps).toHaveText('13 · baseline 10 (+3)');
+  await page.reload();
+  await expect(section(page, P.retests.title).getByRole('definition').first()).toHaveText(
+    '13 · baseline 10 (+3)',
+  );
+  await expectNoAxeViolations(page);
+});
