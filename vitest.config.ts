@@ -55,6 +55,8 @@ export default defineConfig({
         'apps/web/lib/onboarding/**/*.ts',
         'apps/web/components/onboarding/**/*.tsx',
         'apps/web/components/ui/{selector,select,notice,date-picker,progress-ring}.tsx',
+        // P3-05: chart components (PRD §6.8, §12).
+        'apps/web/components/ui/charts/**/*.{ts,tsx}',
         // P2-08: Profile and settings (D35, D56).
         'apps/web/components/profile/**/*.tsx',
         'apps/web/lib/profile/**/*.ts',

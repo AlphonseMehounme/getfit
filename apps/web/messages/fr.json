@@ -771,5 +771,11 @@
       "body": "Vérifie ta connexion, puis réessaie.",
       "retry": "Réessayer"
     }
+  },
+  "Charts": {
+    "week": "Semaine",
+    "weekOf": "Semaine du {date}",
+    "legend": "Légende",
+    "baseline": "Référence : {label}"
   }
 }
