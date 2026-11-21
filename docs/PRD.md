@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.17 (D64–D75 added for Phase 3, 21 Nov 2026; D63 added, 20 Nov 2026; D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.18 (D76 added, 21 Nov 2026; D64–D75 added for Phase 3, 21 Nov 2026; D63 added, 20 Nov 2026; D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -97,6 +97,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D73 | Week-8 re-tests | In week 8, Progress offers "Re-test" for max pull-ups, push-ups and squats, logged as `fitness_tests` that are not baselines and dated now. Each is compared with its baseline. A test can be logged again; the latest one counts. | 21 Nov 2026 |
 | D74 | Progress ranges | 4 weeks, 8 weeks, the programme (from its start) and all time. Charts never plot a point before the first log, except the labelled baseline (PRD §6.8 AC). The range is in the address, so it can be shared and it works without JavaScript. | 21 Nov 2026 |
 | D75 | Suggestions are stored with the review | `weekly_reviews` gains `suggestion` (the offered change, or null) and `suggestion_decision` (`accepted`, `declined` or null), in a new migration. Accepting also writes the `prescription_overrides` row. History is never edited (BR-25). | 21 Nov 2026 |
+| D76 | No RPE logged doesn't block a progression | BR-19 needs an average RPE ≤ 7. When no workout or run of the week has an RPE, that condition counts as met; the others (adherence ≥ 75%, fatigue ≤ 3, no pain) still apply. "Average RPE above 7" (D64, D69) then doesn't apply either. | 21 Nov 2026 |
 
 ## 1. Vision, principles and users
 
