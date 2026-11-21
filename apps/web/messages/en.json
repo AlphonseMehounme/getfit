@@ -771,5 +771,11 @@
       "body": "Check your connection, then try again.",
       "retry": "Try again"
     }
+  },
+  "Charts": {
+    "week": "Week",
+    "weekOf": "Week of {date}",
+    "legend": "Legend",
+    "baseline": "Baseline: {label}"
   }
 }
