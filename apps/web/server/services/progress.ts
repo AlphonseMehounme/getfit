@@ -21,6 +21,7 @@ import {
   rangeBounds,
   runCount,
   runRecords,
+  totalDistance,
   trainingStreak,
   type WeekView,
   weeklyDistance,
@@ -130,16 +131,9 @@ export async function getProgress(
   const strength = [...names.entries()].map(([exerciseId, { slug, name }]) => {
     const series = bestSetSeries(sets.filter((s) => s.exerciseId === exerciseId));
     const test = BASELINE_TEST[slug] ? baselines.tests[BASELINE_TEST[slug]] : undefined;
-    return {
-      exerciseId,
-      slug,
-      name,
-      series,
-      records: personalRecords(
-        series,
-        test ? { value: test.value, date: localDateAt(test.at, zone) } : null,
-      ),
-    };
+    const baseline = test ? { value: test.value, date: localDateAt(test.at, zone) } : null;
+    /** BR-26: the labelled starting reference, kept even once a record beats it. */
+    return { exerciseId, slug, name, series, baseline, records: personalRecords(series, baseline) };
   });
 
   // Consistency over the programme weeks: the range's for the series, every finished one for the streak (D70).
@@ -177,6 +171,7 @@ export async function getProgress(
       weekly: weeklyDistance(runs, mondays),
       monthly: monthlyDistance(runs),
       count: runCount(runs),
+      distanceM: totalDistance(runs),
       pace: paceSeries(runs, unit),
       longRun: longRunProgression(runs),
       records: runRecords(runs, referenceRun),

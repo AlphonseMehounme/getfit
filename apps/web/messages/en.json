@@ -162,6 +162,7 @@
     "today": "Today",
     "programme": "Programme",
     "train": "Train",
+    "progress": "Progress",
     "library": "Library",
     "profile": "Profile"
   },
@@ -777,5 +778,127 @@
     "weekOf": "Week of {date}",
     "legend": "Legend",
     "baseline": "Baseline: {label}"
+  },
+  "Progress": {
+    "title": "Progress",
+    "intro": "What you’ve logged, week by week. Your baselines are your starting point.",
+    "loading": "Loading your progress…",
+    "error": {
+      "title": "Progress didn’t load",
+      "body": "Something went wrong. Try again in a moment.",
+      "retry": "Try again"
+    },
+    "range": {
+      "label": "Period",
+      "4w": "4 weeks",
+      "8w": "8 weeks",
+      "programme": "Programme",
+      "all": "All time"
+    },
+    "noRange": {
+      "programme": {
+        "title": "No programme yet",
+        "description": "Start the programme to see your progress over it.",
+        "action": "Start the programme"
+      },
+      "all": {
+        "title": "Nothing logged yet",
+        "description": "Log a workout or a run to see your progress.",
+        "action": "Go to Train"
+      }
+    },
+    "date": "Date",
+    "week": "Week",
+    "month": "Month",
+    "baselineMark": "{value} (baseline)",
+    "strength": {
+      "title": "Strength",
+      "reps": "{count, plural, one {# rep} other {# reps}}",
+      "seconds": "{count} s",
+      "value": "Best set",
+      "summary": "{count, plural, one {# workout} other {# workouts}} in this period.",
+      "record": "Personal record: {value} on {date}",
+      "baselineOnly": "Baseline: {value}. Beat it to set a record.",
+      "volume": {
+        "title": "Sets per week",
+        "summary": "Sets done in the weeks with a workout.",
+        "value": "Sets",
+        "sets": "{count, plural, one {# set} other {# sets}}"
+      },
+      "empty": {
+        "title": "No workouts in this period",
+        "description": "Log a workout to see your best sets and your weekly volume.",
+        "action": "Go to Train"
+      }
+    },
+    "running": {
+      "title": "Running",
+      "distance": "Distance",
+      "runs": "Runs",
+      "longest": "Longest run",
+      "bestPace": "Best pace",
+      "distanceValue": "{distance} {unit}",
+      "paceValue": "{pace} /{unit}",
+      "weekly": {
+        "title": "Distance per week",
+        "summary": "{distance} {unit} over the period."
+      },
+      "monthly": {
+        "title": "Distance per month",
+        "summary": "{distance} {unit} over the period."
+      },
+      "distanceColumn": "Distance ({unit})",
+      "pace": {
+        "title": "Pace over time",
+        "summary": "Each run’s pace. Lower is faster.",
+        "value": "Pace (/{unit})"
+      },
+      "longRun": {
+        "title": "Long run",
+        "summary": "The runs counted as the Sunday long run.",
+        "empty": {
+          "title": "No long run yet",
+          "description": "Count a run as the Sunday long run to see it here."
+        }
+      },
+      "reference": "Reference run (baseline): {distance} {unit} at {pace} /{unit}",
+      "empty": {
+        "title": "No runs in this period",
+        "description": "Log a run to see your distance and pace.",
+        "action": "Log a run"
+      }
+    },
+    "consistency": {
+      "title": "Consistency",
+      "adherence": {
+        "title": "Weekly adherence",
+        "summary": "Sessions done of those planned, week by week. Partly done counts as half.",
+        "value": "Adherence",
+        "note": "Weeks with no training session planned are left out.",
+        "empty": {
+          "title": "No week to measure yet",
+          "description": "Adherence shows once a week with a training session has started."
+        }
+      },
+      "streak": "Streak",
+      "streakValue": "{count, plural, one {# week} other {# weeks}}",
+      "streakNote": "In a row at 75% or more",
+      "missed": "Missed",
+      "skipped": "Skipped",
+      "heatmap": {
+        "title": "Calendar",
+        "summary": "Each day’s status over the period.",
+        "empty": {
+          "title": "No day in this period",
+          "description": "The calendar fills as the programme’s weeks go by."
+        }
+      },
+      "empty": {
+        "title": "No programme yet",
+        "description": "Start the programme to see your consistency.",
+        "action": "Start the programme"
+      },
+      "week": "Week"
+    }
   }
 }

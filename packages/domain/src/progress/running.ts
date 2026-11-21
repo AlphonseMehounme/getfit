@@ -31,6 +31,10 @@ export function monthlyDistance(
 
 export const runCount = (runs: readonly ProgressRun[]) => runs.length;
 
+/** Metres over every run given (PRD §6.8 distance). */
+export const totalDistance = (runs: readonly ProgressRun[]) =>
+  runs.reduce((sum, r) => sum + r.distanceM, 0);
+
 /** Each run's pace and speed, in the user's unit, oldest first (BR-22, BR-23). */
 export function paceSeries(
   runs: readonly ProgressRun[],

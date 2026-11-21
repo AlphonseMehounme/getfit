@@ -194,6 +194,7 @@ describe('getProgress (PRD §6.8)', () => {
     expect(view.empty).toBe(false);
     const pullUp = view.strength.find((s) => s.slug === 'pull-up')!;
     expect(pullUp.name).toBe('Pull-up');
+    expect(pullUp.baseline).toEqual({ value: 7, date: '2026-11-20' });
     expect(pullUp.series.map((p) => [p.workoutSessionId, p.best])).toEqual([
       [first, { kind: 'reps', reps: 6 }],
       [second, { kind: 'reps', reps: 8 }],
@@ -210,6 +211,7 @@ describe('getProgress (PRD §6.8)', () => {
     ]);
 
     expect(view.running.count).toBe(2);
+    expect(view.running.distanceM).toBe(16_000);
     expect(view.running.weekly.find((w) => w.monday === '2026-11-23')).toEqual({
       monday: '2026-11-23',
       distanceM: 16_000,

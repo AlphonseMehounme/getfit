@@ -14,6 +14,8 @@ describe('MainNav', () => {
       ['Today', '/today'],
       ['Programme', '/programme'],
       ['Train', '/train'],
+      // PRD §9: Progress, between Train and Profile.
+      ['Progress', '/progress'],
       ['Library', '/library'],
       ['Profile', '/profile'],
     ]);

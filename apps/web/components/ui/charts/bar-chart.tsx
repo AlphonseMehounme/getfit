@@ -38,7 +38,12 @@ export function BarChart(props: SeriesChartProps) {
         height={CHART_HEIGHT}
         initialDimension={{ width: 320, height: CHART_HEIGHT }}
       >
-        <RechartsBarChart data={[...points]} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+        <RechartsBarChart
+          // The drawing is hidden; the table is its accessible version (PRD §12), so the SVG takes no focus.
+          accessibilityLayer={false}
+          data={[...points]}
+          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+        >
           <CartesianGrid stroke="var(--border)" vertical={false} />
           <XAxis dataKey="label" tick={AXIS_TICK} stroke="var(--border)" tickLine={false} />
           <YAxis
