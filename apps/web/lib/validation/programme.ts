@@ -7,7 +7,8 @@ import { z } from 'zod';
 const programmeDayId = z.uuid();
 
 /** A calendar date, YYYY-MM-DD, that exists. */
-const localDate = z.string().refine(isLocalDate, { message: 'invalidDate' });
+export const localDateSchema = z.string().refine(isLocalDate, { message: 'invalidDate' });
+const localDate = localDateSchema;
 
 export const moveSessionSchema = z.strictObject({ programmeDayId, date: localDate });
 

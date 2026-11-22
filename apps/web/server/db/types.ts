@@ -901,6 +901,7 @@ export type Database = {
       };
       weekly_reviews: {
         Row: {
+          body_measurement_id: string | null;
           client_updated_at: string;
           created_at: string;
           fatigue: number | null;
@@ -913,6 +914,8 @@ export type Database = {
           recommendation_key: string | null;
           sleep_quality: number | null;
           soreness: number | null;
+          suggestion: Json | null;
+          suggestion_decision: string | null;
           updated_at: string;
           user_id: string;
           user_programme_id: string | null;
@@ -920,6 +923,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          body_measurement_id?: string | null;
           client_updated_at: string;
           created_at?: string;
           fatigue?: number | null;
@@ -932,12 +936,15 @@ export type Database = {
           recommendation_key?: string | null;
           sleep_quality?: number | null;
           soreness?: number | null;
+          suggestion?: Json | null;
+          suggestion_decision?: string | null;
           updated_at?: string;
           user_id: string;
           user_programme_id?: string | null;
           week_start: string;
         };
         Update: {
+          body_measurement_id?: string | null;
           client_updated_at?: string;
           created_at?: string;
           fatigue?: number | null;
@@ -950,12 +957,21 @@ export type Database = {
           recommendation_key?: string | null;
           sleep_quality?: number | null;
           soreness?: number | null;
+          suggestion?: Json | null;
+          suggestion_decision?: string | null;
           updated_at?: string;
           user_id?: string;
           user_programme_id?: string | null;
           week_start?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'weekly_reviews_body_measurement_fkey';
+            columns: ['body_measurement_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'body_measurements';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'weekly_reviews_user_id_fkey';
             columns: ['user_id'];
