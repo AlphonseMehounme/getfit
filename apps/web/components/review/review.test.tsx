@@ -95,6 +95,14 @@ describe('ReviewSummary (PRD §6.9, BR-24, D63)', () => {
     ]);
   });
 
+  it('PRD §9: distances in the locale’s number format', () => {
+    const { container } = renderWithIntl(
+      <ReviewSummary summary={summary()} units="metric" />,
+      'fr',
+    );
+    expect(figures(container)[5]).toBe('Distance10,8 km');
+  });
+
   it('a gain in pounds', () => {
     const { container } = renderWithIntl(
       <ReviewSummary

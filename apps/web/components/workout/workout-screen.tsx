@@ -247,6 +247,7 @@ export function WorkoutScreen({
           name={active?.name ?? exercise.name}
           media={active?.media ?? exercise.media}
           target={tTarget(target.key, target.values)}
+          progressed={prescription.overridden}
           cues={active?.cues ?? exercise.cues}
           replaces={active ? exercise.name : undefined}
           onSubstitute={

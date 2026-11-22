@@ -32,7 +32,7 @@ export interface ReviewRecord {
   notes: string | null;
   recommendationKey: RecommendationKey | null;
   suggestion: Suggestion | null;
-  suggestionDecision: 'accepted' | 'declined' | null;
+  suggestionDecision: 'accepted' | 'declined' | 'withdrawn' | null;
   /** D77: the weight entered with the review, if it is still there. */
   weight: { id: string; kg: number; at: Date } | null;
 }
@@ -247,4 +247,55 @@ export async function findWeekActivity(
       linked: r.programme_day_id !== null,
     })),
   };
+}
+
+/** D79: the user's answer to the week's suggestion. */
+export async function setSuggestionDecision(
+  client: DbClient,
+  reviewId: string,
+  decision: 'accepted' | 'declined' | 'withdrawn',
+  now: Date,
+): Promise<void> {
+  const { error } = await client
+    .from('weekly_reviews')
+    .update({ suggestion_decision: decision, updated_at: now.toISOString() })
+    .eq('id', reviewId);
+  if (error) fail('weekly_reviews', error.code);
+}
+
+/** BR-19: an accepted suggestion; the programme template is never edited. A retried insert is already done. */
+export async function insertPrescriptionOverride(
+  client: DbClient,
+  w: {
+    userProgrammeId: string;
+    templateExerciseId: string;
+    fromWeek: number;
+    targetReps: number | null;
+    targetDistanceM: number | null;
+    at: Date;
+  },
+): Promise<void> {
+  const { error } = await client.from('prescription_overrides').insert({
+    user_programme_id: w.userProgrammeId,
+    template_exercise_id: w.templateExerciseId,
+    from_week: w.fromWeek,
+    target_reps: w.targetReps,
+    target_distance_m: w.targetDistanceM,
+    accepted_at: w.at.toISOString(),
+  });
+  if (error && error.code !== '23505') fail('prescription_overrides', error.code);
+}
+
+/** D80: a withdrawn change. */
+export async function deletePrescriptionOverride(
+  client: DbClient,
+  w: { userProgrammeId: string; templateExerciseId: string; fromWeek: number },
+): Promise<void> {
+  const { error } = await client
+    .from('prescription_overrides')
+    .delete()
+    .eq('user_programme_id', w.userProgrammeId)
+    .eq('template_exercise_id', w.templateExerciseId)
+    .eq('from_week', w.fromWeek);
+  if (error) fail('prescription_overrides', error.code);
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ExerciseMedia as Media } from '@/lib/media/resolve';
 import { ExerciseMedia } from './exercise-media';
+import { ProgressedLabel } from './progressed-label';
 
 interface ExerciseCardProps {
   name: string;
@@ -12,6 +13,8 @@ interface ExerciseCardProps {
   headingLevel?: 3 | 4;
   /** PRD §9: the exercise's library page; the name becomes the link (not on the workout screen, D62). */
   href?: string | undefined;
+  /** BR-19: the target comes from an accepted progression. */
+  progressed?: boolean;
 }
 
 /** One exercise in a session list (PRD §6.3 Today card). Presentation only. */
@@ -22,6 +25,7 @@ export function ExerciseCard({
   media,
   headingLevel = 3,
   href,
+  progressed = false,
 }: ExerciseCardProps) {
   const Heading = headingLevel === 3 ? 'h3' : 'h4';
   return (
@@ -41,6 +45,7 @@ export function ExerciseCard({
           )}
         </Heading>
         <p className="text-lg font-semibold tabular-nums">{target}</p>
+        {progressed ? <ProgressedLabel /> : null}
         {rest ? <p className="text-muted text-sm">{rest}</p> : null}
       </div>
     </article>

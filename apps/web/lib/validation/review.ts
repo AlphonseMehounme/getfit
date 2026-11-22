@@ -38,3 +38,9 @@ export const reviewInputSchema = z
   });
 
 export type ReviewInput = z.infer<typeof reviewInputSchema>;
+
+/** D79: the answer to a week's suggestion, given once. */
+export const decideSuggestionSchema = z.strictObject({
+  weekStart: localDateSchema,
+  decision: z.enum(['accepted', 'declined']),
+});

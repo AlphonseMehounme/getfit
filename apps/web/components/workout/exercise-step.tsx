@@ -2,6 +2,7 @@ import { Replace, SkipForward, Undo2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { ExerciseMedia } from '@/components/exercise/exercise-media';
+import { ProgressedLabel } from '@/components/exercise/progressed-label';
 import { Button } from '@/components/ui/button';
 import type { ExerciseMedia as Media } from '@/lib/media/resolve';
 
@@ -15,6 +16,8 @@ export interface ExerciseStepProps {
   media: Media;
   /** Already formatted, e.g. "3 × 6" (BR-14) or "2 × 30 s per side" (BR-16). */
   target: string;
+  /** BR-19: the target comes from an accepted progression. */
+  progressed?: boolean;
   cues: readonly string[];
   index: number;
   total: number;
@@ -31,6 +34,7 @@ export function ExerciseStep({
   name,
   media,
   target,
+  progressed = false,
   cues,
   index,
   total,
@@ -52,7 +56,10 @@ export function ExerciseStep({
       {/* A thumbnail beside the target keeps the set rows in view on a 360 px phone (PRD §9). */}
       <div className="flex items-center gap-4">
         <ExerciseMedia media={media} exerciseName={name} sizes="8rem" className="w-32 shrink-0" />
-        <p className="text-4xl font-semibold tabular-nums">{target}</p>
+        <div className="flex flex-col gap-1">
+          <p className="text-4xl font-semibold tabular-nums">{target}</p>
+          {progressed ? <ProgressedLabel /> : null}
+        </div>
       </div>
       <section aria-labelledby="exercise-sets" className="flex flex-col gap-3">
         <h3 id="exercise-sets" className="sr-only">

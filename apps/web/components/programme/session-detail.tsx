@@ -108,6 +108,7 @@ export function SessionDetail({
                         target={t(`Today.target.${target.key}`, target.values)}
                         rest={rest ? t(`Today.rest.${rest.key}`, rest.values) : undefined}
                         media={resolveExerciseMedia(exercise.slug, exercise.category, locale)}
+                        progressed={exercise.prescription.overridden}
                         href={exercisePath(exercise.slug)}
                       />
                     </li>

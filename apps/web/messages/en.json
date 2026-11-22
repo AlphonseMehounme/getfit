@@ -379,7 +379,8 @@
       "title": "{day} was missed",
       "body": "{session} can still be moved to another day this week, or skipped.",
       "options": "See options"
-    }
+    },
+    "progressed": "Progressed"
   },
   "Programme": {
     "title": "Programme",
@@ -837,15 +838,15 @@
       "runs": "Runs",
       "longest": "Longest run",
       "bestPace": "Best pace",
-      "distanceValue": "{distance} {unit}",
+      "distanceValue": "{distance, number} {unit}",
       "paceValue": "{pace} /{unit}",
       "weekly": {
         "title": "Distance per week",
-        "summary": "{distance} {unit} over the period."
+        "summary": "{distance, number} {unit} over the period."
       },
       "monthly": {
         "title": "Distance per month",
-        "summary": "{distance} {unit} over the period."
+        "summary": "{distance, number} {unit} over the period."
       },
       "distanceColumn": "Distance ({unit})",
       "pace": {
@@ -861,7 +862,7 @@
           "description": "Count a run as the Sunday long run to see it here."
         }
       },
-      "reference": "Reference run (baseline): {distance} {unit} at {pace} /{unit}",
+      "reference": "Reference run (baseline): {distance, number} {unit} at {pace} /{unit}",
       "empty": {
         "title": "No runs in this period",
         "description": "Log a run to see your distance and pace.",
@@ -947,7 +948,7 @@
       "strength": "Strength sessions",
       "runs": "Runs",
       "distance": "Distance",
-      "distanceValue": "{distance} {unit}",
+      "distanceValue": "{distance, number} {unit}",
       "longest": "Longest run",
       "rpe": "Average effort",
       "rpeValue": "{value} / 10",
@@ -1075,6 +1076,24 @@
       "title": "About the pain you reported",
       "body": "You reported pain ({area}). Reduce your training or rest. If the pain is sharp, persistent or getting worse, seek advice from a health professional.",
       "note": "GetFit doesn’t give medical advice."
+    },
+    "suggestion": {
+      "title": "Suggested progression",
+      "reps": "{exercise} in {session}: {sets} × {to, number} instead of {sets} × {from, number}, from week {week}.",
+      "repsPerSide": "{exercise} in {session}: {sets} × {to, number} per side instead of {sets} × {from, number}, from week {week}.",
+      "longRun": "Long run: up to {to, number} {unit} instead of {from, number} {unit}, from week {week}.",
+      "note": "Nothing changes unless you accept it. Your answer is final.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "saving": "Saving…",
+      "accepted": "Accepted: it applies from week {week}.",
+      "declined": "Declined: nothing changes.",
+      "withdrawn": "Withdrawn because you reported pain: nothing changes.",
+      "unanswered": "Not answered: nothing changed.",
+      "errors": {
+        "closed": "This review has closed, so it can’t be answered.",
+        "failed": "Your answer couldn’t be saved. Try again."
+      }
     }
   }
 }

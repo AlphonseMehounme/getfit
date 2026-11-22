@@ -379,7 +379,8 @@
       "title": "{day} a été manqué",
       "body": "La séance « {session} » peut encore être déplacée à un autre jour de cette semaine, ou passée.",
       "options": "Voir les options"
-    }
+    },
+    "progressed": "Progression"
   },
   "Programme": {
     "title": "Programme",
@@ -837,15 +838,15 @@
       "runs": "Courses",
       "longest": "Plus longue course",
       "bestPace": "Meilleure allure",
-      "distanceValue": "{distance} {unit}",
+      "distanceValue": "{distance, number} {unit}",
       "paceValue": "{pace} /{unit}",
       "weekly": {
         "title": "Distance par semaine",
-        "summary": "{distance} {unit} sur la période."
+        "summary": "{distance, number} {unit} sur la période."
       },
       "monthly": {
         "title": "Distance par mois",
-        "summary": "{distance} {unit} sur la période."
+        "summary": "{distance, number} {unit} sur la période."
       },
       "distanceColumn": "Distance ({unit})",
       "pace": {
@@ -861,7 +862,7 @@
           "description": "Compte une course comme sortie longue du dimanche pour la voir ici."
         }
       },
-      "reference": "Course de référence : {distance} {unit} à {pace} /{unit}",
+      "reference": "Course de référence : {distance, number} {unit} à {pace} /{unit}",
       "empty": {
         "title": "Aucune course sur cette période",
         "description": "Enregistre une course pour voir ta distance et ton allure.",
@@ -947,7 +948,7 @@
       "strength": "Séances de force",
       "runs": "Courses",
       "distance": "Distance",
-      "distanceValue": "{distance} {unit}",
+      "distanceValue": "{distance, number} {unit}",
       "longest": "Plus longue course",
       "rpe": "Effort moyen",
       "rpeValue": "{value} / 10",
@@ -1075,6 +1076,24 @@
       "title": "À propos de la douleur signalée",
       "body": "Tu as signalé une douleur ({area}). Réduis ton entraînement ou repose-toi. Si la douleur est vive, persiste ou s’aggrave, demande conseil à un professionnel de santé.",
       "note": "GetFit ne donne pas de conseil médical."
+    },
+    "suggestion": {
+      "title": "Progression proposée",
+      "reps": "{exercise} dans {session} : {sets} × {to, number} au lieu de {sets} × {from, number}, à partir de la semaine {week}.",
+      "repsPerSide": "{exercise} dans {session} : {sets} × {to, number} par côté au lieu de {sets} × {from, number}, à partir de la semaine {week}.",
+      "longRun": "Sortie longue : jusqu’à {to, number} {unit} au lieu de {from, number} {unit}, à partir de la semaine {week}.",
+      "note": "Rien ne change si tu n’acceptes pas. Ta réponse est définitive.",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "saving": "Enregistrement…",
+      "accepted": "Acceptée : elle s’applique à partir de la semaine {week}.",
+      "declined": "Refusée : rien ne change.",
+      "withdrawn": "Retirée car tu as signalé une douleur : rien ne change.",
+      "unanswered": "Sans réponse : rien n’a changé.",
+      "errors": {
+        "closed": "Ce bilan est fermé, tu ne peux plus répondre.",
+        "failed": "Ta réponse n’a pas pu être enregistrée. Réessaie."
+      }
     }
   }
 }

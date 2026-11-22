@@ -149,13 +149,32 @@ describe('overrides (BR-19 storage)', () => {
     expect(() => resolvePrescription(pullUp, week(1), [wrongKind])).toThrow(RangeError);
   });
 
-  it('rejects long-run overrides until BR-19 defines them (Phase 3)', () => {
+  it('D71: an accepted long-run ceiling applies from its week, except in the deload, which keeps 7 km', () => {
     const longer: PrescriptionOverride = {
       templateExerciseId: LONG_RUN.id,
       fromWeek: 2,
       target: { kind: 'distance', metres: 12_000 },
     };
-    expect(() => resolvePrescription(LONG_RUN, week(2), [longer])).toThrow(RangeError);
-    expect(resolvePrescription(LONG_RUN, week(1), [longer]).overridden).toBe(false);
+    const at = (n: number) => resolvePrescription(LONG_RUN, week(n), [longer]);
+    expect(at(1)).toMatchObject({
+      target: { kind: 'distance', metres: 11_000 },
+      overridden: false,
+    });
+    expect(at(2)).toMatchObject({ target: { kind: 'distance', metres: 12_000 }, overridden: true });
+    expect(at(5)).toMatchObject({ target: { kind: 'distance', metres: 7_000 }, overridden: false });
+    expect(at(6)).toMatchObject({ target: { kind: 'distance', metres: 12_000 }, overridden: true });
+  });
+
+  it('BR-17 / D71: an accepted +1 rep carries through the deload, with its fewer sets', () => {
+    const more: PrescriptionOverride = {
+      templateExerciseId: pullUp.id,
+      fromWeek: 2,
+      target: { kind: 'reps', reps: 7 },
+    };
+    expect(resolvePrescription(pullUp, week(5), [more])).toMatchObject({
+      sets: 2,
+      target: { kind: 'reps', reps: 7 },
+      overridden: true,
+    });
   });
 });
