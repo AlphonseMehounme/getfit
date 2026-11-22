@@ -59,6 +59,9 @@ export default defineConfig({
         'apps/web/components/ui/charts/**/*.{ts,tsx}',
         // P3-06: the Progress page's sections.
         'apps/web/components/progress/**/*.{ts,tsx}',
+        // P3-09: the weekly review.
+        'apps/web/components/review/**/*.tsx',
+        'apps/web/components/ui/scale.tsx',
         // P2-08: Profile and settings (D35, D56).
         'apps/web/components/profile/**/*.tsx',
         'apps/web/lib/profile/**/*.ts',

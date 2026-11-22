@@ -4,7 +4,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import type { Track } from '../../apps/web/lib/observability/analytics';
 import { startProgramme } from '../../apps/web/server/services/enrolment';
 import { saveOnboardingStep } from '../../apps/web/server/services/onboarding';
-import { getReview, saveReview } from '../../apps/web/server/services/review';
+import { getOpenReview, getReview, saveReview } from '../../apps/web/server/services/review';
 import { logRun } from '../../apps/web/server/services/running';
 import { getToday } from '../../apps/web/server/services/schedule';
 import {
@@ -317,6 +317,24 @@ describe('saveReview (PRD §6.9)', () => {
       ok: false,
       error: 'not_signed_in',
     });
+  });
+});
+
+describe('getOpenReview (D68)', () => {
+  it('open from Sunday 18:00 until Wednesday, saved once checked in; none outside the window', async () => {
+    const user = await enrolled();
+    expect(await getOpenReview(user.client, at('2026-11-29T17:59:00+01:00'))).toBeNull();
+    expect(await getOpenReview(user.client, OPEN)).toEqual({
+      weekStart: WEEK_1,
+      weekNumber: 1,
+      saved: false,
+    });
+    await saveReview(user.client, review(), OPEN, noTrack);
+    expect(await getOpenReview(user.client, at('2026-12-02T23:00:00+01:00'))).toMatchObject({
+      saved: true,
+    });
+    expect(await getOpenReview(user.client, at('2026-12-03T00:00:00+01:00'))).toBeNull();
+    expect(await getOpenReview(anonClient(), OPEN)).toBeNull();
   });
 });
 
