@@ -914,6 +914,167 @@
       "result": "{value} · référence {baseline} ({change})",
       "resultNoBaseline": "{value} · pas de référence",
       "notYet": "Pas encore testé"
+    },
+    "reviewCard": {
+      "ready": "Ton bilan de la semaine {week} est prêt",
+      "edit": "Modifier ton bilan de la semaine {week}",
+      "hint": "Ouvert jusqu’à mercredi soir."
+    }
+  },
+  "Review": {
+    "title": "Bilan de la semaine {week}",
+    "back": "Retour aux progrès",
+    "loading": "Chargement de ton bilan…",
+    "error": {
+      "title": "Impossible d’afficher le bilan",
+      "body": "Un problème est survenu. Réessaie dans un instant.",
+      "retry": "Réessayer"
+    },
+    "notEnrolled": {
+      "title": "Pas encore de programme",
+      "description": "Commence le programme pour faire le bilan de tes semaines.",
+      "action": "Commencer le programme"
+    },
+    "notYet": "Ce bilan ouvre dimanche à 18 h.",
+    "closed": "Ce bilan est fermé. Chaque bilan est ouvert du dimanche 18 h au mercredi soir.",
+    "summary": {
+      "title": "Ta semaine",
+      "sessions": "Séances faites",
+      "sessionsValue": "{done} sur {planned}",
+      "partly": "{count, plural, one {# en partie faite} other {# en partie faites}}",
+      "missed": "Manquées",
+      "skipped": "Sautées",
+      "strength": "Séances de force",
+      "runs": "Courses",
+      "distance": "Distance",
+      "distanceValue": "{distance} {unit}",
+      "longest": "Plus longue course",
+      "rpe": "Effort moyen",
+      "rpeValue": "{value} / 10",
+      "weight": "Évolution du poids",
+      "weightValue": "{value} {unit}",
+      "unavailable": {
+        "sessions": "Aucune séance d’entraînement prévue cette semaine.",
+        "longest": "Aucune course enregistrée cette semaine.",
+        "rpe": "Aucun effort noté cette semaine.",
+        "weight": "Indique ton poids pour voir l’évolution."
+      }
+    },
+    "checkIn": {
+      "title": "Ressenti",
+      "intro": "Comment s’est passée ta semaine ? Toutes les réponses sont facultatives.",
+      "fatigue": "Fatigue",
+      "soreness": "Courbatures",
+      "sleep": "Qualité du sommeil",
+      "motivation": "Motivation",
+      "ends": {
+        "fatigue": "1 = aucune · 5 = extrême",
+        "soreness": "1 = aucune · 5 = extrêmes",
+        "sleep": "1 = très mauvaise · 5 = très bonne",
+        "motivation": "1 = très faible · 5 = très forte"
+      },
+      "pain": "Une douleur cette semaine ?",
+      "yes": "Oui",
+      "no": "Non",
+      "painArea": "Où ?",
+      "painAreaPlaceholder": "Choisis une zone",
+      "painNote": "Note (facultative)",
+      "weight": "Poids ({unit}, facultatif)",
+      "notes": "Notes (facultatives)",
+      "save": "Enregistrer le ressenti",
+      "saving": "Enregistrement…",
+      "saved": "Ressenti enregistré.",
+      "errors": {
+        "painArea": "Choisis où tu as mal.",
+        "weight": "Saisis un poids entre 1 et 999.",
+        "closed": "Ce bilan est fermé, il ne peut plus être enregistré.",
+        "failed": "Le ressenti n’a pas pu être enregistré. Réessaie."
+      }
+    },
+    "areas": {
+      "neck": "Cou",
+      "shoulder": "Épaule",
+      "elbow_wrist": "Coude ou poignet",
+      "back": "Dos",
+      "hip": "Hanche",
+      "knee": "Genou",
+      "ankle_foot": "Cheville ou pied",
+      "other": "Autre"
+    },
+    "answers": {
+      "title": "Ton ressenti",
+      "unanswered": "—",
+      "painNone": "Aucune douleur signalée",
+      "painIn": "Douleur : {area}",
+      "scaleValue": "{value} / 5"
+    },
+    "insights": {
+      "title": "Ce que montre ta semaine",
+      "none": "Rien de particulier cette semaine.",
+      "items": {
+        "frequency_up": {
+          "title": "Tu as fait plus de séances que la semaine d’avant",
+          "rule": "Plus de séances faites (terminées ou en partie) que la semaine précédente du programme."
+        },
+        "frequency_down": {
+          "title": "Tu as fait moins de séances que la semaine d’avant",
+          "rule": "Moins de séances faites (terminées ou en partie) que la semaine précédente du programme."
+        },
+        "distance_up": {
+          "title": "Ta distance de course a augmenté de plus de 10 %",
+          "rule": "La distance de cette semaine dépasse de plus de 10 % celle de la semaine précédente."
+        },
+        "missed_sessions": {
+          "title": "Au moins deux séances ont été manquées",
+          "rule": "Au moins deux séances d’entraînement prévues n’ont été ni faites ni sautées avant la fin de leur journée."
+        },
+        "rpe_high": {
+          "title": "Ton effort moyen a dépassé 7",
+          "rule": "L’effort moyen des séances et des courses de la semaine dépasse 7 sur 10."
+        },
+        "recovery_low": {
+          "title": "Ta récupération semble faible",
+          "rule": "Fatigue ou courbatures à 4 ou plus, ou qualité du sommeil à 2 ou moins."
+        },
+        "volume_stable": {
+          "title": "Ton volume de force est resté stable",
+          "rule": "Séries de force faites à 10 % près de la semaine précédente, sans autre point notable."
+        }
+      }
+    },
+    "recommendation": {
+      "title": "Pour la semaine prochaine",
+      "items": {
+        "reduce_or_rest": {
+          "title": "Réduis ou repose-toi",
+          "body": "Entraîne-toi plus légèrement ou prends du repos en plus jusqu’à ce que ça aille mieux."
+        },
+        "add_recovery_day": {
+          "title": "Ajoute un jour de récupération",
+          "body": "Ta récupération semble faible : prévois une journée facile, une marche ou de la mobilité avant ta prochaine séance de force."
+        },
+        "reduce_sets": {
+          "title": "Réduis les séries la semaine prochaine",
+          "body": "Envisage moins de séries la semaine prochaine pour reprendre le rythme sans accumuler de fatigue."
+        },
+        "keep_distance_stable": {
+          "title": "Garde ta distance de course stable",
+          "body": "Ta distance a vite augmenté : garde la même distance pour ta prochaine sortie longue."
+        },
+        "accept_progression": {
+          "title": "Une petite progression",
+          "body": "Ta semaine permet une petite marche de plus, si tu le souhaites."
+        },
+        "maintain": {
+          "title": "Garde la même charge",
+          "body": "Garde le programme tel quel la semaine prochaine."
+        }
+      }
+    },
+    "pain": {
+      "title": "À propos de la douleur signalée",
+      "body": "Tu as signalé une douleur ({area}). Réduis ton entraînement ou repose-toi. Si la douleur est vive, persiste ou s’aggrave, demande conseil à un professionnel de santé.",
+      "note": "GetFit ne donne pas de conseil médical."
     }
   }
 }

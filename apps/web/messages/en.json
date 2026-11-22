@@ -914,6 +914,167 @@
       "result": "{value} · baseline {baseline} ({change})",
       "resultNoBaseline": "{value} · no baseline",
       "notYet": "Not re-tested yet"
+    },
+    "reviewCard": {
+      "ready": "Your week {week} review is ready",
+      "edit": "Edit your week {week} review",
+      "hint": "Open until Wednesday evening."
+    }
+  },
+  "Review": {
+    "title": "Week {week} review",
+    "back": "Back to Progress",
+    "loading": "Loading your review…",
+    "error": {
+      "title": "The review didn’t load",
+      "body": "Something went wrong. Try again in a moment.",
+      "retry": "Try again"
+    },
+    "notEnrolled": {
+      "title": "No programme yet",
+      "description": "Start the programme to review your weeks.",
+      "action": "Start the programme"
+    },
+    "notYet": "This review opens on Sunday at 18:00.",
+    "closed": "This review has closed. Each review is open from Sunday 18:00 until Wednesday.",
+    "summary": {
+      "title": "Your week",
+      "sessions": "Sessions done",
+      "sessionsValue": "{done} of {planned}",
+      "partly": "{count, plural, one {# partly done} other {# partly done}}",
+      "missed": "Missed",
+      "skipped": "Skipped",
+      "strength": "Strength sessions",
+      "runs": "Runs",
+      "distance": "Distance",
+      "distanceValue": "{distance} {unit}",
+      "longest": "Longest run",
+      "rpe": "Average effort",
+      "rpeValue": "{value} / 10",
+      "weight": "Weight change",
+      "weightValue": "{value} {unit}",
+      "unavailable": {
+        "sessions": "No training session planned this week.",
+        "longest": "No run logged this week.",
+        "rpe": "No effort logged this week.",
+        "weight": "Enter your weight to see the change."
+      }
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "intro": "How did the week feel? Every answer is optional.",
+      "fatigue": "Fatigue",
+      "soreness": "Soreness",
+      "sleep": "Sleep quality",
+      "motivation": "Motivation",
+      "ends": {
+        "fatigue": "1 = none · 5 = extreme",
+        "soreness": "1 = none · 5 = extreme",
+        "sleep": "1 = very poor · 5 = very good",
+        "motivation": "1 = very low · 5 = very high"
+      },
+      "pain": "Any pain this week?",
+      "yes": "Yes",
+      "no": "No",
+      "painArea": "Where?",
+      "painAreaPlaceholder": "Choose an area",
+      "painNote": "Note (optional)",
+      "weight": "Weight ({unit}, optional)",
+      "notes": "Notes (optional)",
+      "save": "Save check-in",
+      "saving": "Saving…",
+      "saved": "Check-in saved.",
+      "errors": {
+        "painArea": "Choose where it hurts.",
+        "weight": "Enter a weight between 1 and 999.",
+        "closed": "This review has closed, so it can’t be saved.",
+        "failed": "The check-in couldn’t be saved. Try again."
+      }
+    },
+    "areas": {
+      "neck": "Neck",
+      "shoulder": "Shoulder",
+      "elbow_wrist": "Elbow or wrist",
+      "back": "Back",
+      "hip": "Hip",
+      "knee": "Knee",
+      "ankle_foot": "Ankle or foot",
+      "other": "Other"
+    },
+    "answers": {
+      "title": "Your check-in",
+      "unanswered": "—",
+      "painNone": "No pain reported",
+      "painIn": "Pain: {area}",
+      "scaleValue": "{value} / 5"
+    },
+    "insights": {
+      "title": "What the week shows",
+      "none": "Nothing stood out this week.",
+      "items": {
+        "frequency_up": {
+          "title": "You trained more than the week before",
+          "rule": "More sessions done (completed or partly) than in the previous programme week."
+        },
+        "frequency_down": {
+          "title": "You trained less than the week before",
+          "rule": "Fewer sessions done (completed or partly) than in the previous programme week."
+        },
+        "distance_up": {
+          "title": "Your running distance went up by more than 10%",
+          "rule": "This week’s distance is more than 10% above the previous week’s."
+        },
+        "missed_sessions": {
+          "title": "Two or more sessions were missed",
+          "rule": "At least two planned training sessions weren’t done or skipped by the end of their day."
+        },
+        "rpe_high": {
+          "title": "Your average effort was above 7",
+          "rule": "The average effort of this week’s workouts and runs is above 7 out of 10."
+        },
+        "recovery_low": {
+          "title": "Your recovery looks low",
+          "rule": "Fatigue or soreness at 4 or more, or sleep quality at 2 or less."
+        },
+        "volume_stable": {
+          "title": "Your strength volume held steady",
+          "rule": "Strength sets done within 10% of the previous week, and nothing else stood out."
+        }
+      }
+    },
+    "recommendation": {
+      "title": "For next week",
+      "items": {
+        "reduce_or_rest": {
+          "title": "Reduce or rest",
+          "body": "Train lighter or take extra rest until you feel better."
+        },
+        "add_recovery_day": {
+          "title": "Add a recovery day",
+          "body": "Your recovery looks low: plan an easy day, a walk or some mobility before your next strength session."
+        },
+        "reduce_sets": {
+          "title": "Reduce sets next week",
+          "body": "Consider fewer sets next week to get back on track without piling up fatigue."
+        },
+        "keep_distance_stable": {
+          "title": "Keep your running distance stable",
+          "body": "Your distance went up quickly: keep next week’s long run at the same distance."
+        },
+        "accept_progression": {
+          "title": "One small progression",
+          "body": "Your week allows one small step up, if you want it."
+        },
+        "maintain": {
+          "title": "Maintain the workload",
+          "body": "Keep the plan as it is next week."
+        }
+      }
+    },
+    "pain": {
+      "title": "About the pain you reported",
+      "body": "You reported pain ({area}). Reduce your training or rest. If the pain is sharp, persistent or getting worse, seek advice from a health professional.",
+      "note": "GetFit doesn’t give medical advice."
     }
   }
 }

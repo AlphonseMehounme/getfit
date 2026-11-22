@@ -7,9 +7,9 @@ import {
   compareLocalDates,
   isLocalDate,
   isoWeekday,
-  type LocalDate,
   localDateAt,
   localDayBounds,
+  openReviewWeek,
   progressionEligible,
   recommend,
   reviewState,
@@ -157,6 +157,22 @@ export async function getReview(client: DbClient, weekStart: string, clock: Cloc
   };
 }
 
+/** PRD §6.9: the review open now, if any (D68), for the way in from Progress and, later, Today. */
+export async function getOpenReview(client: DbClient, clock: Clock) {
+  const context = await loadSchedule(client, clock);
+  if (typeof context === 'string') return null;
+  const monday = openReviewWeek({
+    now: context.now,
+    timeZone: context.profile.timezone,
+    programmeStart: context.enrolment.startDate,
+    durationWeeks: context.programme.shape.durationWeeks,
+  });
+  if (!monday) return null;
+  const week = buildWeek(context.scheduleInput, monday, context.now);
+  const stored = await findReview(client, context.userId, monday);
+  return { weekStart: monday, weekNumber: week.weekNumber!, saved: stored !== null };
+}
+
 export type ReviewView = Extract<
   NonNullable<Awaited<ReturnType<typeof getReview>>>,
   { kind: 'review' }
@@ -234,3 +250,6 @@ export async function saveReview(
   }
   return { ok: true, reviewId };
 }
+
+/** The stored review, for the review screens (AGENTS §5.2: components go through services). */
+export type { ReviewRecord } from '@/server/repositories/reviews';
