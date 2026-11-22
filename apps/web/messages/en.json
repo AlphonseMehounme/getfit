@@ -120,7 +120,13 @@
       "intro": "The language applies to your account on every device. The theme applies to this device only.",
       "themeHint": "Kept on this device only."
     },
-    "number": "{value, number}"
+    "number": "{value, number}",
+    "install": {
+      "title": "Install the app",
+      "body": "Open GetFit from your home screen, full screen, and keep the pages you’ve opened available offline.",
+      "action": "Install",
+      "ios": "On iPhone or iPad: tap Share, then “Add to Home Screen”."
+    }
   },
   "States": {
     "loading": "Loading…",
@@ -1116,5 +1122,11 @@
         "failed": "Your answer couldn’t be saved. Try again."
       }
     }
+  },
+  "Offline": {
+    "title": "You’re offline",
+    "body": "Pages you’ve already opened still work, with their exercise instructions.",
+    "needsConnection": "This page hasn’t been opened on this device yet, so it needs a connection.",
+    "today": "Go to Today"
   }
 }

@@ -10,8 +10,9 @@ import {
 } from '@/components/profile/answers-summary';
 import { LibraryShortcut } from '@/components/library/library-shortcut';
 import { BaselinesSummary } from '@/components/profile/baselines-summary';
+import { InstallApp } from '@/components/profile/install-app';
 import { Field, ProfileSection } from '@/components/profile/profile-section';
-import { Button } from '@/components/ui/button';
+import { SignOutButton } from '@/components/profile/sign-out-button';
 import { Notice } from '@/components/ui/notice';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { savedBaselinesOf } from '@/lib/onboarding/saved-baselines';
@@ -100,17 +101,14 @@ export default async function ProfilePage({
         </dl>
       </ProfileSection>
       <LibraryShortcut />
+      <InstallApp />
       <ProfileSection id="account" title={t('account')}>
         <dl className="grid gap-3">
           <Field label={t('email')}>
             <span className="break-all">{account.email ?? '—'}</span>
           </Field>
         </dl>
-        <form action={signOutAction}>
-          <Button type="submit" variant="secondary">
-            {t('signOut')}
-          </Button>
-        </form>
+        <SignOutButton signOut={signOutAction} />
       </ProfileSection>
     </div>
   );

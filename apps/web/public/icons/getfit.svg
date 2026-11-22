@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GetFit">
+  <!-- GetFit's mark (D95): a cobalt tile (D16) with a geometric "G" drawn from one stroke and its bar. -->
+  <rect width="512" height="512" rx="112" fill="#2F5BEA"/>
+  <path d="M346 149 A140 140 0 1 0 396 256 L280 256" fill="none" stroke="#FFFFFF" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
