@@ -380,7 +380,27 @@
       "body": "{session} can still be moved to another day this week, or skipped.",
       "options": "See options"
     },
-    "progressed": "Progressed"
+    "progressed": "Progressed",
+    "reviewReady": {
+      "title": "Your week {week} review is ready",
+      "body": "Take a few minutes to look back on the week and plan the next one. Open until Wednesday evening.",
+      "action": "Start the review"
+    },
+    "overview": {
+      "title": "Performance",
+      "streak": "Training streak",
+      "streakValue": "{count, plural, one {# week} other {# weeks}}",
+      "streakNote": "In a row at 75% or more",
+      "records": "Latest records",
+      "none": "Log a workout or a run to set your first records.",
+      "strength": "{name}: {value}",
+      "reps": "{count, plural, one {# rep} other {# reps}}",
+      "seconds": "{count} s",
+      "longest": "Longest run: {distance, number} {unit}",
+      "bestPace": "Best pace: {pace} /{unit}",
+      "on": "{record} · {date}",
+      "link": "See your progress"
+    }
   },
   "Programme": {
     "title": "Programme",

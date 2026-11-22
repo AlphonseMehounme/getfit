@@ -1,7 +1,12 @@
 import { expect, type Page, test } from '@playwright/test';
 import programme from '../content/programmes/force-muscle-endurance-8w.json' with { type: 'json' };
 import en from '../apps/web/messages/en.json' with { type: 'json' };
-import { expectNoAxeViolations } from './support/auth-flow';
+import {
+  expectNoAxeViolations,
+  newEmail,
+  newPassword,
+  signUpAndConfirm,
+} from './support/auth-flow';
 import { logEverySet, setNow, startOnMonday, strengthA } from './support/workout-flow';
 
 // P3-09 · the weekly review (PRD §6.9 and its AC, BR-27, D64, D68, D69, D72). Week 1 starts on Monday 23 Nov 2026
@@ -184,4 +189,55 @@ test('BR-19 / D79: a full week at target offers +1 rep; accepted, the next week 
   const pullUp = page.getByRole('article').filter({ hasText: 'Pull-up' });
   await expect(pullUp).toContainText('3 × 7');
   await expect(pullUp).toContainText(en.Today.progressed);
+});
+
+test('PRD §6.3 / D68: Today shows the review card on Sunday evening until the review is done, and the overview', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  // Started on Sunday ("this week", BR-2): the week holds only the long run, so no missed session comes first.
+  await setNow(page, '2026-11-29T08:00:00+01:00');
+  await signUpAndConfirm(page, newEmail(), newPassword());
+  await page.getByRole('button', { name: en.Start.thisWeek }).click();
+  await expect(page).toHaveURL('/today');
+  await page.goto('/train/run/new?date=2026-11-29');
+  await page.getByLabel('Distance (km)').fill('10.84');
+  await page.getByLabel(en.Run.hours).fill('1');
+  await page.getByLabel(en.Run.minutes).fill('19');
+  await page.getByLabel(en.Run.seconds).fill('30');
+  await page
+    .getByRole('group', { name: 'Count this run as Long run on Sunday, November 29?' })
+    .getByText(en.Run.link.yes)
+    .click();
+  await page.getByRole('button', { name: en.Run.save, exact: true }).click();
+  await expect(page).toHaveURL(/\/train\/run\/[0-9a-f-]{36}$/);
+
+  // Before 18:00 there is no card; the overview shows the run's records.
+  await page.goto('/today');
+  const card = page.getByRole('region', { name: 'Your week 1 review is ready' });
+  await expect(card).toHaveCount(0);
+  const overview = page.getByRole('region', { name: en.Today.overview.title });
+  await expect(overview.getByRole('listitem')).toHaveText([
+    'Longest run: 10.8 km · Nov 29',
+    'Best pace: 7:20 /km · Nov 29',
+  ]);
+
+  await setNow(page, '2026-11-29T18:30:00+01:00');
+  await page.goto('/today');
+  await card.getByRole('link', { name: en.Today.reviewReady.action }).click();
+  await expect(page).toHaveURL(REVIEW, { timeout: 15_000 });
+  await scale(page, R.checkIn.fatigue, '2');
+  await page
+    .getByRole('group', { name: R.checkIn.pain })
+    .getByText(R.checkIn.no, { exact: true })
+    .click();
+  await save(page);
+
+  // Done: the card is gone; the overview leads to Progress.
+  await page.goto('/today');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(card).toHaveCount(0);
+  await expectNoAxeViolations(page);
+  await overview.getByRole('link', { name: en.Today.overview.link }).click();
+  await expect(page).toHaveURL('/progress', { timeout: 15_000 });
 });
