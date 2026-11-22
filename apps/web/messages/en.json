@@ -1128,5 +1128,11 @@
     "body": "Pages you’ve already opened still work, with their exercise instructions.",
     "needsConnection": "This page hasn’t been opened on this device yet, so it needs a connection.",
     "today": "Go to Today"
+  },
+  "Sync": {
+    "synced": "Synced",
+    "saved": "Saved on this device",
+    "failed": "Not synced",
+    "retry": "Retry"
   }
 }

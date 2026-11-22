@@ -1128,5 +1128,11 @@
     "body": "Les pages déjà ouvertes fonctionnent toujours, avec leurs instructions d’exercice.",
     "needsConnection": "Cette page n’a pas encore été ouverte sur cet appareil : elle demande une connexion.",
     "today": "Aller à Aujourd’hui"
+  },
+  "Sync": {
+    "synced": "Synchronisé",
+    "saved": "Enregistré sur cet appareil",
+    "failed": "Non synchronisé",
+    "retry": "Réessayer"
   }
 }
