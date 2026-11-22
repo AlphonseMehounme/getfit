@@ -4,7 +4,11 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import type { Track } from '../../apps/web/lib/observability/analytics';
 import { startProgramme } from '../../apps/web/server/services/enrolment';
 import { saveOnboardingStep } from '../../apps/web/server/services/onboarding';
-import { getProgress, type ProgressView } from '../../apps/web/server/services/progress';
+import {
+  getOverview,
+  getProgress,
+  type ProgressView,
+} from '../../apps/web/server/services/progress';
 import { deleteRun, logRun } from '../../apps/web/server/services/running';
 import { getToday } from '../../apps/web/server/services/schedule';
 import {
@@ -274,5 +278,67 @@ describe('getProgress (PRD §6.8)', () => {
       await getProgress(b.client, { range: '4w' }, at('2026-11-25T10:00:00+01:00'), noTrack),
     );
     expect(view.kind === 'range' && view.empty).toBe(true);
+  });
+});
+
+describe('getOverview (PRD §6.3)', () => {
+  it('D63 / BR-24: a new account has a 0 streak once enrolled, and no records', async () => {
+    const user = await enrolled();
+    expect(await getOverview(user.client, at('2026-11-25T10:00:00+01:00'))).toEqual({
+      units: 'metric',
+      streak: 0,
+      records: [],
+    });
+    expect(await getOverview(anonClient(), at('2026-11-25T10:00:00+01:00'))).toBeNull();
+  });
+
+  it('BR-26 / D66: the latest records, newest first; the reference run is beaten, never a record itself', async () => {
+    const user = await newUser();
+    await saveOnboardingStep(
+      user.client,
+      'baselines',
+      { run: { id: randomUUID(), distance: 10.84, distanceUnit: 'km', durationS: 4770 } },
+      at('2026-11-20T10:00:00+01:00'),
+    );
+    await logRun(
+      user.client,
+      run('2026-11-24T18:00', 5, 1800),
+      at('2026-11-24T20:00:00+01:00'),
+      noTrack,
+    );
+    await logRun(
+      user.client,
+      run('2026-11-29T09:00', 11, 4730),
+      at('2026-11-29T12:00:00+01:00'),
+      noTrack,
+    );
+    expect(await getOverview(user.client, at('2026-12-01T10:00:00+01:00'))).toEqual({
+      units: 'metric',
+      // Not enrolled: no streak to count.
+      streak: null,
+      records: [
+        { kind: 'longest', metres: 11_000, date: '2026-11-29' },
+        // 5 km is shorter than the reference run, so it is no record; its pace is.
+        { kind: 'best_pace', secondsPerKm: 360, date: '2026-11-24' },
+      ],
+    });
+  });
+
+  it('a strength record, with at most three, newest first', async () => {
+    const user = await enrolled();
+    await logStrength(user, '2026-11-23T08:00:00+01:00', 6);
+    await logRun(
+      user.client,
+      run('2026-11-29T09:00', 11, 4730, 'link'),
+      at('2026-11-29T12:00:00+01:00'),
+      noTrack,
+    );
+    const { records } = (await getOverview(user.client, at('2026-12-01T10:00:00+01:00')))!;
+    expect(records).toHaveLength(3);
+    expect(records.slice(0, 2)).toEqual([
+      { kind: 'longest', metres: 11_000, date: '2026-11-29' },
+      { kind: 'best_pace', secondsPerKm: 430, date: '2026-11-29' },
+    ]);
+    expect(records[2]).toMatchObject({ kind: 'strength', date: '2026-11-23' });
   });
 });

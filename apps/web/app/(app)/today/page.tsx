@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { AttentionCard } from '@/components/today/attention-card';
+import { PerformanceOverview } from '@/components/today/performance-overview';
+import { ReviewReadyCard } from '@/components/today/review-ready-card';
 import { RecentActivity } from '@/components/today/recent-activity';
 import { SessionAction } from '@/components/today/session-action';
 import { ThisWeek } from '@/components/today/this-week';
@@ -15,6 +17,8 @@ import { START_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
+import { getOverview } from '@/server/services/progress';
+import { getOpenReview } from '@/server/services/review';
 import { getToday } from '@/server/services/schedule';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,8 +31,16 @@ const toDate = (date: LocalDate) => new Date(`${date}T12:00:00Z`);
 
 // PRD §6.3 (Phase 1 subset): what to do today, then the week. Every value comes from getToday (AGENTS §5).
 export default async function TodayPage() {
-  const view = await getToday(await createSupabaseServerClient(), await getRequestClock());
-  if (!view) return redirectToLogin();
+  const [client, clock] = [await createSupabaseServerClient(), await getRequestClock()];
+  const [view, openReview, overview] = await Promise.all([
+    getToday(client, clock),
+    getOpenReview(client, clock),
+    getOverview(client, clock),
+  ]);
+  if (!view || !overview) return redirectToLogin();
+  // PRD §6.3: one card at most. A review already done needs no card (Progress offers to edit it).
+  const reviewReady =
+    openReview && !openReview.saved ? <ReviewReadyCard review={openReview} /> : null;
   if (view.kind === 'not_enrolled') redirect(START_PATH);
 
   const t = await getTranslations('Today');
@@ -61,6 +73,8 @@ export default async function TodayPage() {
           <CardHeader title={t('finished.title')} />
           <p className="text-muted">{t('finished.body', { weeks: view.durationWeeks })}</p>
         </Card>
+        {/* D68: week 8's review stays open until Wednesday. */}
+        {reviewReady}
       </div>
     );
   }
@@ -68,7 +82,8 @@ export default async function TodayPage() {
   return (
     <div className="flex flex-col gap-8">
       <TodayHeader view={view} />
-      {view.attention ? <AttentionCard attention={view.attention} /> : null}
+      {/* PRD §6.3: one card at most; a missed session comes first (D37). */}
+      {view.attention ? <AttentionCard attention={view.attention} /> : reviewReady}
       {view.sessions.map((session) => (
         <SessionCard
           key={session.programmeDayId}
@@ -81,6 +96,7 @@ export default async function TodayPage() {
       ))}
       <WeekStrip days={view.week} />
       <ThisWeek thisWeek={view.thisWeek} units={view.units} />
+      <PerformanceOverview overview={overview} />
       <RecentActivity items={view.recent} units={view.units} />
     </div>
   );

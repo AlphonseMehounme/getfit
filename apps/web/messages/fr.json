@@ -380,7 +380,27 @@
       "body": "La séance « {session} » peut encore être déplacée à un autre jour de cette semaine, ou passée.",
       "options": "Voir les options"
     },
-    "progressed": "Progression"
+    "progressed": "Progression",
+    "reviewReady": {
+      "title": "Ton bilan de la semaine {week} est prêt",
+      "body": "Prends quelques minutes pour revenir sur ta semaine et préparer la suivante. Ouvert jusqu’à mercredi soir.",
+      "action": "Commencer le bilan"
+    },
+    "overview": {
+      "title": "Performances",
+      "streak": "Série d’entraînement",
+      "streakValue": "{count, plural, one {# semaine} other {# semaines}}",
+      "streakNote": "D’affilée à 75 % ou plus",
+      "records": "Derniers records",
+      "none": "Enregistre une séance ou une course pour établir tes premiers records.",
+      "strength": "{name} : {value}",
+      "reps": "{count, plural, one {# répétition} other {# répétitions}}",
+      "seconds": "{count} s",
+      "longest": "Plus longue course : {distance, number} {unit}",
+      "bestPace": "Meilleure allure : {pace} /{unit}",
+      "on": "{record} · {date}",
+      "link": "Voir tes progrès"
+    }
   },
   "Programme": {
     "title": "Programme",
