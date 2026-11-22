@@ -19,7 +19,7 @@ import { decideSuggestionAction, saveReviewAction } from './actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Review');
-  return { title: t('title', { week: '' }).trim() };
+  return { title: t('heading') };
 }
 
 // PRD §6.9 weekly review: the summary first, then the check-in, then the insights and the one recommendation (D64).
@@ -35,12 +35,16 @@ export default async function ReviewPage({ params }: { params: Promise<{ weekSta
   if (!view) return redirectToLogin();
   const t = await getTranslations('Review');
   if (view.kind === 'not_enrolled') {
+    // WCAG 2.4.6 / axe: the page keeps its level-one heading.
     return (
-      <EmptyState
-        title={t('notEnrolled.title')}
-        description={t('notEnrolled.description')}
-        action={<ActionLink href={START_PATH}>{t('notEnrolled.action')}</ActionLink>}
-      />
+      <div className="flex flex-col gap-8">
+        <h1 className="text-3xl font-semibold tracking-tight">{t('heading')}</h1>
+        <EmptyState
+          title={t('notEnrolled.title')}
+          description={t('notEnrolled.description')}
+          action={<ActionLink href={START_PATH}>{t('notEnrolled.action')}</ActionLink>}
+        />
+      </div>
     );
   }
   if (view.kind === 'not_a_week') notFound();

@@ -944,6 +944,7 @@
   },
   "Review": {
     "title": "Bilan de la semaine {week}",
+    "heading": "Bilan de la semaine",
     "back": "Retour aux progrès",
     "loading": "Chargement de ton bilan…",
     "error": {

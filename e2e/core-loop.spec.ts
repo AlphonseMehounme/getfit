@@ -6,7 +6,7 @@ import { logEverySet, setNow } from './support/workout-flow';
 
 // P2-17 · the Phase 2 exit (PRD §13 E2E, §14): the core loop, then a full programme week with the per-test clock
 // (D30). Week 1 starts on Monday 23 Nov 2026 (Paris): Mon A, Tue recovery, Wed B, Thu rest, Fri C, Sat rest,
-// Sun long run. The Progress step joins in Phase 3.
+// Sun long run. Progress shows what was logged (P3-12).
 test.use({ locale: 'en-US', timezoneId: 'Europe/Paris' });
 
 const at = (date: string, time = '08:00') => `${date}T${time}:00+01:00`;
@@ -50,6 +50,18 @@ async function completeWorkout(page: Page, exercises: number, action = en.Today.
 
 const strip = (page: Page) => page.getByRole('list', { name: en.WeekStrip.label });
 
+/** PRD §13 / §6.8: Strength A's pull-ups and the 5 km run are on Progress (the default 8-week range, D74). */
+async function expectProgress(page: Page) {
+  await page.goto('/progress');
+  await expect(page.getByRole('heading', { level: 1, name: en.Progress.title })).toBeVisible();
+  await expect(
+    page.getByRole('table', { name: 'Pull-up', exact: true }).getByRole('row').nth(1),
+  ).toHaveText('Nov 236 reps');
+  const running = page.getByRole('region', { name: en.Progress.running.title });
+  await expect(running.locator('dl > div').nth(0)).toHaveText('Distance5 km');
+  await expect(running.locator('dl > div').nth(1)).toHaveText('Runs1');
+}
+
 test('the core loop: register → onboarding → start → log a workout → dashboard → log a run → log out and in', async ({
   page,
 }) => {
@@ -81,6 +93,9 @@ test('the core loop: register → onboarding → start → log a workout → das
   const recent = page.getByRole('region', { name: en.Today.recent.title }).getByRole('listitem');
   await expect(recent).toHaveCount(2);
 
+  // PRD §13: Progress shows what was logged.
+  await expectProgress(page);
+
   // Log out and back in: everything is on the server (D8).
   await page.goto('/profile');
   await page.getByRole('button', { name: en.Profile.signOut }).click();
@@ -94,6 +109,7 @@ test('the core loop: register → onboarding → start → log a workout → das
   await expect(thisWeek).toContainText('1 of 4');
   await expect(thisWeek).toContainText('5 km');
   await expect(recent).toHaveCount(2);
+  await expectProgress(page);
 });
 
 test('a full programme week: every training day done, so adherence is 100% and the strip shows each day', async ({

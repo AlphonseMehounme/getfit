@@ -944,6 +944,7 @@
   },
   "Review": {
     "title": "Week {week} review",
+    "heading": "Weekly review",
     "back": "Back to Progress",
     "loading": "Loading your review…",
     "error": {
