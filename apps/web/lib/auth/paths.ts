@@ -24,8 +24,19 @@ export const UPDATE_PASSWORD_PATH = '/update-password';
 export const PATHNAME_HEADER = 'x-getfit-pathname';
 
 // D8 / PRD §6.1: every route needs a session except the landing, auth and (later) legal pages.
-const PUBLIC_PATHS = new Set(['/', LOGIN_PATH, SIGN_UP_PATH, RESET_PASSWORD_PATH]);
-const PUBLIC_PREFIXES = ['/auth/'];
+/** D95: the offline page, shown by the service worker. */
+export const OFFLINE_PATH = '/offline';
+const PUBLIC_PATHS = new Set([
+  '/',
+  LOGIN_PATH,
+  SIGN_UP_PATH,
+  RESET_PASSWORD_PATH,
+  OFFLINE_PATH,
+  // D95: the PWA manifest is read by the browser before any session.
+  '/manifest.webmanifest',
+]);
+// D95: the service worker is served at /serwist/sw.js.
+const PUBLIC_PREFIXES = ['/auth/', '/serwist/'];
 
 export function isPublicPath(pathname: string): boolean {
   return (

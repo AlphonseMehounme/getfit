@@ -42,6 +42,8 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_URL: supabase.apiUrl,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.publishableKey,
       APP_ORIGIN: origin,
+      // D95: the service worker is registered under `next dev` too while the tests run (P4-02).
+      NEXT_PUBLIC_GETFIT_SERVICE_WORKER: 'on',
       // Keep test runs out of the real monitoring and analytics projects, even when .env.local has keys (P1-15).
       NEXT_PUBLIC_SENTRY_DSN: '',
       POSTHOG_API_KEY: '',

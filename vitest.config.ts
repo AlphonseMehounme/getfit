@@ -62,6 +62,10 @@ export default defineConfig({
         // P3-09: the weekly review.
         'apps/web/components/review/**/*.tsx',
         'apps/web/components/ui/scale.tsx',
+        // P4-02: the PWA (D95).
+        'apps/web/lib/offline/**/*.ts',
+        'apps/web/components/profile/{install-app,sign-out-button}.tsx',
+        'apps/web/app/manifest.ts',
         // P2-08: Profile and settings (D35, D56).
         'apps/web/components/profile/**/*.tsx',
         'apps/web/lib/profile/**/*.ts',
