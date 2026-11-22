@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ViewRunLink } from '@/components/running/run-links';
 import { ViewWorkoutLink } from '@/components/today/view-workout-link';
 import { TRAIN_PATH } from '@/lib/auth/paths';
+import { ProgressedLabel } from '@/components/exercise/progressed-label';
 import { targetMessage } from '@/lib/format/target';
 import { exercisePath } from '@/lib/library/paths';
 import { dayPath } from '@/lib/programme/paths';
@@ -92,8 +93,11 @@ export function WeekDayRow({
                           {name}
                         </Link>
                       )}
-                      <span className="text-foreground font-semibold tabular-nums">
-                        {t(`Today.target.${target.key}`, target.values)}
+                      <span className="flex flex-col items-end">
+                        <span className="text-foreground font-semibold tabular-nums">
+                          {t(`Today.target.${target.key}`, target.values)}
+                        </span>
+                        {prescription.overridden ? <ProgressedLabel /> : null}
                       </span>
                     </li>
                   );

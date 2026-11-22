@@ -30,6 +30,7 @@ import {
   upsertReview,
   upsertReviewWeight,
 } from '@/server/repositories/reviews';
+import { describeSuggestion, longRunCeiling, withdrawOnPain } from './progression';
 import { loadSchedule, type ScheduleContext } from './schedule';
 
 // PRD §6.9 weekly review: one per programme week, open from Sunday 18:00 to Wednesday (D68). Everything shown is
@@ -117,7 +118,8 @@ async function computeReview(
         weekNumber: week.weekNumber,
         workouts: activity.workouts,
         runs: activity.runs,
-        ceilingM: context.programme.weeks.get(week.weekNumber)?.week.longRunCeilingM ?? null,
+        // D71: the ceiling after any accepted change, so the next +10% builds on it.
+        ceilingM: longRunCeiling(context.programme, week.weekNumber, context.prescriptionOverrides),
       })
     : null;
   return {
@@ -144,6 +146,7 @@ export async function getReview(client: DbClient, weekStart: string, clock: Cloc
     stored ? checkInOf(stored) : NO_CHECK_IN,
     stored?.weight ?? null,
   );
+  const suggestion = stored?.suggestionDecision ? stored.suggestion : computed.suggestion;
   return {
     kind: 'review' as const,
     weekStart: week.monday,
@@ -153,7 +156,8 @@ export async function getReview(client: DbClient, weekStart: string, clock: Cloc
     stored,
     ...computed,
     // D75: once answered, the offered change stays as it was (BR-19: one change per week).
-    suggestion: stored?.suggestionDecision ? stored.suggestion : computed.suggestion,
+    suggestion: suggestion ? describeSuggestion(context, suggestion) : null,
+    decision: stored?.suggestionDecision ?? null,
   };
 }
 
@@ -241,6 +245,18 @@ export async function saveReview(
     bodyMeasurementId: weight?.id ?? null,
     now,
   });
+  // D80: pain reported after accepting a change withdraws it, unless a workout of its week already used it.
+  if (checkIn.pain && stored?.suggestionDecision === 'accepted' && stored.suggestion) {
+    const monday = addDays(context.enrolment.startDate, (stored.suggestion.fromWeek - 1) * 7);
+    const { workouts } = await findWeekActivity(
+      client,
+      context.userId,
+      context.enrolment.id,
+      monday,
+      addDays(monday, 6),
+    );
+    await withdrawOnPain(client, context, stored, workouts, now);
+  }
   // D78: sent once, on the week's first save; IDs only, never the check-in (D72).
   if (!stored) {
     await trackEvent(

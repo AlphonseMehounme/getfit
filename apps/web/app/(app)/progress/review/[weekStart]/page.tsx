@@ -8,13 +8,14 @@ import { Insights } from '@/components/review/insights';
 import { PainMessage } from '@/components/review/pain-message';
 import { Recommendation } from '@/components/review/recommendation';
 import { ReviewSummary } from '@/components/review/review-summary';
+import { SuggestionCard } from '@/components/review/suggestion-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PROGRESS_PATH, START_PATH } from '@/lib/auth/paths';
 import { redirectToLogin } from '@/lib/auth/redirect-to-login';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getRequestClock } from '@/server/request-clock';
 import { getReview } from '@/server/services/review';
-import { saveReviewAction } from './actions';
+import { decideSuggestionAction, saveReviewAction } from './actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Review');
@@ -50,6 +51,15 @@ export default async function ReviewPage({ params }: { params: Promise<{ weekSta
     <>
       {stored.pain ? <PainMessage area={stored.painArea} /> : null}
       <Recommendation recommendation={view.recommendation} />
+      {view.suggestion ? (
+        <SuggestionCard
+          suggestion={view.suggestion}
+          decision={view.decision}
+          open={state === 'open'}
+          units={view.units}
+          decide={decideSuggestionAction.bind(null, view.weekStart)}
+        />
+      ) : null}
       <Insights insights={view.insights} />
     </>
   ) : null;

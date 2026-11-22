@@ -1,8 +1,9 @@
 // BR-19: one suggested progression at the end of a week, accepted or declined by the user; nothing changes on its
 // own (BR-18). D71 sets the weeks, D65 the choice, D76 the RPE condition without RPE. Pain always rules it out
-// (BR-27). P3-10 applies an accepted change through `prescription_overrides`; a long-run change needs
-// `resolvePrescription` to accept distance overrides there, keeping the deload's ceiling (D71).
+// (BR-27). An accepted change is stored as a `prescription_overrides` row (`suggestionOverride`); the answer is final
+// (D79), and pain reported later withdraws it unless a workout already used it (D80, `keepsAcceptedChange`).
 import type { Adherence } from '../metrics/adherence';
+import type { PrescriptionOverride } from '../prescription/types';
 import { exerciseSlots, slotKey } from '../workout/progress';
 import type { CheckIn } from './check-in';
 import type { Measured, ReviewRun, ReviewWorkout } from './summary';
@@ -46,7 +47,7 @@ export function chooseProgression(input: {
   /** The week's strength workouts, in programme order. */
   workouts: readonly ReviewWorkout[];
   runs: readonly ReviewRun[];
-  /** The week's long-run ceiling (D25). */
+  /** The long run's ceiling this week, after any accepted change (D25, D71). */
   ceilingM: number | null;
 }): Suggestion | null {
   const fromWeek = input.weekNumber + 1;
@@ -88,4 +89,42 @@ export function chooseProgression(input: {
     if (toM > input.ceilingM) return { kind: 'long_run', fromM: input.ceilingM, toM, fromWeek };
   }
   return null;
+}
+
+/** D75 / BR-19: the override an accepted suggestion writes. The long run's template exercise comes from content. */
+export function suggestionOverride(
+  suggestion: Suggestion,
+  longRunTemplateExerciseId: string | null,
+): PrescriptionOverride {
+  if (suggestion.kind === 'reps') {
+    return {
+      templateExerciseId: suggestion.templateExerciseId,
+      fromWeek: suggestion.fromWeek,
+      target: { kind: 'reps', reps: suggestion.toReps },
+    };
+  }
+  if (!longRunTemplateExerciseId)
+    throw new RangeError('A long-run suggestion needs the long run (D65)');
+  return {
+    templateExerciseId: longRunTemplateExerciseId,
+    fromWeek: suggestion.fromWeek,
+    target: { kind: 'distance', metres: suggestion.toM },
+  };
+}
+
+/**
+ * D80: an accepted change stays when pain is reported afterwards only if a workout of its week already used it: its
+ * snapshot (BR-25) holds the overridden prescription. `workouts` are the logged workouts of week `fromWeek`.
+ */
+export function keepsAcceptedChange(
+  override: PrescriptionOverride,
+  workouts: readonly {
+    prescriptions: readonly { templateExerciseId: string; overridden: boolean }[];
+  }[],
+): boolean {
+  return workouts.some((w) =>
+    w.prescriptions.some(
+      (p) => p.templateExerciseId === override.templateExerciseId && p.overridden,
+    ),
+  );
 }

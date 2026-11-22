@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import programme from '../content/programmes/force-muscle-endurance-8w.json' with { type: 'json' };
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import { expectNoAxeViolations } from './support/auth-flow';
 import { logEverySet, setNow, startOnMonday, strengthA } from './support/workout-flow';
@@ -10,14 +11,23 @@ test.use({ locale: 'en-US', timezoneId: 'Europe/Paris' });
 const R = en.Review;
 const REVIEW = '/progress/review/2026-11-23';
 
-async function logStrengthAAndLongRun(page: Page) {
+const exercisesOf = (slug: string) =>
+  programme.templates.find((t) => t.slug === slug)!.exercises.length;
+
+/** From Today: the day's workout, every set done as planned (at target), saved as completed at RPE 6. */
+async function completeTodaysWorkout(page: Page, exercises: number) {
+  await page.goto('/today');
   await page.getByRole('button', { name: en.Today.action.start }).click();
   await expect(page).toHaveURL(/\/train\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('button', { name: en.Workout.doneAsPlanned }).first()).toBeVisible();
-  await logEverySet(page, strengthA.exercises.length);
+  await logEverySet(page, exercises);
   await page.locator('label').filter({ hasText: /^6$/ }).click();
   await page.getByRole('button', { name: en.Workout.summary.saveCompleted }).click();
   await expect(page).toHaveURL('/today');
+}
+
+async function logStrengthAAndLongRun(page: Page) {
+  await completeTodaysWorkout(page, strengthA.exercises.length);
 
   await setNow(page, '2026-11-29T10:00:00+01:00');
   await page.goto('/train/run/new?date=2026-11-29');
@@ -121,4 +131,57 @@ test('D68: before Sunday 18:00 the review is not open yet; a week not started is
   // The loading state streams first, so the status is already sent; the page says it is not found.
   await page.goto('/progress/review/2026-11-30');
   await expect(page.getByRole('heading', { level: 1, name: en.NotFound.title })).toBeVisible();
+});
+
+test('BR-19 / D79: a full week at target offers +1 rep; accepted, the next week shows it as progressed', async ({
+  page,
+}) => {
+  test.setTimeout(300_000);
+  await startOnMonday(page);
+  await completeTodaysWorkout(page, strengthA.exercises.length);
+  await setNow(page, '2026-11-25T08:00:00+01:00');
+  await completeTodaysWorkout(page, exercisesOf('strength-b'));
+  await setNow(page, '2026-11-27T08:00:00+01:00');
+  await completeTodaysWorkout(page, exercisesOf('strength-c'));
+  // The long run, so the week is fully done (adherence 100%).
+  await setNow(page, '2026-11-29T10:00:00+01:00');
+  await page.goto('/train/run/new?date=2026-11-29');
+  await page.getByLabel('Distance (km)').fill('10');
+  await page.getByLabel(en.Run.hours).fill('1');
+  await page.getByLabel(en.Run.minutes).fill('10');
+  await page.getByLabel(en.Run.seconds).fill('0');
+  await page
+    .getByRole('group', { name: 'Count this run as Long run on Sunday, November 29?' })
+    .getByText(en.Run.link.yes)
+    .click();
+  await page.getByRole('button', { name: en.Run.save, exact: true }).click();
+  await expect(page).toHaveURL(/\/train\/run\/[0-9a-f-]{36}$/);
+
+  await setNow(page, '2026-11-29T18:30:00+01:00');
+  await page.goto(REVIEW);
+  await scale(page, R.checkIn.fatigue, '2');
+  await page
+    .getByRole('group', { name: R.checkIn.pain })
+    .getByText(R.checkIn.no, { exact: true })
+    .click();
+  await save(page);
+  // The results show after the page refreshes from the save.
+  await expect(recommendation(page)).toContainText(
+    R.recommendation.items.accept_progression.title,
+    { timeout: 15_000 },
+  );
+  const suggestion = page.getByRole('region', { name: R.suggestion.title });
+  await expect(suggestion).toContainText(
+    'Pull-up in Strength A — Upper body: 3 × 7 instead of 3 × 6, from week 2.',
+  );
+  await suggestion.getByRole('button', { name: R.suggestion.accept }).click();
+  await expect(suggestion).toContainText('Accepted: it applies from week 2.');
+  await expect(suggestion.getByRole('button')).toHaveCount(0);
+
+  // Monday of week 2: the pull-up target is raised, and says so.
+  await setNow(page, '2026-11-30T08:00:00+01:00');
+  await page.goto('/today');
+  const pullUp = page.getByRole('article').filter({ hasText: 'Pull-up' });
+  await expect(pullUp).toContainText('3 × 7');
+  await expect(pullUp).toContainText(en.Today.progressed);
 });

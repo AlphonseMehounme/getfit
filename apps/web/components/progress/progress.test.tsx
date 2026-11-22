@@ -84,6 +84,11 @@ describe('RunningSection (PRD §6.8)', () => {
     await expectNoAxeViolations(container);
   });
 
+  it('PRD §9: distances in the locale’s number format', () => {
+    renderWithIntl(<RunningSection view={rangeView()} />, 'fr');
+    expect(screen.getByText('Course de référence : 10,84 km à 7:20 /km')).toBeTruthy();
+  });
+
   it('D66 / BR-26: a record still held by the reference run says so; in miles for imperial', () => {
     const view = rangeView({ units: 'imperial', referenceRun: null });
     view.running.records.bestPace = {

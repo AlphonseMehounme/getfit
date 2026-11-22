@@ -4,7 +4,13 @@ import { parseInstant } from '../time/clock';
 import { parseLocalDate } from '../time/local-date';
 import { type CheckIn, PAIN_AREAS, recoveryLow } from './check-in';
 import { weekInsights } from './insights';
-import { chooseProgression, progressionEligible, SUGGESTION_WEEKS } from './progression';
+import {
+  chooseProgression,
+  keepsAcceptedChange,
+  progressionEligible,
+  SUGGESTION_WEEKS,
+  suggestionOverride,
+} from './progression';
 import { recommend } from './recommendation';
 import {
   type ReviewRun,
@@ -387,6 +393,13 @@ describe('D65: the suggested progression', () => {
     expect(choose([run(5)], null)).toBeNull();
     // 10% of a short ceiling rounds down to no change: nothing to suggest.
     expect(choose([run(5)], 5000)).toBeNull();
+    // D71: after an accepted 12 km, the next +10% builds on it.
+    expect(choose([run(5)], 12_000)).toEqual({
+      kind: 'long_run',
+      fromM: 12_000,
+      toM: 13_000,
+      fromWeek: 7,
+    });
   });
 });
 
@@ -427,5 +440,42 @@ describe('D64 / BR-27: one recommendation, caution first', () => {
     expect(recommend({ ...everything, checkIn: CHECK_IN, summary: summaryOf() })).toBe(
       'keep_distance_stable',
     );
+  });
+});
+
+describe('D75 / D79 / D80: an accepted suggestion', () => {
+  it('becomes an override from the next week: +1 rep, or the long run’s new ceiling', () => {
+    expect(
+      suggestionOverride(
+        { kind: 'reps', templateExerciseId: 'te-pull', fromReps: 6, toReps: 7, fromWeek: 2 },
+        'te-run',
+      ),
+    ).toEqual({ templateExerciseId: 'te-pull', fromWeek: 2, target: { kind: 'reps', reps: 7 } });
+    expect(
+      suggestionOverride({ kind: 'long_run', fromM: 11_000, toM: 12_000, fromWeek: 3 }, 'te-run'),
+    ).toEqual({
+      templateExerciseId: 'te-run',
+      fromWeek: 3,
+      target: { kind: 'distance', metres: 12_000 },
+    });
+    expect(() =>
+      suggestionOverride({ kind: 'long_run', fromM: 11_000, toM: 12_000, fromWeek: 3 }, null),
+    ).toThrow(RangeError);
+  });
+
+  it('D80: stays after pain only when a workout of its week already used it', () => {
+    const override = {
+      templateExerciseId: 'te-pull',
+      fromWeek: 2,
+      target: { kind: 'reps' as const, reps: 7 },
+    };
+    const workout = (templateExerciseId: string, overridden: boolean) => ({
+      prescriptions: [{ templateExerciseId, overridden }],
+    });
+    expect(keepsAcceptedChange(override, [])).toBe(false);
+    expect(
+      keepsAcceptedChange(override, [workout('te-pull', false), workout('te-push', true)]),
+    ).toBe(false);
+    expect(keepsAcceptedChange(override, [workout('te-pull', true)])).toBe(true);
   });
 });

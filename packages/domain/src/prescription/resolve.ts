@@ -37,17 +37,13 @@ export function resolvePrescription(
   week: ProgrammeWeek,
   overrides: readonly PrescriptionOverride[] = [],
 ): Prescription {
-  const override = overrideFor(exercise, week, overrides);
-  if (override) {
-    if (override.target.kind !== exercise.target.kind) {
-      throw new RangeError('An override keeps the target kind of its exercise (BR-19)');
-    }
-    // How an accepted long-run change combines with the week ceiling and the deload is decided
-    // with BR-19 suggestions in Phase 3; nothing can create such an override before then.
-    if (override.target.kind === 'distance') {
-      throw new RangeError('Long-run overrides are not supported yet (BR-19, Phase 3)');
-    }
+  const found = overrideFor(exercise, week, overrides);
+  if (found && found.target.kind !== exercise.target.kind) {
+    throw new RangeError('An override keeps the target kind of its exercise (BR-19)');
   }
+  // D71: an accepted long-run ceiling never applies in the deload week, which keeps its own (7 km, BR-17).
+  const override =
+    found?.target.kind === 'distance' && week.volumeMultiplier < 1 ? undefined : found;
 
   return {
     templateExerciseId: exercise.id,
