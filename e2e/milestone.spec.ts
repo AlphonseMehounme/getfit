@@ -1,4 +1,5 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test, testIpHeaders } from './support/test';
 import manifest from '../content/media/manifest.json' with { type: 'json' };
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import { expectNoAxeViolations, logIn } from './support/auth-flow';
@@ -95,7 +96,7 @@ test('milestone: log Strength A, save it, and find it intact after logging out a
 
   // A second device sees the same data.
   const other = await browser.newContext(LOCALE);
-  await other.setExtraHTTPHeaders({ [TEST_NOW_HEADER]: MONDAY });
+  await other.setExtraHTTPHeaders({ [TEST_NOW_HEADER]: MONDAY, ...testIpHeaders() });
   const otherPage = await other.newPage();
   await otherPage.goto('/login');
   await logIn(otherPage, email, password);

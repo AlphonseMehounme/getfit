@@ -4,6 +4,7 @@ import type { NextConfig } from 'next';
 import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { assertNoTestClockInBuild } from './server/clock';
+import { assertRateLimitSecretInBuild } from './server/rate-limit';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -28,7 +29,11 @@ const config = withSentryConfig(withNextIntl(nextConfig), {
 });
 
 // D20: a production build fails if the test clock is set (preview deployments excepted).
+// D86: a Vercel build fails without the rate-limit secret.
 export default function nextConfigFor(phase: string) {
-  if (phase === PHASE_PRODUCTION_BUILD) assertNoTestClockInBuild(process.env);
+  if (phase === PHASE_PRODUCTION_BUILD) {
+    assertNoTestClockInBuild(process.env);
+    assertRateLimitSecretInBuild(process.env);
+  }
   return config;
 }

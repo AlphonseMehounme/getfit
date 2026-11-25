@@ -486,6 +486,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      rate_limits: {
+        Row: {
+          hits: number;
+          key: string;
+          window_start: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          hits: number;
+          key: string;
+          window_start: string;
+        };
+        Update: {
+          hits?: number;
+          key?: string;
+          window_start?: string;
+        };
+        Relationships: [];
+      };
       running_sessions: {
         Row: {
           client_updated_at: string;
@@ -1166,6 +1185,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      hit_rate_limit: {
+        Args: { p_key: string; p_max: number; p_window_s: number };
+        Returns: boolean;
+      };
       is_known_time_zone: { Args: { tz: string }; Returns: boolean };
       owns_user_programme: { Args: { target: string }; Returns: boolean };
       owns_workout_session: { Args: { target: string }; Returns: boolean };

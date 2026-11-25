@@ -1,17 +1,22 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { CONFIRM_PATH } from '@/lib/auth/paths';
 import { safeNextPath } from '@/lib/auth/safe-next-path';
 import { setLocaleCookie } from '@/lib/i18n/locale-cookie';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { appOrigin } from '@/server/config/app-origin';
+import { clientIp } from '@/server/rate-limit';
 import { type AuthResult, requestPasswordReset, signIn, signUp } from '@/server/services/auth';
 import { getProfileLocale } from '@/server/services/settings';
 
+/** D86: the auth limits are counted per IP (D101 lets each E2E test have its own). */
+const requestIp = async () => clientIp(await headers());
+
 export async function signUpAction(input: unknown): Promise<AuthResult> {
   const supabase = await createSupabaseServerClient();
-  return signUp(supabase, input, `${appOrigin()}${CONFIRM_PATH}`);
+  return signUp(supabase, input, `${appOrigin()}${CONFIRM_PATH}`, await requestIp());
 }
 
 /**
@@ -20,7 +25,7 @@ export async function signUpAction(input: unknown): Promise<AuthResult> {
  */
 export async function signInAction(input: unknown, next: unknown): Promise<AuthResult> {
   const supabase = await createSupabaseServerClient();
-  const result = await signIn(supabase, input);
+  const result = await signIn(supabase, input, await requestIp());
   if (result.ok) {
     const locale = await getProfileLocale(supabase);
     if (locale) await setLocaleCookie(locale);
@@ -31,5 +36,5 @@ export async function signInAction(input: unknown, next: unknown): Promise<AuthR
 
 export async function requestPasswordResetAction(input: unknown): Promise<AuthResult> {
   const supabase = await createSupabaseServerClient();
-  return requestPasswordReset(supabase, input, `${appOrigin()}${CONFIRM_PATH}`);
+  return requestPasswordReset(supabase, input, `${appOrigin()}${CONFIRM_PATH}`, await requestIp());
 }

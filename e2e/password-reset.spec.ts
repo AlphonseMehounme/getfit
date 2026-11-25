@@ -1,4 +1,5 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test, testIpHeaders } from './support/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import {
   expectNoAxeViolations,
@@ -28,7 +29,10 @@ test('reset the password by email; other devices are signed out', async ({ page,
   await signUpAndConfirm(page, email, oldPassword);
 
   // A second device signed in with the old password.
-  const otherDevice = await browser.newContext({ locale: 'en-US' });
+  const otherDevice = await browser.newContext({
+    locale: 'en-US',
+    extraHTTPHeaders: testIpHeaders(),
+  });
   const otherPage = await otherDevice.newPage();
   await otherPage.goto('/login');
   await logIn(otherPage, email, oldPassword);

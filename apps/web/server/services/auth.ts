@@ -6,11 +6,24 @@ import {
   signUpSchema,
   updatePasswordSchema,
 } from '@/lib/validation/auth';
+import { checkRateLimit, RATE_LIMITS } from '@/server/rate-limit';
 import { type AuthErrorKey, toAuthErrorKey } from './auth-errors';
 
 export type AuthResult = { ok: true } | { ok: false; error: AuthErrorKey };
 
 const OK: AuthResult = { ok: true };
+const RATE_LIMITED: AuthResult = { ok: false, error: 'rateLimited' };
+
+/** D86: 10 attempts per 10 minutes, counted per IP and per email; both must pass. */
+const withinAuthLimit = (client: DbClient, ip: string, email: string) =>
+  checkRateLimit(
+    client,
+    [
+      { scope: 'auth-ip', subject: ip },
+      { scope: 'auth-email', subject: email },
+    ],
+    RATE_LIMITS.auth,
+  );
 
 /** Logs the error code only: never the email address or any other personal field (AGENTS §12). */
 function fail(operation: string, error: { code?: string; status?: number }): AuthResult {
@@ -27,11 +40,13 @@ export async function signUp(
   client: DbClient,
   input: unknown,
   emailRedirectTo: string,
+  ip: string,
   trackEvent: Track = track,
 ): Promise<AuthResult> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'invalidInput' };
   const { email, password, locale, timezone } = parsed.data;
+  if (!(await withinAuthLimit(client, ip, email))) return RATE_LIMITED;
 
   const { data, error } = await client.auth.signUp({
     email,
@@ -49,9 +64,10 @@ export async function signUp(
   return OK;
 }
 
-export async function signIn(client: DbClient, input: unknown): Promise<AuthResult> {
+export async function signIn(client: DbClient, input: unknown, ip: string): Promise<AuthResult> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'invalidInput' };
+  if (!(await withinAuthLimit(client, ip, parsed.data.email))) return RATE_LIMITED;
 
   const { error } = await client.auth.signInWithPassword(parsed.data);
   return error ? fail('sign-in', error) : OK;
@@ -94,9 +110,11 @@ export async function requestPasswordReset(
   client: DbClient,
   input: unknown,
   redirectTo: string,
+  ip: string,
 ): Promise<AuthResult> {
   const parsed = resetPasswordSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: 'invalidInput' };
+  if (!(await withinAuthLimit(client, ip, parsed.data.email))) return RATE_LIMITED;
 
   const { error } = await client.auth.resetPasswordForEmail(parsed.data.email, { redirectTo });
   return error ? fail('reset-request', error) : OK;
