@@ -250,6 +250,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      dexie:
+        specifier: 4.4.7
+        version: 4.4.7
       esbuild-wasm:
         specifier: 0.28.2
         version: 0.28.2
@@ -314,6 +317,9 @@ importers:
       axe-core:
         specifier: 4.14.0
         version: 4.14.0
+      fake-indexeddb:
+        specifier: 6.2.7
+        version: 6.2.7
       jsdom:
         specifier: 30.1.3
         version: 30.1.3(@noble/hashes@1.8.0)
@@ -2552,6 +2558,9 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
+  dexie@4.4.7:
+    resolution: {integrity: sha512-wemFiCl3DTCnfzyqepUTX1ugbYbkTrw3aEZOG7YjAOUoEQB5g5PrEywPzk5JpbX/SxqQ9IvjUpxCDIEjoOWEfA==}
+
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
@@ -2773,6 +2782,10 @@ packages:
   expect-type@1.4.0:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
+
+  fake-indexeddb@6.2.7:
+    resolution: {integrity: sha512-g0ghQ+BmU3CSZaHup5FigEAAtCmtNyxkrmID7OAeK2qONHghw1aQ2l2T1RxmfhP1H1tEXVRWArUTGVCk5832ww==}
+    engines: {node: '>=18'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -5959,6 +5972,8 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
+  dexie@4.4.7: {}
+
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
@@ -6326,6 +6341,8 @@ snapshots:
   eventemitter3@5.0.4: {}
 
   expect-type@1.4.0: {}
+
+  fake-indexeddb@6.2.7: {}
 
   fast-deep-equal@3.1.3: {}
 
