@@ -712,6 +712,93 @@ export type Database = {
           },
         ];
       };
+      sync_conflicts: {
+        Row: {
+          client_updated_at: string;
+          created_at: string;
+          id: string;
+          kind: string;
+          payload: Json | null;
+          reason: string | null;
+          record_id: string | null;
+          record_type: string | null;
+          status: string;
+          user_id: string;
+          write_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_updated_at: string;
+          created_at?: string;
+          id?: string;
+          kind: string;
+          payload?: Json | null;
+          reason?: string | null;
+          record_id?: string | null;
+          record_type?: string | null;
+          status: string;
+          user_id: string;
+          write_id: string;
+        };
+        Update: {
+          client_updated_at?: string;
+          created_at?: string;
+          id?: string;
+          kind?: string;
+          payload?: Json | null;
+          reason?: string | null;
+          record_id?: string | null;
+          record_type?: string | null;
+          status?: string;
+          user_id?: string;
+          write_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'sync_conflicts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      sync_writes: {
+        Row: {
+          created_at: string;
+          id: string;
+          kind: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id: string;
+          kind: string;
+          status: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          kind?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'sync_writes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       template_exercises: {
         Row: {
           exercise_id: string;
