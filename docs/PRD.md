@@ -6,7 +6,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 
 ## 0. Document control
 
-**Version:** 2.21 (D81–D100 added for Phase 4, 22 Nov 2026; D79–D80 added, 22 Nov 2026; D77–D78 added, 22 Nov 2026; D76 added, 21 Nov 2026; D64–D75 added for Phase 3, 21 Nov 2026; D63 added, 20 Nov 2026; D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
+**Version:** 2.22 (D101 added, 25 Nov 2026; D81–D100 added for Phase 4, 22 Nov 2026; D79–D80 added, 22 Nov 2026; D77–D78 added, 22 Nov 2026; D76 added, 21 Nov 2026; D64–D75 added for Phase 3, 21 Nov 2026; D63 added, 20 Nov 2026; D62 added, 20 Nov 2026; D59–D61 added, 20 Nov 2026; D58 added, 19 Nov 2026; D57 added, 19 Nov 2026; D56 added, 19 Nov 2026; D54–D55 added, 19 Nov 2026; D51–D53 added, 19 Nov 2026; D49–D50 added, 18 Nov 2026; D46–D48 added, 18 Nov 2026; D44–D45 added, 18 Nov 2026; D42–D43 added, 18 Nov 2026; D33–D41 added for Phase 2, 18 Nov 2026; D31–D32 added, 17 Nov 2026; D30 added, 17 Nov 2026; D20–D29 added for Phase 1, 16 Nov 2026) · **Status:** Approved for build · **Supersedes:** PRD v1 (initial product definition) · **Working name:** GetFit App
 
 ### What changed from v1
 
@@ -122,6 +122,7 @@ GetFit is a responsive web app and PWA that unifies strength training and runnin
 | D98 | The accessibility audit | axe runs in CI on every main screen at 360 px and 1440 px in both themes. AL does a manual VoiceOver and TalkBack pass, recorded in `docs/runbooks/accessibility-audit.md`. Blockers are fixed before the beta. | 22 Nov 2026 |
 | D99 | The security review | The security review is a checklist in `docs/runbooks/security-review.md`. It covers headers (CSP, HSTS, frame-ancestors, referrer policy), cookies, every service-role use, RLS on every table (the isolation test lists them all), input validation, `pnpm audit`, and the hosted Auth settings (D84). Each finding is fixed or recorded. | 22 Nov 2026 |
 | D100 | The beta is open but unlisted | Sign-up stays open; AL invites people by sharing the address. A small "Beta" label is shown in the header. Beta users are "onboarded" when they have finished onboarding and started the programme. | 22 Nov 2026 |
+| D101 | Per-test IP in E2E | The rate limits (D86) stay on in every environment. Only when `NODE_ENV=test`, an `x-getfit-test-ip` request header stands in for the client IP, so each end-to-end test has its own per-IP count against one server, as D30 does for the clock. It is never honoured in development, preview or production. | 25 Nov 2026 |
 
 ## 1. Vision, principles and users
 

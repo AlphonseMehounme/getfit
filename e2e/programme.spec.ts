@@ -1,4 +1,5 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './support/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import { expectNoAxeViolations } from './support/auth-flow';
 import { setNow, startOnMonday } from './support/workout-flow';

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import { expectNoAxeViolations } from './support/auth-flow';
 
 // P1-13 / AGENTS §9: every screen works at 360 and 1440 px (the mobile and desktop projects) in light and dark.

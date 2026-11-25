@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import manifest from '../content/media/manifest.json' with { type: 'json' };
 import { expectNoAxeViolations } from './support/auth-flow';

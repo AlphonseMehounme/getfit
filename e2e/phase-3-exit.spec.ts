@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/test';
 import en from '../apps/web/messages/en.json' with { type: 'json' };
 import {
   expectNoAxeViolations,

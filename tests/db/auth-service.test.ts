@@ -22,6 +22,8 @@ const newEmail = () => {
   return email;
 };
 const newPassword = () => `pw-${randomUUID()}`;
+/** D86: each call gets its own IP, so this file's attempts don't add up on one per-IP count. */
+const newIp = () => `db-test-${randomUUID()}`;
 
 async function query<T>(sql: string, params: unknown[]): Promise<T[]> {
   const db = await connectDb();
@@ -47,6 +49,7 @@ describe('signUp', () => {
       anonClient(),
       { email, password: newPassword(), locale: 'en', timezone: 'Europe/Paris' },
       REDIRECT,
+      newIp(),
     );
     expect(result).toEqual({ ok: true });
 
@@ -61,14 +64,19 @@ describe('signUp', () => {
   it('gives the same answer for an email that is already registered', async () => {
     const email = newEmail();
     const input = { email, password: newPassword() };
-    expect(await signUp(anonClient(), input, REDIRECT)).toEqual({ ok: true });
+    expect(await signUp(anonClient(), input, REDIRECT, newIp())).toEqual({ ok: true });
     // Supabase allows one email per address per second (config.toml `max_frequency`).
     await new Promise((resolve) => setTimeout(resolve, 1_100));
-    expect(await signUp(anonClient(), input, REDIRECT)).toEqual({ ok: true });
+    expect(await signUp(anonClient(), input, REDIRECT, newIp())).toEqual({ ok: true });
   });
 
   it('rejects invalid input on the server too', async () => {
-    const result = await signUp(anonClient(), { email: 'nope', password: 'short' }, REDIRECT);
+    const result = await signUp(
+      anonClient(),
+      { email: 'nope', password: 'short' },
+      REDIRECT,
+      newIp(),
+    );
     expect(result).toEqual({ ok: false, error: 'invalidInput' });
   });
 });
@@ -77,8 +85,8 @@ describe('signIn and signOut', () => {
   it('refuses to sign in before the email is confirmed', async () => {
     const email = newEmail();
     const password = newPassword();
-    await signUp(anonClient(), { email, password }, REDIRECT);
-    expect(await signIn(anonClient(), { email, password })).toEqual({
+    await signUp(anonClient(), { email, password }, REDIRECT, newIp());
+    expect(await signIn(anonClient(), { email, password }, newIp())).toEqual({
       ok: false,
       error: 'emailNotConfirmed',
     });
@@ -90,9 +98,9 @@ describe('signIn and signOut', () => {
       const [row] = await query<{ email: string }>('select email from auth.users where id = $1', [
         user.id,
       ]);
-      expect(await signIn(anonClient(), { email: row!.email, password: 'wrong-password' })).toEqual(
-        { ok: false, error: 'invalidCredentials' },
-      );
+      expect(
+        await signIn(anonClient(), { email: row!.email, password: 'wrong-password' }, newIp()),
+      ).toEqual({ ok: false, error: 'invalidCredentials' });
     } finally {
       await user.remove();
     }
@@ -105,12 +113,15 @@ describe('signIn and signOut', () => {
       anonClient(),
       { email, password, locale: 'fr', timezone: 'Pacific/Auckland' },
       REDIRECT,
+      newIp(),
     );
     await markConfirmed(email);
 
     const client = anonClient();
     // Emails are normalised, so a differently cased address signs in to the same account.
-    expect(await signIn(client, { email: email.toUpperCase(), password })).toEqual({ ok: true });
+    expect(await signIn(client, { email: email.toUpperCase(), password }, newIp())).toEqual({
+      ok: true,
+    });
     expect(await getCurrentUser(client)).toMatchObject({ email });
     expect(await getAccount(client)).toEqual({ email, locale: 'fr', timezone: 'Pacific/Auckland' });
 
@@ -140,24 +151,28 @@ describe('verifyEmailLink', () => {
 async function signedInUser() {
   const email = newEmail();
   const password = newPassword();
-  await signUp(anonClient(), { email, password }, REDIRECT);
+  await signUp(anonClient(), { email, password }, REDIRECT, newIp());
   await markConfirmed(email);
   const client = anonClient();
-  expect(await signIn(client, { email, password })).toEqual({ ok: true });
+  expect(await signIn(client, { email, password }, newIp())).toEqual({ ok: true });
   return { email, password, client };
 }
 
 describe('password reset', () => {
   it('answers the same for a known and an unknown email', async () => {
     const { email } = await signedInUser();
-    expect(await requestPasswordReset(anonClient(), { email }, REDIRECT)).toEqual({ ok: true });
-    expect(await requestPasswordReset(anonClient(), { email: newEmail() }, REDIRECT)).toEqual({
+    expect(await requestPasswordReset(anonClient(), { email }, REDIRECT, newIp())).toEqual({
+      ok: true,
+    });
+    expect(
+      await requestPasswordReset(anonClient(), { email: newEmail() }, REDIRECT, newIp()),
+    ).toEqual({
       ok: true,
     });
   });
 
   it('rejects an invalid email on the server too', async () => {
-    expect(await requestPasswordReset(anonClient(), { email: 'nope' }, REDIRECT)).toEqual({
+    expect(await requestPasswordReset(anonClient(), { email: 'nope' }, REDIRECT, newIp())).toEqual({
       ok: false,
       error: 'invalidInput',
     });
@@ -181,17 +196,19 @@ describe('password reset', () => {
   it('replaces the password and signs out the other devices', async () => {
     const { email, password, client } = await signedInUser();
     const otherDevice = anonClient();
-    expect(await signIn(otherDevice, { email, password })).toEqual({ ok: true });
+    expect(await signIn(otherDevice, { email, password }, newIp())).toEqual({ ok: true });
 
     const replacement = newPassword();
     expect(await updatePassword(client, { password: replacement })).toEqual({ ok: true });
 
     expect(await getCurrentUser(client)).toMatchObject({ email });
     expect(await getCurrentUser(otherDevice)).toBeNull();
-    expect(await signIn(anonClient(), { email, password })).toEqual({
+    expect(await signIn(anonClient(), { email, password }, newIp())).toEqual({
       ok: false,
       error: 'invalidCredentials',
     });
-    expect(await signIn(anonClient(), { email, password: replacement })).toEqual({ ok: true });
+    expect(await signIn(anonClient(), { email, password: replacement }, newIp())).toEqual({
+      ok: true,
+    });
   });
 });
