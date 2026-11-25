@@ -31,6 +31,7 @@ export default defineConfig({
         'packages/domain/src/library/**/*.ts',
         'packages/domain/src/progress/**/*.ts',
         'packages/domain/src/review/**/*.ts',
+        'packages/domain/src/sync/**/*.ts',
         'content/schema/**/*.ts',
         'supabase/seed/**/*.ts',
         'apps/web/lib/design/**/*.ts',

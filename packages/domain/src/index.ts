@@ -57,3 +57,4 @@ export * from './review/summary';
 export * from './review/insights';
 export * from './review/progression';
 export * from './review/recommendation';
+export * from './sync/conflict';

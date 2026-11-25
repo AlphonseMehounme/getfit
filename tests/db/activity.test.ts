@@ -376,7 +376,7 @@ describe('policy definitions', () => {
     }
   });
 
-  it('the isolation suites cover every user table (13 in Phase 1)', async () => {
+  it('the isolation suites cover every user table (13 in Phase 1, 15 after P4-04)', async () => {
     const db = await connectDb();
     try {
       // A user table is any public table whose policies are not the content tables' `using (true)`.
@@ -391,6 +391,9 @@ describe('policy definitions', () => {
         'profiles',
         'running_sessions',
         'schedule_overrides',
+        // P4-04: their isolation is tested in sync-service.test.ts.
+        'sync_conflicts',
+        'sync_writes',
         'user_availability',
         'user_equipment',
         'user_goals',

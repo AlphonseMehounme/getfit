@@ -47,3 +47,4 @@ export const syncResultSchema = z.strictObject({
 export type SyncResult = z.infer<typeof syncResultSchema>;
 
 export const syncResponseSchema = z.strictObject({ results: z.array(syncResultSchema) });
+export type SyncResponse = z.infer<typeof syncResponseSchema>;
