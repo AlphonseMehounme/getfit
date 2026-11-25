@@ -377,3 +377,190 @@ describe('RLS (PRD §12)', () => {
     expect((await alice.client.from('workout_sessions').select('id')).data).toEqual([]);
   });
 });
+
+/** Every prescribed set of the session, as the device would send them, a minute apart from `fromMinute`. */
+const allSets = (sessionId: string, slots: SetSlot[], fromMinute: number) =>
+  slots.map((slot, i) =>
+    write(
+      'set.upsert',
+      `08:${String(fromMinute + i).padStart(2, '0')}:00`,
+      setPayload(sessionId, slot),
+    ),
+  );
+
+const sessionRow = async (user: TestUser, id: string) =>
+  (
+    await user.client
+      .from('workout_sessions')
+      .select('status, programme_day_id, scheduled_date')
+      .eq('id', id)
+  ).data![0]!;
+
+describe('D90: a start the server refuses is kept unlinked', () => {
+  it('the day completed on device A, then device B started it offline: B is kept, A keeps the day', async () => {
+    const { user, monday } = await enrolledUser();
+    const { sessionId: a, slots } = await startedWorkout(user, monday);
+    await sync(user, [
+      ...allSets(a, slots, 1),
+      write('workout.finish', '08:20:00', { sessionId: a, save: 'completed', confirm: true }),
+    ]);
+
+    const b = randomUUID();
+    const bStart = write('workout.start', '08:30:00', { sessionId: b, programmeDayId: monday });
+    expect(statuses(await sync(user, [bStart]))).toEqual(['refused:kept_unlinked']);
+    const bSets = allSets(b, slots, 31);
+    const bFinish = write('workout.finish', '08:50:00', {
+      sessionId: b,
+      save: 'completed',
+      confirm: true,
+    });
+    expect(statuses(await sync(user, [...bSets, bFinish]))).toEqual(Array(13).fill('applied'));
+
+    expect(await sessionRow(user, a)).toEqual({
+      status: 'completed',
+      programme_day_id: monday,
+      scheduled_date: '2026-11-23',
+    });
+    expect(await sessionRow(user, b)).toEqual({
+      status: 'completed',
+      programme_day_id: null,
+      scheduled_date: null,
+    });
+    const bSetCount = (
+      await user.client.from('workout_sets').select('id').eq('workout_session_id', b)
+    ).data!;
+    expect(bSetCount).toHaveLength(slots.length);
+    // The start is kept as refused (D103), and a retry of it still says so.
+    expect(statuses(await sync(user, [{ ...bStart, id: randomUUID() }]))).toEqual([
+      'refused:kept_unlinked',
+    ]);
+    expect((await kept(user)).map((k) => k.reason)).toEqual(['kept_unlinked', 'kept_unlinked']);
+  });
+
+  it('D32: its own partial session started again on the device is reopened', async () => {
+    const { user, monday } = await enrolledUser();
+    const { sessionId, slots } = await startedWorkout(user, monday);
+    await sync(user, [
+      write('set.upsert', '08:05:00', setPayload(sessionId, slots[0]!)),
+      write('workout.finish', '08:10:00', { sessionId, save: 'partial', confirm: true }),
+    ]);
+    expect(
+      statuses(
+        await sync(user, [
+          write('workout.start', '08:30:00', { sessionId, programmeDayId: monday }),
+        ]),
+      ),
+    ).toEqual(['applied']);
+    expect((await sessionRow(user, sessionId)).status).toBe('in_progress');
+  });
+
+  it('refuses a start that names no workout day, and creates nothing', async () => {
+    const { user } = await enrolledUser();
+    const results = await sync(user, [
+      write('workout.start', '08:00:00', { sessionId: randomUUID(), programmeDayId: randomUUID() }),
+    ]);
+    expect(statuses(results)).toEqual(['refused:not_found']);
+    expect((await user.client.from('workout_sessions').select('id')).data).toEqual([]);
+  });
+});
+
+describe('D91 / D104: two sessions for one day, the completed one keeps it', () => {
+  it('both in progress: A saves partial, then B completes and takes the day; A is kept unlinked', async () => {
+    const { user, monday } = await enrolledUser();
+    const { sessionId: a, slots } = await startedWorkout(user, monday);
+    const b = randomUUID();
+    expect(
+      statuses(
+        await sync(user, [
+          write('workout.start', '08:01:00', { sessionId: b, programmeDayId: monday }),
+        ]),
+      ),
+    ).toEqual(['applied']);
+
+    await sync(user, [
+      write('set.upsert', '08:02:00', setPayload(a, slots[0]!)),
+      write('workout.finish', '08:05:00', { sessionId: a, save: 'partial', confirm: true }),
+    ]);
+    const finish = write('workout.finish', '08:40:00', {
+      sessionId: b,
+      save: 'completed',
+      confirm: true,
+    });
+    expect(statuses(await sync(user, [...allSets(b, slots, 10), finish])).at(-1)).toBe('applied');
+
+    expect(await sessionRow(user, b)).toMatchObject({
+      status: 'completed',
+      programme_day_id: monday,
+    });
+    expect(await sessionRow(user, a)).toEqual({
+      status: 'partial',
+      programme_day_id: null,
+      scheduled_date: null,
+    });
+  });
+
+  it('both in progress: A completes, then B saves: B is kept unlinked', async () => {
+    const { user, monday } = await enrolledUser();
+    const { sessionId: a, slots } = await startedWorkout(user, monday);
+    const b = randomUUID();
+    await sync(user, [
+      write('workout.start', '08:01:00', { sessionId: b, programmeDayId: monday }),
+    ]);
+    await sync(user, [
+      ...allSets(a, slots, 2),
+      write('workout.finish', '08:20:00', { sessionId: a, save: 'completed', confirm: true }),
+    ]);
+    const results = await sync(user, [
+      write('set.upsert', '08:30:00', setPayload(b, slots[0]!)),
+      write('workout.finish', '08:35:00', { sessionId: b, save: 'partial', confirm: true }),
+    ]);
+    expect(statuses(results)).toEqual(['applied', 'refused:kept_unlinked']);
+    expect(await sessionRow(user, a)).toMatchObject({
+      status: 'completed',
+      programme_day_id: monday,
+    });
+    expect(await sessionRow(user, b)).toEqual({
+      status: 'partial',
+      programme_day_id: null,
+      scheduled_date: null,
+    });
+  });
+
+  it('a run whose long-run link was taken on another device is saved unlinked', async () => {
+    const { user } = await enrolledUser();
+    const monday = fixedClock(new Date('2026-11-30T09:00:00+01:00'));
+    const sundayRun = () => ({
+      id: randomUUID(),
+      startedAt: '2026-11-29T09:30',
+      distance: 10.84,
+      distanceUnit: 'km',
+      durationS: 4770,
+      effort: 5,
+      link: 'link',
+    });
+    const send = (time: string, payload: unknown) =>
+      sync(
+        user,
+        [
+          {
+            id: randomUUID(),
+            kind: 'run.upsert',
+            payload,
+            clientUpdatedAt: `2026-11-29T${time}+01:00`,
+          },
+        ],
+        monday,
+      );
+    const first = sundayRun();
+    const second = sundayRun();
+    expect(statuses(await send('20:00:00', first))).toEqual(['applied']);
+    expect(statuses(await send('20:05:00', second))).toEqual(['refused:kept_unlinked']);
+    const runs = (
+      await user.client.from('running_sessions').select('id, programme_day_id').order('created_at')
+    ).data!;
+    expect(runs.map((r) => [r.id, r.programme_day_id !== null])).toEqual([
+      [first.id, true],
+      [second.id, false],
+    ]);
+  });
+});
