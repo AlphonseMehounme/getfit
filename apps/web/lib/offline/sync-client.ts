@@ -27,9 +27,11 @@ export interface SyncClientOptions {
   onStatus?: (status: OutboxStatus) => void;
   /** The server's answers that need the user's attention: conflicts and refusals (D90, D91). */
   onNotice?: (results: SyncResult[]) => void;
+  /** Every answer, once its writes have left the outbox (e.g. to clear the workout's local copy). */
+  onSettled?: (results: SyncResult[]) => Promise<void>;
 }
 
-export function createSyncClient({ db, send, onStatus, onNotice }: SyncClientOptions) {
+export function createSyncClient({ db, send, onStatus, onNotice, onSettled }: SyncClientOptions) {
   let running: Promise<void> | null = null;
 
   async function run() {
@@ -47,6 +49,7 @@ export function createSyncClient({ db, send, onStatus, onNotice }: SyncClientOpt
         break;
       }
       const answered = await settle(db, results);
+      await onSettled?.(results);
       const notices = results.filter((r) => r.status === 'conflict' || r.status === 'refused');
       if (notices.length > 0) onNotice?.(notices);
       // An answer that leaves writes of this batch unanswered: they wait for the next trigger, never a busy loop.

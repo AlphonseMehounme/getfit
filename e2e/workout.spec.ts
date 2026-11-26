@@ -38,7 +38,7 @@ test('start from Today, log two sets, reload and resume at the same set', async 
   await setRow(page, 'Set 2').getByRole('button', { name: 'Save 5 reps' }).click();
   await expect(page.getByText('Set 2: done, 5 reps')).toBeAttached();
   await expect(page.getByText('2 of 12 sets done')).toBeVisible();
-  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 
   // BR-6: a reload resumes on the pull-up with both sets saved and set 3 open.
   await page.reload();
@@ -77,6 +77,63 @@ test('start from Today, log two sets, reload and resume at the same set', async 
   await expect(page.getByText('2 of 12 sets done')).toBeVisible();
 });
 
+test('P4-05 · PRD §6.5 AC: kill the page mid-workout, reopen, and it resumes at the same set', async ({
+  context,
+  page,
+}) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page).toHaveURL(/\/train\/[0-9a-f-]{36}$/);
+  const workoutUrl = page.url();
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
+
+  // BR-6 / D89: offline, the next set is kept on the device ("Saved on this device"), not rolled back.
+  await context.setOffline(true);
+  await setRow(page, 'Set 2').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByText('Set 2: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.saved })).toBeVisible();
+
+  // The page is killed with set 2 still on the device, then the workout is opened again online.
+  await page.close();
+  await context.setOffline(false);
+  const reopened = await context.newPage();
+  await reopened.goto(workoutUrl);
+  await expect(reopened.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
+  await expect(reopened.getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(reopened.getByText('Set 2: done, 6 reps')).toBeAttached();
+  await expect(reopened.getByRole('spinbutton', { name: 'Reps for Set 3' })).toHaveValue('6');
+  await expect(reopened.getByText('2 of 12 sets done')).toBeVisible();
+
+  // Once synced, the device's copy is cleared: a reload shows the server's workout alone, with both sets.
+  await expect(reopened.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
+  await reopened.reload();
+  await expect(reopened.getByText('2 of 12 sets done')).toBeVisible();
+});
+
+test('P4-05 · D89: a set logged offline syncs once, back online', async ({ context, page }) => {
+  await startOnMonday(page);
+  await page.getByRole('button', { name: en.Today.action.start }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
+
+  await context.setOffline(true);
+  await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.saved })).toBeVisible();
+  // A correction made offline goes in the same queue, in order.
+  await page.getByRole('button', { name: 'Edit Set 1' }).click();
+  await setRow(page, 'Set 1')
+    .getByRole('button', { name: /^Decrease/ })
+    .click();
+  await setRow(page, 'Set 1').getByRole('button', { name: 'Save 5 reps' }).click();
+
+  // D89: back online, the outbox sends at once; then the server holds one set, the corrected one.
+  await context.setOffline(false);
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Set 1: done, 5 reps')).toBeAttached();
+  await expect(page.getByText('1 of 12 sets done')).toBeVisible();
+});
+
 test('the workout screen passes axe in dark mode', async ({ page }, testInfo) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await startOnMonday(page);
@@ -96,7 +153,7 @@ test('D31 / D32: save as partial from Leave, then resume; completed is not offer
   await startOnMonday(page);
   await page.getByRole('button', { name: en.Today.action.start }).click();
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 
   await page.getByRole('button', { name: en.Workout.leave }).click();
   await page.getByRole('button', { name: en.Workout.savePartialLeave }).click();
@@ -169,7 +226,7 @@ test('D34 / D45: pause, reload and still paused, then resume and log', async ({ 
   await expect(paused).toHaveCount(0);
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
   await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
-  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 });
 
 test('D40 / D49 / D31: skip an exercise, reload, and only partial is offered', async ({ page }) => {
@@ -218,7 +275,7 @@ test('D40 / D44 / D41: substitute the plank with the crunch, log load and RIR, a
   await expect(page.getByText('Instead of Plank')).toBeVisible();
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
   await expect(page.getByText('Set 1: done, 45 s')).toBeAttached();
-  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 
   // D44: after a reload the substitute comes back from the logged set.
   await page.reload();

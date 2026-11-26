@@ -3,6 +3,8 @@ import { findProfileSettings } from '@/server/repositories/profiles';
 import { getCurrentUser } from './auth';
 
 export interface Account {
+  /** The device's offline store is per user (D89). */
+  id: string;
   email: string | null;
   locale: 'fr' | 'en';
   timezone: string;
@@ -14,5 +16,5 @@ export async function getAccount(client: DbClient): Promise<Account | null> {
   if (!user) return null;
   const profile = await findProfileSettings(client, user.id);
   if (!profile) throw new Error('profile missing for signed-in user');
-  return { email: user.email, locale: profile.locale, timezone: profile.timezone };
+  return { id: user.id, email: user.email, locale: profile.locale, timezone: profile.timezone };
 }

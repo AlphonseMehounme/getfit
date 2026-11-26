@@ -123,7 +123,12 @@ describe('signIn and signOut', () => {
       ok: true,
     });
     expect(await getCurrentUser(client)).toMatchObject({ email });
-    expect(await getAccount(client)).toEqual({ email, locale: 'fr', timezone: 'Pacific/Auckland' });
+    expect(await getAccount(client)).toEqual({
+      id: expect.any(String),
+      email,
+      locale: 'fr',
+      timezone: 'Pacific/Auckland',
+    });
 
     expect(await signOut(client)).toEqual({ ok: true });
     expect(await getCurrentUser(client)).toBeNull();

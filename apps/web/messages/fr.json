@@ -126,6 +126,14 @@
       "body": "Ouvre GetFit depuis ton écran d’accueil, en plein écran, et garde les pages déjà ouvertes disponibles hors ligne.",
       "action": "Installer",
       "ios": "Sur iPhone ou iPad : touche Partager, puis « Sur l’écran d’accueil »."
+    },
+    "signOutPending": {
+      "title": "Des changements ne sont pas encore synchronisés",
+      "body": "Des séances enregistrées sur cet appareil n’ont pas encore rejoint ton compte. Attends qu’elles soient synchronisées avant de te déconnecter.",
+      "wait": "Synchroniser, puis se déconnecter",
+      "syncing": "Synchronisation…",
+      "anyway": "Se déconnecter quand même",
+      "failed": "Impossible de les synchroniser. Vérifie ta connexion et réessaie. Si tu te déconnectes quand même, elles restent sur cet appareil jusqu’à ta prochaine connexion."
     }
   },
   "States": {
@@ -710,6 +718,14 @@
       "body": "Mêmes séries et même objectif. Ton choix s’applique pour le reste de la séance.",
       "original": "Revenir à {name}",
       "instead": "À la place de {name}"
+    },
+    "sync": {
+      "noticeTitle": "Synchronisé, avec un changement",
+      "savedTitle": "Séance enregistrée",
+      "savedOnDevice": "Enregistrée sur cet appareil. Elle sera synchronisée dès que tu seras de nouveau en ligne.",
+      "keptUnlinked": "Cette séance est enregistrée, mais elle ne compte pas pour son jour : ce jour a déjà été enregistré sur un autre appareil.",
+      "notApplied": "Certaines modifications n’ont pas pu être appliquées, par exemple parce qu’elles avaient déjà été faites sur un autre appareil.",
+      "toToday": "Retour à Aujourd’hui"
     }
   },
   "NotFound": {

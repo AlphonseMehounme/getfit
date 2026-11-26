@@ -9,8 +9,19 @@ export const TEST_NOW_HEADER = 'x-getfit-test-now';
 export const MONDAY = '2026-11-23T08:00:00+01:00';
 export const strengthA = programme.templates.find((t) => t.slug === 'strength-a')!;
 
-export const setNow = (page: Page, iso: string) =>
-  page.setExtraHTTPHeaders({ [TEST_NOW_HEADER]: iso });
+const clocked = new WeakSet<Page>();
+
+/**
+ * Puts the server (the D30 header) and the browser at the same instant. Outbox writes carry the device's time and a
+ * write more than 5 minutes ahead of the server is refused (D102), so the device's clock is the test's too. It then
+ * runs on from there, like a real one.
+ */
+export async function setNow(page: Page, iso: string) {
+  await page.setExtraHTTPHeaders({ [TEST_NOW_HEADER]: iso });
+  if (clocked.has(page)) return page.clock.setSystemTime(new Date(iso));
+  clocked.add(page);
+  await page.clock.install({ time: new Date(iso) });
+}
 
 /** Signs up a new user on Monday of week 1 and starts the programme today; returns the credentials. */
 export async function startOnMonday(page: Page) {

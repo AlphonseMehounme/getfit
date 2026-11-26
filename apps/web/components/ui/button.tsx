@@ -3,7 +3,8 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils/cn';
 
 // Design-system primitive (PRD §9). Tokens only (AGENTS §9).
-const buttonVariants = cva(
+/** Also styles a link that acts as a button (e.g. back to Today). */
+export const buttonVariants = cva(
   'inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-5 text-base font-semibold transition-colors duration-fast ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-60',
   {
     variants: {

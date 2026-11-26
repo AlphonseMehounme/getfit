@@ -1,8 +1,9 @@
 import Dexie, { type EntityTable } from 'dexie';
+import type { LocalWorkout } from './local-workout';
 import type { WriteKind } from './protocol';
 
 // D89: the device's own store (IndexedDB through Dexie), one database per signed-in user, so two people on one device
-// never share a queue. P4-05 and P4-06 add the in-progress workout and the runs as new versions.
+// never share a queue. Version 2 adds the open workout's local copy (P4-05); P4-06 adds the runs.
 
 /** A write kept on the device until the server has answered it (BR-6). */
 export interface OutboxEntry {
@@ -20,10 +21,12 @@ export interface OutboxEntry {
 
 export class OfflineDb extends Dexie {
   outbox!: EntityTable<OutboxEntry, 'seq'>;
+  workouts!: EntityTable<LocalWorkout, 'sessionId'>;
 
   constructor(name: string) {
     super(name);
     this.version(1).stores({ outbox: '++seq, id, attempts' });
+    this.version(2).stores({ outbox: '++seq, id, attempts', workouts: 'sessionId' });
   }
 }
 

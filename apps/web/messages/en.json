@@ -126,6 +126,14 @@
       "body": "Open GetFit from your home screen, full screen, and keep the pages you’ve opened available offline.",
       "action": "Install",
       "ios": "On iPhone or iPad: tap Share, then “Add to Home Screen”."
+    },
+    "signOutPending": {
+      "title": "Some changes aren’t synced yet",
+      "body": "Workouts logged on this device haven’t reached your account yet. Wait for them to sync before you log out.",
+      "wait": "Sync, then log out",
+      "syncing": "Syncing…",
+      "anyway": "Log out anyway",
+      "failed": "They couldn’t be synced. Check your connection and try again. If you log out anyway, they stay on this device until you log back in."
     }
   },
   "States": {
@@ -710,6 +718,14 @@
       "body": "Same sets and target. Your choice applies for the rest of this workout.",
       "original": "Back to {name}",
       "instead": "Instead of {name}"
+    },
+    "sync": {
+      "noticeTitle": "Synced, with a change",
+      "savedTitle": "Workout saved",
+      "savedOnDevice": "Saved on this device. It will sync as soon as you’re back online.",
+      "keptUnlinked": "This workout is saved, but it doesn’t count for its day: that day was already logged on another device.",
+      "notApplied": "Some changes couldn’t be applied, for example because they were made on another device first.",
+      "toToday": "Back to Today"
     }
   },
   "NotFound": {

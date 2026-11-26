@@ -55,6 +55,21 @@ describe('the sync client (D89, PRD §12)', () => {
     expect(onStatus).toHaveBeenLastCalledWith('synced');
   });
 
+  it('passes every answer on once its writes have left the outbox', async () => {
+    const server = fakeServer();
+    await add(1, 2);
+    const seen: number[] = [];
+    const onSettled = vi.fn(async () => {
+      seen.push(await store.outbox.count());
+    });
+    await createSyncClient({ db: store, send: server.send, onSettled }).flush();
+    expect(onSettled).toHaveBeenCalledWith([
+      { id: id(1), status: 'applied' },
+      { id: id(2), status: 'applied' },
+    ]);
+    expect(seen).toEqual([0]);
+  });
+
   it('one send at a time: a flush during another joins it', async () => {
     const server = fakeServer();
     await add(1);

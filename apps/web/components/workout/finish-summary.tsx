@@ -10,6 +10,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useId, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
+import type { SyncResult } from '@/lib/offline/protocol';
 import { cn } from '@/lib/utils/cn';
 
 // PRD §6.5 finish: what was done, an optional effort (RPE 1–10) and notes, then save. "Save as completed" is
@@ -21,7 +22,17 @@ export type FinishAction = (input: {
   confirm: true;
   rpe: number | null;
   notes: string | null;
-}) => Promise<{ ok: boolean }>;
+}) => Promise<FinishResult>;
+
+/**
+ * Through the outbox (P4-05): `synced: false` while the finish waits on this device; `notice` when the server kept it
+ * without applying it as sent (D90, D104). The online path answers `ok` alone.
+ */
+export interface FinishResult {
+  ok: boolean;
+  synced?: boolean;
+  notice?: SyncResult;
+}
 
 export interface FinishSummaryProps {
   sessionId: string;
@@ -37,7 +48,7 @@ export interface FinishSummaryProps {
   initialNotes?: string | null;
   finish: FinishAction;
   onBack: () => void;
-  onSaved: () => void;
+  onSaved: (result: FinishResult) => void;
 }
 
 const RPE_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
@@ -76,7 +87,7 @@ export function FinishSummary({
           notes: notes.trim() === '' ? null : notes.trim(),
         });
         if (!result.ok) throw new Error('finish refused');
-        onSaved();
+        onSaved(result);
       } catch {
         setFailed(true);
       }

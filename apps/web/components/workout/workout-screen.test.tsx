@@ -605,3 +605,93 @@ describe('WorkoutScreen substitutes (D40, D44) and load (D41)', () => {
     );
   });
 });
+
+describe('WorkoutScreen through the outbox (P4-05, D89)', () => {
+  const ALL = {
+    'pull-up|1|both': { id: 'a', value: 6 },
+    'pull-up|2|both': { id: 'b', value: 5 },
+    'side-plank|1|left': { id: 'c', value: 30 },
+    'side-plank|1|right': { id: 'd', value: 28 },
+  };
+  const syncProps = (overrides = {}) => ({
+    status: 'saved' as const,
+    notice: null,
+    onRetry: vi.fn(),
+    ...overrides,
+  });
+
+  it('shows the indicator in place of the saving line, with its retry', async () => {
+    const sync = syncProps({ status: 'failed' });
+    renderWithIntl(
+      <WorkoutScreen
+        sessionId={SESSION}
+        title="Strength A"
+        exercises={EXERCISES}
+        initialSets={{}}
+        initialIndex={0}
+        logSet={vi.fn()}
+        finish={vi.fn()}
+        pause={vi.fn()}
+        resume={vi.fn()}
+        activeSecondsAtLoad={0}
+        exitHref="/today"
+        sync={sync}
+      />,
+    );
+    expect(screen.getByRole('status').textContent).toBe('Not synced');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(sync.onRetry).toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      { id: SESSION, status: 'refused', reason: 'kept_unlinked' },
+      /already logged on another device/,
+    ],
+    [{ id: SESSION, status: 'conflict' }, /couldn’t be applied/],
+  ] as const)('D90 / D91: a write the server kept apart is said, in amber', (notice, message) => {
+    renderWithIntl(
+      <WorkoutScreen
+        sessionId={SESSION}
+        title="Strength A"
+        exercises={EXERCISES}
+        initialSets={{}}
+        initialIndex={0}
+        logSet={vi.fn()}
+        finish={vi.fn()}
+        pause={vi.fn()}
+        resume={vi.fn()}
+        activeSecondsAtLoad={0}
+        exitHref="/today"
+        sync={syncProps({ notice })}
+      />,
+    );
+    expect(screen.getByText('Synced, with a change')).toBeTruthy();
+    expect(screen.getByText(message)).toBeTruthy();
+  });
+
+  it('a finish waiting on the device stays here and says so, with the way back to Today', async () => {
+    push.mockClear();
+    const finish = vi.fn<FinishAction>(async () => ({ ok: true, synced: false }));
+    const { container } = renderScreen(vi.fn(), 1, ALL, finish);
+    await userEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save as completed' }));
+    expect(await screen.findByText('Workout saved')).toBeTruthy();
+    expect(screen.getByText(/Saved on this device. It will sync/)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Back to Today' })).toBeTruthy();
+    expect(push).not.toHaveBeenCalled();
+    await expectNoAxeViolations(container);
+  });
+
+  it('D104: a finish kept apart by the server says why', async () => {
+    const finish = vi.fn<FinishAction>(async () => ({
+      ok: true,
+      synced: true,
+      notice: { id: SESSION, status: 'refused', reason: 'kept_unlinked' },
+    }));
+    renderScreen(vi.fn(), 0, undefined, finish);
+    await userEvent.click(screen.getByRole('button', { name: 'Leave' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save as partial' }));
+    expect(await screen.findByText(/doesn’t count for its day/)).toBeTruthy();
+  });
+});
