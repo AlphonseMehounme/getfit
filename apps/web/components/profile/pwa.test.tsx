@@ -1,10 +1,16 @@
 // @vitest-environment jsdom
+import 'fake-indexeddb/auto';
+import '@/test/dialog-shim';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { expectNoAxeViolations, renderWithIntl } from '@/test/render';
 import { type BeforeInstallPromptEvent, InstallApp } from './install-app';
 import { SignOutButton } from './sign-out-button';
+import Dexie from 'dexie';
+import { openOfflineDb } from '@/lib/offline/db';
+import { enqueue } from '@/lib/offline/outbox';
+import type { Send } from '@/lib/offline/sync-client';
 
 const standalone = vi.fn(() => false);
 const IPHONE =
@@ -72,17 +78,94 @@ describe('InstallApp (D95)', () => {
   });
 });
 
-describe('SignOutButton (D95, AGENTS §12)', () => {
-  it('clears the cached pages before signing out', async () => {
+describe('SignOutButton (D95, D89, AGENTS §12)', () => {
+  let n = 0;
+  const USER = () => `signout-${n}`;
+  beforeEach(() => {
+    n++;
+    vi.stubGlobal('caches', { delete: vi.fn(async () => true) });
+  });
+  const waitingWrite = async () => {
+    const db = openOfflineDb(USER());
+    await enqueue(
+      db,
+      { id: '00000000-0000-4000-8000-000000000001', kind: 'run.delete', payload: {} },
+      new Date(),
+    );
+    db.close();
+  };
+  const outboxCount = async () => {
+    const db = openOfflineDb(USER());
+    const count = await db.outbox.count();
+    db.close();
+    return count;
+  };
+
+  it('clears the cached pages, then the empty device store, before signing out', async () => {
     const order: string[] = [];
     vi.stubGlobal('caches', { delete: vi.fn(async (name: string) => order.push(`clear ${name}`)) });
+    const deleted = vi.spyOn(Dexie, 'delete');
     const signOut = vi.fn(async () => {
       order.push('sign out');
     });
-    renderWithIntl(<SignOutButton signOut={signOut} />);
+    renderWithIntl(<SignOutButton userId={USER()} signOut={signOut} />);
     await userEvent.setup().click(screen.getByRole('button', { name: 'Log out' }));
     await waitFor(() => expect(signOut).toHaveBeenCalled());
     expect(order[0]).toBe('clear pages');
     expect(order.at(-1)).toBe('sign out');
+    expect(deleted).toHaveBeenCalledWith(`getfit-${USER()}`);
+  });
+
+  it('with writes waiting, warns first; syncing them then signs out', async () => {
+    await waitingWrite();
+    const signOut = vi.fn(async () => undefined);
+    const send = vi.fn<Send>(async (request) => ({
+      results: request.writes.map((w) => ({ id: w.id, status: 'applied' as const })),
+    }));
+    const { container } = renderWithIntl(
+      <SignOutButton userId={USER()} signOut={signOut} send={send} />,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Log out' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Some changes aren’t synced yet' }),
+    ).toBeTruthy();
+    expect(signOut).not.toHaveBeenCalled();
+    await expectNoAxeViolations(container);
+    // Closing the warning signs nobody out; asking again opens it again.
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(screen.queryByRole('heading', { name: 'Some changes aren’t synced yet' })).toBeNull(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Log out' }));
+    await user.click(await screen.findByRole('button', { name: 'Sync, then log out' }));
+    await waitFor(() => expect(signOut).toHaveBeenCalled());
+    expect(send).toHaveBeenCalled();
+  });
+
+  it('a sync that fails says so; signing out anyway keeps the writes on this device', async () => {
+    await waitingWrite();
+    const signOut = vi.fn(async () => undefined);
+    const send = vi.fn<Send>(async () => {
+      throw new TypeError('offline');
+    });
+    renderWithIntl(<SignOutButton userId={USER()} signOut={signOut} send={send} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Log out' }));
+    await user.click(await screen.findByRole('button', { name: 'Sync, then log out' }));
+    expect(await screen.findByText(/They couldn’t be synced/)).toBeTruthy();
+    expect(signOut).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Log out anyway' }));
+    await waitFor(() => expect(signOut).toHaveBeenCalled());
+    expect(await outboxCount()).toBe(1);
+  });
+
+  it('where the store can’t open, nothing is waiting: it signs out', async () => {
+    vi.spyOn(Dexie.prototype, 'open').mockRejectedValue(new Error('no IndexedDB'));
+    vi.spyOn(Dexie, 'delete').mockRejectedValue(new Error('no IndexedDB'));
+    const signOut = vi.fn(async () => undefined);
+    renderWithIntl(<SignOutButton userId={USER()} signOut={signOut} />);
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Log out' }));
+    await waitFor(() => expect(signOut).toHaveBeenCalled());
   });
 });

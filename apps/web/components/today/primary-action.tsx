@@ -9,7 +9,8 @@ import { FormAlert } from '@/components/ui/form-alert';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
 
 // PRD §6.3: Today's one primary action, reachable without scrolling at 360 px. The session ID is generated on the
-// device (D21); the service resumes the day's open session instead when there is one (D32).
+// device (D21); the service resumes the day's open session instead when there is one (D32). Starting also asks the
+// browser to keep this site's storage, so the workout's outbox isn't evicted (P4-05, D89; Safari evicts otherwise).
 
 export type StartWorkoutAction = (input: {
   sessionId: string;
@@ -39,6 +40,7 @@ export function PrimaryAction({
     startTransition(async () => {
       setFailed(false);
       sessionId.current ??= crypto.randomUUID();
+      void navigator.storage?.persist?.().catch(() => false);
       try {
         const result = await action({ sessionId: sessionId.current, programmeDayId });
         if (!result.ok) throw new Error('start refused');

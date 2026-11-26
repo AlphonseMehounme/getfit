@@ -28,6 +28,29 @@ describe('PrimaryAction', () => {
     await expectNoAxeViolations(container);
   });
 
+  it('P4-05: asks the browser to keep the outbox, wherever it can, without waiting on the answer', async () => {
+    const action = vi.fn<StartWorkoutAction>(async (input) => ({
+      ok: true,
+      sessionId: input.sessionId,
+    }));
+    const persist = vi.fn(async () => {
+      throw new Error('denied');
+    });
+    for (const storage of [{ persist }, {}]) {
+      // jsdom has no StorageManager.
+      Object.defineProperty(navigator, 'storage', { value: storage, configurable: true });
+      push.mockClear();
+      const { unmount } = renderWithIntl(
+        <PrimaryAction programmeDayId={DAY} mode="start" action={action} trainPath="/train" />,
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Start workout' }));
+      await waitFor(() => expect(push).toHaveBeenCalled());
+      unmount();
+    }
+    expect(persist).toHaveBeenCalledTimes(1);
+    Reflect.deleteProperty(navigator, 'storage');
+  });
+
   it('says Resume for a session in progress, and shows a generic error when opening fails', async () => {
     const action = vi
       .fn<StartWorkoutAction>()

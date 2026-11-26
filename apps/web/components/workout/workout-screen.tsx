@@ -17,6 +17,8 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FormAlert } from '@/components/ui/form-alert';
+import { Notice } from '@/components/ui/notice';
+import { SyncStatus } from '@/components/ui/sync-status';
 import { setMeasure, targetMessage } from '@/lib/format/target';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
 import { useRestTimer } from '@/lib/hooks/use-rest-timer';
@@ -25,21 +27,25 @@ import { useSkippedExercises } from '@/lib/hooks/use-skipped-exercises';
 import { useWakeLock } from '@/lib/hooks/use-wake-lock';
 import { type PauseAction, useWorkoutPause } from '@/lib/hooks/use-workout-pause';
 import type { ExerciseMedia } from '@/lib/media/resolve';
+import type { OutboxStatus } from '@/lib/offline/outbox';
+import type { SyncResult } from '@/lib/offline/protocol';
 import { toLoggedSets } from '@/lib/workout/logged-sets';
 import { ExerciseListSheet } from './exercise-list-sheet';
 import { ExerciseStep } from './exercise-step';
-import { type FinishAction, FinishSummary } from './finish-summary';
+import { type FinishAction, type FinishResult, FinishSummary } from './finish-summary';
 import { LeaveDialog } from './leave-dialog';
 import { PauseOverlay } from './pause-overlay';
 import { RestTimer } from './rest-timer';
 import { SubstituteSheet } from './substitute-sheet';
 import { SetRow } from './set-row';
 import { WorkoutNav } from './workout-nav';
+import { noticeKey, WorkoutSaved } from './workout-saved';
 
 // PRD §6.5 workout execution: one exercise per screen, every set saved as it is logged (BR-6, D21; see
 // useSetLogging). A rest starts on a set's first log (D39, D43, D47), and the screen stays awake while the workout
 // is open and not paused (PRD §9). Pause is persisted (D34) and ends a running rest (D50); skipped exercises are
-// kept on this device (D49).
+// kept on this device (D49). Through the outbox (P4-05, D89), writes are kept on the device first: the indicator says
+// where they are, and a finish still waiting on the device, or kept apart by the server (D90, D104), is said so.
 
 export interface WorkoutScreenExercise {
   name: string;
@@ -77,6 +83,10 @@ export interface WorkoutScreenProps {
   savedNotes?: string | null;
   /** Where leaving and saving go: Today. */
   exitHref: string;
+  /** D89: the outbox's state, when the writes go through it. */
+  sync?: { status: OutboxStatus; notice: SyncResult | null; onRetry: () => void };
+  /** A finish chosen on this device still waits to be sent. */
+  savedOnDevice?: boolean;
 }
 
 export function WorkoutScreen({
@@ -95,6 +105,8 @@ export function WorkoutScreen({
   savedRpe = null,
   savedNotes = null,
   exitHref,
+  sync,
+  savedOnDevice = false,
 }: WorkoutScreenProps) {
   const t = useTranslations('Workout');
   const tTarget = useTranslations('Today.target');
@@ -117,6 +129,14 @@ export function WorkoutScreen({
   const [leaveOpen, setLeaveOpen] = useState(false);
   /** Seconds spent when the summary opened; null while logging. */
   const [summaryDuration, setSummaryDuration] = useState<number | null>(null);
+  /** Saved, but waiting on this device or kept apart by the server; null while the workout is open. */
+  const [saved, setSaved] = useState<FinishResult | null>(
+    savedOnDevice ? { ok: true, synced: false } : null,
+  );
+  const onSaved = (result: FinishResult) => {
+    if (result.synced === false || result.notice) setSaved(result);
+    else router.push(exitHref);
+  };
   const hydrated = useHydrated();
   const restTimer = useRestTimer(sessionId);
   const [announcement, setAnnouncement] = useState('');
@@ -170,7 +190,10 @@ export function WorkoutScreen({
       rpe: null,
       notes: null,
     });
-    if (result.ok) router.push(exitHref);
+    if (result.ok) {
+      setLeaveOpen(false);
+      onSaved(result);
+    }
     return result.ok;
   };
 
@@ -192,6 +215,8 @@ export function WorkoutScreen({
     t(slot.side === 'left' ? 'setLeft' : slot.side === 'right' ? 'setRight' : 'set', {
       number: slot.setNumber,
     });
+
+  if (saved) return <WorkoutSaved notice={saved.notice} exitHref={exitHref} />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -220,12 +245,22 @@ export function WorkoutScreen({
         <p className="text-muted text-sm">
           {t('progress', { logged: progress.logged, total: progress.prescribed })}
         </p>
-        {/* BR-6: says when every logged set has reached the server. */}
-        <p role="status" className="text-muted text-sm">
-          {pending > 0 ? t('saving') : progress.logged > 0 ? t('saved') : null}
-        </p>
+        {/* BR-6 / D89: where the logged sets are; without the outbox, when they have all reached the server. */}
+        {sync ? (
+          <SyncStatus status={sync.status} onRetry={sync.onRetry} />
+        ) : (
+          <p role="status" className="text-muted text-sm">
+            {pending > 0 ? t('saving') : progress.logged > 0 ? t('saved') : null}
+          </p>
+        )}
       </div>
       {failed ? <FormAlert>{t('saveError')}</FormAlert> : null}
+      {/* D90 / D91: amber, not red: nothing is lost, the server kept it (D103). */}
+      {sync?.notice ? (
+        <Notice tone="warning" title={t('sync.noticeTitle')} live>
+          {t(`sync.${noticeKey(sync.notice)}`)}
+        </Notice>
+      ) : null}
       {pauseState.failed === 'pause' ? <FormAlert>{t('pause.error')}</FormAlert> : null}
       {summaryDuration !== null ? (
         <FinishSummary
@@ -239,7 +274,7 @@ export function WorkoutScreen({
           initialNotes={savedNotes}
           finish={finish}
           onBack={() => setSummaryDuration(null)}
-          onSaved={() => router.push(exitHref)}
+          onSaved={onSaved}
         />
       ) : (
         <ExerciseStep

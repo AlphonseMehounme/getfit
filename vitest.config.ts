@@ -66,7 +66,7 @@ export default defineConfig({
         'apps/web/components/review/**/*.tsx',
         'apps/web/components/ui/scale.tsx',
         // P4-02: the PWA (D95).
-        'apps/web/lib/offline/**/*.ts',
+        'apps/web/lib/offline/**/*.{ts,tsx}',
         'apps/web/components/profile/{install-app,sign-out-button}.tsx',
         // P4-03: the sync indicator (D89).
         'apps/web/components/ui/sync-status.tsx',

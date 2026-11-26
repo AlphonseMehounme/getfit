@@ -108,7 +108,7 @@ export default async function ProfilePage({
             <span className="break-all">{account.email ?? '—'}</span>
           </Field>
         </dl>
-        <SignOutButton signOut={signOutAction} />
+        <SignOutButton userId={account.id} signOut={signOutAction} />
       </ProfileSection>
     </div>
   );

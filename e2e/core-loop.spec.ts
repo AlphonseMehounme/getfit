@@ -155,7 +155,7 @@ test('a full programme week: every training day done, so adherence is 100% and t
     .getByRole('group', { name: 'Set 1' })
     .getByRole('button', { name: en.Workout.doneAsPlanned })
     .click();
-  await expect(page.getByRole('status').filter({ hasText: en.Workout.saved })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
   await page.getByRole('button', { name: en.Workout.leave }).click();
   await page.getByRole('button', { name: en.Workout.savePartialLeave }).click();
   await expect(page).toHaveURL('/today');

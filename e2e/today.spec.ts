@@ -1,8 +1,7 @@
-import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import programme from '../content/programmes/force-muscle-endurance-8w.json' with { type: 'json' };
 import en from '../apps/web/messages/en.json' with { type: 'json' };
-import { logEverySet, startOnMonday } from './support/workout-flow';
+import { logEverySet, setNow, startOnMonday } from './support/workout-flow';
 import {
   expectNoAxeViolations,
   newEmail,
@@ -12,14 +11,12 @@ import {
 
 // P1-16 / D20 / D30: each test picks its day with the clock header, honoured only by the NODE_ENV=test server.
 // Week 1 below starts on Monday 23 Nov 2026 (Paris).
-const TEST_NOW_HEADER = 'x-getfit-test-now';
 const WEDNESDAY = '2026-11-18T10:00:00+01:00';
 const MONDAY = '2026-11-23T08:00:00+01:00';
 const TUESDAY = '2026-11-24T08:00:00+01:00';
 const BACKGROUND = { light: 'rgb(255, 255, 255)', dark: 'rgb(17, 18, 21)' } as const;
 
 const template = (slug: string) => programme.templates.find((t) => t.slug === slug)!;
-const setNow = (page: Page, iso: string) => page.setExtraHTTPHeaders({ [TEST_NOW_HEADER]: iso });
 
 test.use({ locale: 'en-US', timezoneId: 'Europe/Paris' });
 

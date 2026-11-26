@@ -4,7 +4,8 @@ import { notFound, redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import { WorkoutRecord } from '@/components/workout/workout-record';
-import { type LoggedSetValue, WorkoutScreen } from '@/components/workout/workout-screen';
+import { DeviceWorkoutScreen } from '@/components/workout/device-workout-screen';
+import type { LoggedSetValue } from '@/components/workout/workout-screen';
 import { HOME_PATH } from '@/lib/auth/paths';
 import type { Locale } from '@/lib/i18n/config';
 import { resolveExerciseMedia } from '@/lib/media/resolve';
@@ -23,7 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('exercises') };
 }
 
-// PRD §6.5: the workout screen. It reopens at the first set not yet logged (BR-6).
+// PRD §6.5: the workout screen. It reopens at the first set not yet logged (BR-6), counting the sets this device
+// logged and hasn't synced yet (P4-05, D89).
 export default async function WorkoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
   const workout = z.uuid().safeParse(sessionId).success
@@ -63,7 +65,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ sessio
   }
 
   return (
-    <WorkoutScreen
+    <DeviceWorkoutScreen
       sessionId={workout.sessionId}
       title={workout.title}
       exercises={workout.exercises.map((e) => ({
