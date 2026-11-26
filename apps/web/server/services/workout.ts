@@ -50,6 +50,7 @@ import {
   findSets,
   finishSessionRow,
   insertSession,
+  type NewWorkoutSession,
   reopenSession,
   setPause,
   upsertSet,
@@ -77,6 +78,71 @@ export type StartSessionResult =
         | StartRefusal;
     };
 
+type StartError = Extract<StartSessionResult, { ok: false }>['error'];
+
+/** What a start needs, worked out from the schedule (D14, D23, D26). Shared with the device start (P4-04b, D90). */
+export async function prepareStart(client: DbClient, input: unknown, clock: Clock) {
+  const parsed = startSessionSchema.safeParse(input);
+  if (!parsed.success) return { ok: false as const, error: 'invalid_input' as StartError };
+  const { sessionId, programmeDayId } = parsed.data;
+
+  const context = await loadSchedule(client, clock);
+  if (typeof context === 'string') return { ok: false as const, error: context as StartError };
+  const { programme, enrolment, scheduleInput, prescriptionOverrides, now } = context;
+  const retried = await findSession(client, sessionId);
+  // D21: a retry must name the same day; any other use of this ID is refused.
+  if (retried && retried.programmeDayId !== programmeDayId) {
+    return { ok: false as const, error: 'invalid_input' as StartError };
+  }
+
+  const day = programme.shape.days.find((d) => d.id === programmeDayId);
+  if (!day) return { ok: false as const, error: 'not_found' as StartError };
+  // D26: a workout fulfils only a strength day; runs are logged separately (Phase 2).
+  if (day.template.sessionType !== 'strength') {
+    return { ok: false as const, error: 'not_a_workout' as StartError };
+  }
+
+  const date = calendarDate(
+    enrolment.startDate,
+    day,
+    scheduleInput.overrides.find((o) => o.programmeDayId === day.id),
+  );
+  const view = buildWeek(scheduleInput, mondayOf(date), now)
+    .days.flatMap((d) => d.sessions)
+    .find((s) => s.programmeDayId === day.id)!;
+
+  const template = programme.templates.get(day.template.id)!;
+  const week = programme.weeks.get(day.weekNumber)!.week;
+  /** A new session for this day: linked to it, or unlinked when the schedule refused it (D90). */
+  const newSession = (linked: boolean): NewWorkoutSession => ({
+    id: sessionId,
+    userId: context.userId,
+    userProgrammeId: linked ? enrolment.id : null,
+    programmeDayId: linked ? day.id : null,
+    scheduledDate: linked ? date : null,
+    sessionTemplateId: template.ref.id,
+    snapshot: buildSnapshot({
+      programmeId: programme.id,
+      programmeVersion: programme.version,
+      sessionTemplateId: template.ref.id,
+      week,
+      prescriptions: resolveSession(template.exercises, week, prescriptionOverrides),
+    }),
+    startedAt: now,
+  });
+  return {
+    ok: true as const,
+    sessionId,
+    userId: context.userId,
+    enrolmentId: enrolment.id,
+    day,
+    start: view.start,
+    retried,
+    newSession,
+    now,
+  };
+}
+
 /**
  * Starts the programme day's workout, or resumes the one in progress or saved as partial (D32).
  * Retrying with the same `sessionId` returns the same session (D21).
@@ -87,38 +153,15 @@ export async function startSession(
   clock: Clock,
   trackEvent: Track = track,
 ): Promise<StartSessionResult> {
-  const parsed = startSessionSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: 'invalid_input' };
-  const { sessionId, programmeDayId } = parsed.data;
+  const prepared = await prepareStart(client, input, clock);
+  if (!prepared.ok) return prepared;
+  const { sessionId, day, start, retried, now } = prepared;
 
-  const context = await loadSchedule(client, clock);
-  if (typeof context === 'string') return { ok: false, error: context };
-  const { programme, enrolment, scheduleInput, prescriptionOverrides, now } = context;
+  if (retried) return { ok: true, sessionId, resumed: false };
+  if (!start.allowed) return { ok: false, error: start.reason };
 
-  const retried = await findSession(client, sessionId);
-  if (retried) {
-    return retried.programmeDayId === programmeDayId
-      ? { ok: true, sessionId, resumed: false }
-      : { ok: false, error: 'invalid_input' };
-  }
-
-  const day = programme.shape.days.find((d) => d.id === programmeDayId);
-  if (!day) return { ok: false, error: 'not_found' };
-  // D26: a workout fulfils only a strength day; runs are logged separately (Phase 2).
-  if (day.template.sessionType !== 'strength') return { ok: false, error: 'not_a_workout' };
-
-  const date = calendarDate(
-    enrolment.startDate,
-    day,
-    scheduleInput.overrides.find((o) => o.programmeDayId === day.id),
-  );
-  const view = buildWeek(scheduleInput, mondayOf(date), now)
-    .days.flatMap((d) => d.sessions)
-    .find((s) => s.programmeDayId === day.id)!;
-  if (!view.start.allowed) return { ok: false, error: view.start.reason };
-
-  if (view.start.mode === 'resume') {
-    const open = await findOpenSessionForDay(client, enrolment.id, day.id);
+  if (start.mode === 'resume') {
+    const open = await findOpenSessionForDay(client, prepared.enrolmentId, day.id);
     if (!open) throw new Error('workout_sessions: resumable day without an open session');
     if (open.status === 'partial') await reopenSession(client, open.id, now);
     await trackEvent(
@@ -126,36 +169,18 @@ export async function startSession(
         name: 'workout_started',
         properties: { workout_session_id: open.id, programme_day_id: day.id, resumed: true },
       },
-      context.userId,
+      prepared.userId,
     );
     return { ok: true, sessionId: open.id, resumed: true };
   }
 
-  const template = programme.templates.get(day.template.id)!;
-  const week = programme.weeks.get(day.weekNumber)!.week;
-  const snapshot = buildSnapshot({
-    programmeId: programme.id,
-    programmeVersion: programme.version,
-    sessionTemplateId: template.ref.id,
-    week,
-    prescriptions: resolveSession(template.exercises, week, prescriptionOverrides),
-  });
-  await insertSession(client, {
-    id: sessionId,
-    userId: context.userId,
-    userProgrammeId: enrolment.id,
-    programmeDayId: day.id,
-    sessionTemplateId: template.ref.id,
-    scheduledDate: date,
-    snapshot,
-    startedAt: now,
-  });
+  await insertSession(client, prepared.newSession(true));
   await trackEvent(
     {
       name: 'workout_started',
       properties: { workout_session_id: sessionId, programme_day_id: day.id, resumed: false },
     },
-    context.userId,
+    prepared.userId,
   );
   return { ok: true, sessionId, resumed: false };
 }

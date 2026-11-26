@@ -96,13 +96,14 @@ export async function findOpenSessionForDay(
   return data ? toSession(data) : null;
 }
 
+/** The three programme links are set together, or all null for an unlinked session (D90). */
 export interface NewWorkoutSession {
   id: string;
   userId: string;
-  userProgrammeId: string;
-  programmeDayId: string;
+  userProgrammeId: string | null;
+  programmeDayId: string | null;
   sessionTemplateId: string;
-  scheduledDate: LocalDate;
+  scheduledDate: LocalDate | null;
   snapshot: PrescriptionSnapshot;
   startedAt: Date;
 }
@@ -120,6 +121,41 @@ export async function insertSession(client: DbClient, input: NewWorkoutSession):
     started_at: input.startedAt.toISOString(),
     client_updated_at: input.startedAt.toISOString(),
   });
+  if (error) fail('workout_sessions', error.code);
+}
+
+/** D91 / D104: the session that fulfils a programme day (partial or completed), if any. */
+export async function findFulfilmentForDay(
+  client: DbClient,
+  userProgrammeId: string,
+  programmeDayId: string,
+): Promise<WorkoutSessionRecord | null> {
+  const { data, error } = await client
+    .from('workout_sessions')
+    .select(SESSION_COLUMNS)
+    .eq('user_programme_id', userProgrammeId)
+    .eq('programme_day_id', programmeDayId)
+    .in('status', ['partial', 'completed'])
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (error) fail('workout_sessions', error.code);
+  return data ? toSession(data) : null;
+}
+
+/**
+ * D90 / D104: a session no longer fulfils its programme day. Its sets, snapshot and times are untouched (BR-25); only
+ * the three links are cleared, together (the table's check).
+ */
+export async function unlinkSession(client: DbClient, id: string, at: Date): Promise<void> {
+  const { error } = await client
+    .from('workout_sessions')
+    .update({
+      user_programme_id: null,
+      programme_day_id: null,
+      scheduled_date: null,
+      client_updated_at: at.toISOString(),
+    })
+    .eq('id', id);
   if (error) fail('workout_sessions', error.code);
 }
 
