@@ -58,11 +58,16 @@ export function createSyncClient({ db, send, onStatus, onNotice, onSettled }: Sy
     onStatus?.(await outboxStatus(db));
   }
 
-  /** Sends what's waiting; a call while a send runs joins it. */
+  /**
+   * Sends what's waiting; a call while a send runs joins it. It never rejects: if the device's store fails or is closed
+   * mid-send (the page is leaving), the writes stay in the outbox for the next send (BR-6).
+   */
   function flush(): Promise<void> {
-    running ??= run().finally(() => {
-      running = null;
-    });
+    running ??= run()
+      .catch(() => undefined)
+      .finally(() => {
+        running = null;
+      });
     return running;
   }
 

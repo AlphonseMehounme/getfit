@@ -19,7 +19,7 @@ export interface WorkoutActions {
 }
 
 export function outboxWorkoutActions(
-  sync: Pick<OfflineSync, 'db' | 'push' | 'answer'>,
+  sync: Pick<OfflineSync, 'db' | 'saving' | 'push' | 'answer'>,
   online: WorkoutActions,
   now: () => Date = () => new Date(),
 ): WorkoutActions {
@@ -27,7 +27,19 @@ export function outboxWorkoutActions(
     kind: WriteKind,
     payload: { sessionId: string },
     update: (copy: LocalWorkout, writeId: string) => void,
-  ) => saveWorkoutWrite(sync.db, { sessionId: payload.sessionId, kind, payload }, update, now());
+  ) => {
+    sync.saving();
+    return saveWorkoutWrite(
+      sync.db,
+      { sessionId: payload.sessionId, kind, payload },
+      update,
+      now(),
+    ).catch((error: unknown) => {
+      // Not kept: the write goes to the server action instead, and the indicator shows the outbox as it is.
+      void sync.push();
+      throw error;
+    });
+  };
 
   const pauseWrite =
     (paused: boolean, fallback: PauseAction): PauseAction =>

@@ -23,6 +23,7 @@ const online = (): WorkoutActions => ({
 function fakeSync(status: SyncResult['status'] | null, reason?: string) {
   return {
     db,
+    saving: vi.fn(),
     push: vi.fn(async () => {
       if (!status) return;
       for (const entry of await db.outbox.toArray()) {
@@ -72,6 +73,10 @@ describe('the workout’s writes through the outbox (P4-05, D89, BR-6)', () => {
     const { logSet } = outboxWorkoutActions(sync, actions, () => NOW);
     expect(await logSet(setInput)).toEqual({ ok: true });
     expect(actions.logSet).not.toHaveBeenCalled();
+    // D89: the indicator leaves "Synced" before the device write, never after it.
+    expect(sync.saving.mock.invocationCallOrder[0]).toBeLessThan(
+      sync.push.mock.invocationCallOrder[0]!,
+    );
     expect(sync.push).toHaveBeenCalled();
     // D40: the substitute's set fills the plank's slot, and remembers the substitute.
     expect((await readLocalWorkout(db, SESSION))!.sets['plank|1|both']).toMatchObject({
@@ -129,7 +134,10 @@ describe('the workout’s writes through the outbox (P4-05, D89, BR-6)', () => {
     expect(actions.pause).toHaveBeenCalledWith({ sessionId: SESSION });
     expect(actions.resume).toHaveBeenCalledWith({ sessionId: SESSION });
     expect(actions.finish).toHaveBeenCalledWith(finishInput);
-    expect(sync.push).not.toHaveBeenCalled();
+    // D89: the indicator said "Saved on this device" for each write; with none kept, it is told the outbox's state
+    // again (a send with nothing new), once per write, and the finish isn't waited on through the outbox.
+    expect(sync.saving).toHaveBeenCalledTimes(4);
+    expect(sync.push).toHaveBeenCalledTimes(4);
   });
 
   it('a finish online waits for the answer: applied, or a duplicate of one applied', async () => {
