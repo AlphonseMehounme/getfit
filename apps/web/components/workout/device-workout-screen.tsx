@@ -34,6 +34,7 @@ export function DeviceWorkoutScreen(props: WorkoutScreenProps) {
   const [copy, setCopy] = useState<LocalWorkout | null>(null);
   const { sessionId, logSet, pause, resume, finish } = props;
   const db = sync?.db;
+  const saving = sync?.saving;
   const push = sync?.push;
   const answer = sync?.answer;
 
@@ -48,10 +49,10 @@ export function DeviceWorkoutScreen(props: WorkoutScreenProps) {
 
   const actions = useMemo(
     () =>
-      db && push && answer
-        ? outboxWorkoutActions({ db, push, answer }, { logSet, pause, resume, finish })
+      db && saving && push && answer
+        ? outboxWorkoutActions({ db, saving, push, answer }, { logSet, pause, resume, finish })
         : null,
-    [db, push, answer, logSet, pause, resume, finish],
+    [db, saving, push, answer, logSet, pause, resume, finish],
   );
 
   const screenProps = copy ? withDeviceCopy(props, copy) : props;

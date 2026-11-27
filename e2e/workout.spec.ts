@@ -29,22 +29,23 @@ test('start from Today, log two sets, reload and resume at the same set', async 
     setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }),
   ).toBeInViewport();
 
-  // BR-14: one tap logs the target; an adjusted set logs what was done.
+  // BR-14: one tap logs the target; an adjusted set logs what was done. Logged sets are read inside `main`: just after
+  // a page load, React's streamed HTML waits a moment in a hidden copy outside it.
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 1: done, 6 reps')).toBeAttached();
   await setRow(page, 'Set 2')
     .getByRole('button', { name: /^Decrease/ })
     .click();
   await setRow(page, 'Set 2').getByRole('button', { name: 'Save 5 reps' }).click();
-  await expect(page.getByText('Set 2: done, 5 reps')).toBeAttached();
-  await expect(page.getByText('2 of 12 sets done')).toBeVisible();
+  await expect(page.getByRole('main').getByText('Set 2: done, 5 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('2 of 12 sets done')).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 
   // BR-6: a reload resumes on the pull-up with both sets saved and set 3 open.
   await page.reload();
   await expect(page.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
-  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
-  await expect(page.getByText('Set 2: done, 5 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 2: done, 5 reps')).toBeAttached();
   await expect(page.getByRole('spinbutton', { name: 'Reps for Set 3' })).toHaveValue('6');
 
   // PRD §9: every control on the workout screen is at least 48 × 48 px; axe passes.
@@ -74,7 +75,7 @@ test('start from Today, log two sets, reload and resume at the same set', async 
   // Today now offers to resume the same session.
   await page.getByRole('button', { name: en.Today.action.resume }).click();
   await expect(page).toHaveURL(workoutUrl);
-  await expect(page.getByText('2 of 12 sets done')).toBeVisible();
+  await expect(page.getByRole('main').getByText('2 of 12 sets done')).toBeVisible();
 });
 
 test('P4-05 · PRD §6.5 AC: kill the page mid-workout, reopen, and it resumes at the same set', async ({
@@ -86,12 +87,12 @@ test('P4-05 · PRD §6.5 AC: kill the page mid-workout, reopen, and it resumes a
   await expect(page).toHaveURL(/\/train\/[0-9a-f-]{36}$/);
   const workoutUrl = page.url();
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 1: done, 6 reps')).toBeAttached();
 
   // BR-6 / D89: offline, the next set is kept on the device ("Saved on this device"), not rolled back.
   await context.setOffline(true);
   await setRow(page, 'Set 2').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 2: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 2: done, 6 reps')).toBeAttached();
   await expect(page.getByRole('status').filter({ hasText: en.Sync.saved })).toBeVisible();
 
   // The page is killed with set 2 still on the device, then the workout is opened again online.
@@ -100,15 +101,15 @@ test('P4-05 · PRD §6.5 AC: kill the page mid-workout, reopen, and it resumes a
   const reopened = await context.newPage();
   await reopened.goto(workoutUrl);
   await expect(reopened.getByRole('heading', { level: 2, name: 'Pull-up' })).toBeVisible();
-  await expect(reopened.getByText('Set 1: done, 6 reps')).toBeAttached();
-  await expect(reopened.getByText('Set 2: done, 6 reps')).toBeAttached();
+  await expect(reopened.getByRole('main').getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(reopened.getByRole('main').getByText('Set 2: done, 6 reps')).toBeAttached();
   await expect(reopened.getByRole('spinbutton', { name: 'Reps for Set 3' })).toHaveValue('6');
-  await expect(reopened.getByText('2 of 12 sets done')).toBeVisible();
+  await expect(reopened.getByRole('main').getByText('2 of 12 sets done')).toBeVisible();
 
   // Once synced, the device's copy is cleared: a reload shows the server's workout alone, with both sets.
   await expect(reopened.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
   await reopened.reload();
-  await expect(reopened.getByText('2 of 12 sets done')).toBeVisible();
+  await expect(reopened.getByRole('main').getByText('2 of 12 sets done')).toBeVisible();
 });
 
 test('P4-05 · D89: a set logged offline syncs once, back online', async ({ context, page }) => {
@@ -130,8 +131,8 @@ test('P4-05 · D89: a set logged offline syncs once, back online', async ({ cont
   await context.setOffline(false);
   await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
   await page.reload();
-  await expect(page.getByText('Set 1: done, 5 reps')).toBeAttached();
-  await expect(page.getByText('1 of 12 sets done')).toBeVisible();
+  await expect(page.getByRole('main').getByText('Set 1: done, 5 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('1 of 12 sets done')).toBeVisible();
 });
 
 test('the workout screen passes axe in dark mode', async ({ page }, testInfo) => {
@@ -162,7 +163,7 @@ test('D31 / D32: save as partial from Leave, then resume; completed is not offer
 
   // D32: a partial workout is reopened from Today, with its set still there.
   await page.getByRole('button', { name: en.Today.action.resume }).click();
-  await expect(page.getByText('1 of 12 sets done')).toBeVisible();
+  await expect(page.getByRole('main').getByText('1 of 12 sets done')).toBeVisible();
   await page.getByRole('button', { name: en.Workout.exercises }).click();
   await page.getByRole('button', { name: en.Workout.finishWorkout }).click();
   await expect(page.getByText('11 sets are not logged', { exact: false })).toBeVisible();
@@ -225,7 +226,7 @@ test('D34 / D45: pause, reload and still paused, then resume and log', async ({ 
   await paused.getByRole('button', { name: en.Workout.pause.resume }).click();
   await expect(paused).toHaveCount(0);
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 1: done, 6 reps')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 1: done, 6 reps')).toBeAttached();
   await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 });
 
@@ -261,7 +262,9 @@ test('D40 / D44 / D41: substitute the plank with the crunch, log load and RIR, a
   await set1.getByLabel('Load (kg)').fill('10');
   await set1.getByLabel('Reps in reserve').selectOption('2');
   await set1.getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 1: done, 6 reps · 10 kg · RIR 2')).toBeAttached();
+  await expect(
+    page.getByRole('main').getByText('Set 1: done, 6 reps · 10 kg · RIR 2'),
+  ).toBeAttached();
   await page.getByRole('button', { name: en.Workout.rest.skip }).click();
 
   // D40: the plank's substitute is the abdominal crunch (same category, bodyweight).
@@ -274,7 +277,7 @@ test('D40 / D44 / D41: substitute the plank with the crunch, log load and RIR, a
   await expect(page.getByRole('heading', { level: 2, name: 'Abdominal crunch' })).toBeVisible();
   await expect(page.getByText('Instead of Plank')).toBeVisible();
   await setRow(page, 'Set 1').getByRole('button', { name: en.Workout.doneAsPlanned }).click();
-  await expect(page.getByText('Set 1: done, 45 s')).toBeAttached();
+  await expect(page.getByRole('main').getByText('Set 1: done, 45 s')).toBeAttached();
   await expect(page.getByRole('status').filter({ hasText: en.Sync.synced })).toBeVisible();
 
   // D44: after a reload the substitute comes back from the logged set.

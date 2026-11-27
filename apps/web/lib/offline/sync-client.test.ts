@@ -97,6 +97,17 @@ describe('the sync client (D89, PRD §12)', () => {
     expect([...server.applied.keys()]).toEqual([id(1), id(2)]);
   });
 
+  it('BR-6: a store closed mid-send (the page leaving) never rejects, and the writes stay for the next send', async () => {
+    await add(1);
+    const server = fakeServer();
+    const client = createSyncClient({ db: store, send: server.send });
+    store.close();
+    await expect(client.flush()).resolves.toBeUndefined();
+    expect(server.send).not.toHaveBeenCalled();
+    await store.open();
+    expect(await store.outbox.count()).toBe(1);
+  });
+
   it('an answer that does not parse is never taken as sent', async () => {
     const send = vi.fn<Send>(async () => ({ ok: true }));
     await add(1);

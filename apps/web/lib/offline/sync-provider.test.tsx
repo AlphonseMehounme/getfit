@@ -70,6 +70,14 @@ describe('SyncProvider (P4-05, D89)', () => {
     });
   });
 
+  it('D89: a write on its way to the device turns "Synced" into "Saved on this device" at once', async () => {
+    const { unmount } = mount(vi.fn<Send>(async () => ({ results: [] })));
+    await waitFor(() => expect(seen?.status).toBe('synced'));
+    act(() => seen!.saving());
+    expect(seen!.status).toBe('saved');
+    unmount();
+  });
+
   it('where the store can’t open, there is no outbox: the screens keep the online path', async () => {
     vi.spyOn(Dexie.prototype, 'open').mockRejectedValue(new Error('no IndexedDB'));
     const send = vi.fn<Send>();

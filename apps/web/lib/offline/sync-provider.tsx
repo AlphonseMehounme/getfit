@@ -17,6 +17,11 @@ export interface OfflineSync {
   status: OutboxStatus;
   /** The latest write the server didn't apply (refused, or lost to a later version, D90, D91). */
   notice: SyncResult | null;
+  /**
+   * A write is being kept on the device: the indicator says so at once, so it never shows "Synced" while a write is
+   * on its way to the outbox (D89).
+   */
+  saving: () => void;
   /** A write was just kept on the device: says so, and sends it. */
   push: () => Promise<void>;
   /** The server's answer to a write sent from this page, once it has one. */
@@ -66,6 +71,7 @@ export function SyncProvider({
         client.start();
         setSync({
           db,
+          saving: () => setStatus('saved'),
           push: () => {
             setStatus('saved');
             return client.flush();
